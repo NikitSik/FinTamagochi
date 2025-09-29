@@ -1,0 +1,55 @@
+:root {
+  /* базовые */
+  --bg: #0e1220;
+  --text: #ffffff;
+  --muted: rgba(255,255,255,.6);
+  --card: rgba(0,0,0,.25);
+  --card-border: rgba(255,255,255,.06);
+  --accent: #7c67f2;
+
+  /* нижняя навигация */
+  --nav-bg: rgba(10,12,24,.9);
+  --nav-border: rgba(255,255,255,.08);
+
+  /* вспомогательные */
+  --chip: rgba(255,255,255,.10);
+  --chip-text: #ffffff;
+}
+
+/* LIGHT */
+html.theme-light {
+  --bg: #f6f7fb;
+  --text: #101225;
+  --muted: rgba(0,0,0,.6);
+  --card: #ffffff;
+  --card-border: rgba(0,0,0,.06);
+  --accent: #3b82f6;
+
+  --nav-bg: rgba(255,255,255,.9);
+  --nav-border: rgba(0,0,0,.08);
+
+  --chip: rgba(0,0,0,.06);
+  --chip-text: #101225;
+}
+
+
+
+/* GPB (сине-белый) */
+html.theme-gpb {
+  --bg: #061a42;              /* глубокий синий */
+  --text: #ffffff;
+  --muted: rgba(255,255,255,.75);
+  --card: rgba(255,255,255,.06);
+  --card-border: rgba(255,255,255,.14);
+  --accent: #0066cc;          /* корпоративный голубой */
+
+  --nav-bg: rgba(4,12,32,.9);
+  --nav-border: rgba(255,255,255,.12);
+
+  --chip: rgba(255,255,255,.10);
+  --chip-text: #eaf4ff;
+}
+
+/* утилити-токены для переиспользования в Tailwind классах через [var(--...)] */
+.bg-app     { background: var(--bg); }
+.text-app   { color: var(--text); }

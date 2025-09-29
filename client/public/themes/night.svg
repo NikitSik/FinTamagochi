@@ -1,0 +1,34 @@
+<svg width="336" height="84" viewBox="0 0 336 84" xmlns="http://www.w3.org/2000/svg">
+  <!-- night gradient -->
+  <defs>
+    <linearGradient id="night" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0E1630"></stop>
+      <stop offset="1" stop-color="#0A0F24"></stop>
+    </linearGradient>
+  </defs>
+  <rect width="336" height="84" fill="url(#night)"></rect>
+
+  <!-- moon -->
+  <g transform="translate(264,34)">
+    <circle cx="0" cy="0" r="18" fill="#7EA5FF" opacity="0.25"></circle>
+    <path d="M10 -16a18 18 0 1 0 0 32a14 14 0 1 1 0 -32Z" fill="#7EA5FF"></path>
+  </g>
+
+  <!-- stars -->
+  <g fill="#BFD3FF">
+    <circle cx="210" cy="18" r="2"></circle>
+    <circle cx="238" cy="10" r="1.8"></circle>
+    <circle cx="296" cy="16" r="1.6"></circle>
+    <circle cx="248" cy="30" r="1.4"></circle>
+    <circle cx="312" cy="36" r="1.6"></circle>
+    <circle cx="228" cy="44" r="1.2"></circle>
+    <circle cx="284" cy="50" r="1.4"></circle>
+  </g>
+
+  <!-- clouds (right bottom) -->
+  <g fill="#3E3F72" opacity="0.55">
+    <circle cx="280" cy="80" r="28"></circle>
+    <circle cx="306" cy="78" r="22"></circle>
+    <circle cx="330" cy="82" r="18"></circle>
+  </g>
+</svg>

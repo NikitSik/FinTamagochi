@@ -1,0 +1,124 @@
+.page {
+  min-height: 100dvh;
+  background: var(--bg);      /* было #0e1220 */
+  color: var(--text);         /* было #fff   */
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+.header { padding: 24px 20px 8px; }
+.title {
+  margin: 0;
+  text-align: center;
+  color: rgba(255,255,255,.7);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: .3px;
+}
+
+
+.main {
+  padding: 8px 20px 90px; /* место под навигацию */
+  display: grid;
+  gap: 16px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* Баланс */
+.balanceCard {
+  background: rgba(0,0,0,.25);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 16px;
+  padding: 16px;
+  padding-top: 30px;
+  backdrop-filter: blur(6px);
+}
+.balanceTop {
+  display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px;
+}
+.balanceCaption { color: rgba(255,255,255,.6); font-size: 14px; }
+.balanceValue { font-size: 24px; font-weight: 700; }
+
+.accounts { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 10px; }
+.accountRow {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 12px; border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.04); border-radius: 12px;
+}
+.accountInfo { display: grid; }
+.accountTitle { font-size: 14px; }
+.accountNumber { font-size: 12px; color: rgba(255,255,255,.55); }
+.accountAmt { font-weight: 600; font-size: 14px; }
+
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.primaryBtn, .secondaryBtn {
+  height: 40px; border-radius: 10px; font-weight: 600; cursor: pointer; border: 0;
+}
+.primaryBtn { background:#6d4cff; color:#fff; box-shadow:0 10px 24px rgba(109,76,255,.35); }
+.primaryBtn:hover { background:#7b5dff; }
+.secondaryBtn { background:rgba(255,255,255,.06); color:#fff; border:1px solid rgba(255,255,255,.08); }
+
+/* Питомец */
+.petCard {
+  display: grid; grid-template-columns: 1fr auto; gap: 12px;
+  background: rgba(0,0,0,.25); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 16px; padding: 16px;
+}
+.petLeft { display: grid; gap: 8px; }
+.petTitle { margin: 0; font-size: 16px; }
+.petHint { margin: 0; color: rgba(255,255,255,.6); font-size: 13px; }
+.petStats { display: grid; gap: 8px; margin-top: 4px; }
+.stat { display: grid; gap: 6px; }
+.statLabel { color: rgba(255,255,255,.6); font-size: 12px; }
+.progress { height: 8px; background: rgba(255,255,255,.07); border-radius: 999px; overflow: hidden; }
+.progress i { display:block; height:100%; background:#7f5af0; }
+
+.linkBtn {
+  margin-top: 4px; display: inline-block; font-size: 13px; color:#cbb6ff; text-decoration: none;
+}
+.linkBtn:hover { text-decoration: underline; }
+
+.petRight { display: grid; place-items: center; }
+.petCircle {
+  width: 92px; height: 92px; border-radius: 999px;
+  background: radial-gradient(100% 100% at 50% 0%, #2a2d3f 0%, #1a1c2b 100%);
+  border: 1px solid rgba(255,255,255,.08);
+  font-size: 44px; display: grid; place-items: center;
+}
+
+/* Нижняя навигация */
+.bottomNav {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  background: var(--nav-bg);                /* было rgba(10,12,24,.9) */
+  border-top: 1px solid var(--nav-border);  /* было rgba(255,255,255,.08) */
+  backdrop-filter: blur(10px);
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  padding: 8px 10px 10px;
+}
+.navItem {
+  display: grid; gap: 4px; justify-items: center;
+  color: rgba(255,255,255,.6); text-decoration: none; font-size: 12px;
+  padding: 6px 8px; border-radius: 10px;
+}
+.navItem:hover { background: rgba(255,255,255,.04); }
+.active { color: #ffffff; background: rgba(127,90,240,.12); }
+.navIcon { width: 22px; height: 22px; fill: currentColor; }
+
+.themeToggle {
+  margin-top: 50px;
+  width: 100%;
+  height: 10%;
+}
+
+.petCircle {              /* уже есть у тебя — оставляем */
+  width: 92px; height: 92px; border-radius: 999px;
+  background: radial-gradient(100% 100% at 50% 0%, #2a2d3f 0%, #1a1c2b 100%);
+  border: 1px solid rgba(255,255,255,.08);
+  display: grid; place-items: center;
+  overflow: hidden;       /* 👈 чтобы голова не вылезала за круг */
+}
+
+.petCircleSvg {
+  width: 72px; height: 72px;   /* компактная «голова» */
+}

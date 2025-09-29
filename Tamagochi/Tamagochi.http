@@ -1,0 +1,6 @@
+@Tamagochi_HostAddress = http://localhost:5217
+
+GET {{Tamagochi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
