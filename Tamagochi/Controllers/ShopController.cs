@@ -32,66 +32,126 @@ public class ShopController : ControllerBase
         return Ok(items);
     }
 
+    private async Task<Wallet> EnsureWalletAsync(CancellationToken ct)
+    {
+        var wallet = await _db.Wallets.FindAsync(new object?[] { UserId }, ct);
+        if (wallet is not null)
+        {
+            return wallet;
+        }
+
+        wallet = new Wallet { UserId = UserId, Coins = 0 };
+        _db.Wallets.Add(wallet);
+        await _db.SaveChangesAsync(ct);
+        return wallet;
+    }
+
+    private async Task<Inventory> EnsureInventoryAsync(CancellationToken ct)
+    {
+        var inventory = await _db.Inventories.FindAsync(new object?[] { UserId }, ct);
+        if (inventory is not null)
+        {
+            return inventory;
+        }
+
+        inventory = new Inventory { UserId = UserId };
+        _db.Inventories.Add(inventory);
+        await _db.SaveChangesAsync(ct);
+        return inventory;
+    }
+
+    private async Task<PetProfile> EnsurePetProfileAsync(CancellationToken ct)
+    {
+        var profile = await _db.PetProfiles.FindAsync(new object?[] { UserId }, ct);
+        if (profile is not null)
+        {
+            return profile;
+        }
+
+        profile = new PetProfile { UserId = UserId, SelectedPetId = "dog", OwnedPetIds = new() { "dog" } };
+        _db.PetProfiles.Add(profile);
+        await _db.SaveChangesAsync(ct);
+        return profile;
+    }
+
+
     public record PurchaseReq(string ItemId);
 
     [HttpPost("purchase")]
     public async Task<IActionResult> Purchase([FromBody] PurchaseReq req, CancellationToken ct)
     {
         var item = await _db.ShopItems.AsNoTracking().FirstOrDefaultAsync(x => x.Id == req.ItemId, ct);
-        if (item is null || !item.Enabled) return NotFound("Item not found");
-
-        var wallet = await _db.Wallets.FindAsync(new object?[] { UserId }, ct);
-        if (wallet is null)
+        if (item is null || !item.Enabled)
         {
-            wallet = new Wallet { UserId = UserId, Coins = 0 };
-            _db.Wallets.Add(wallet);
+            return NotFound("Item not found");
         }
 
-        if (wallet.Coins < item.Price) return BadRequest("Not enough coins");
-
-        var inv = await _db.Inventories.FindAsync(new object?[] { UserId }, ct);
-        if (inv is null)
+        var wallet = await EnsureWalletAsync(ct);
+        if (wallet.Coins < item.Price)
         {
-            inv = new Inventory { UserId = UserId };
-            _db.Inventories.Add(inv);
+            return BadRequest("Not enough coins");
         }
 
         // Списываем монеты
+        var inventory = await EnsureInventoryAsync(ct);
+        var profile = await EnsurePetProfileAsync(ct);
+
         wallet.Coins -= item.Price;
 
         // Применяем покупку
         try
         {
+            using var payload = JsonDocument.Parse(item.PayloadJson);
+            var root = payload.RootElement;
+
             switch (item.Type)
             {
                 case "pet":
                     {
-                        var petId = JsonDocument.Parse(item.PayloadJson).RootElement.GetProperty("petId").GetString();
-                        if (string.IsNullOrWhiteSpace(petId)) return BadRequest("Bad pet payload");
-                        if (!inv.OwnedPets.Contains(petId!))
-                            inv.OwnedPets.Add(petId!);
+                        if (!root.TryGetProperty("petId", out var petElement))
+                        {
+                            return BadRequest("Bad pet payload");
+                        }
+
+                        var petId = petElement.GetString();
+                        if (string.IsNullOrWhiteSpace(petId))
+                        {
+                            return BadRequest("Bad pet payload");
+                        }
+
+                        if (!profile.OwnedPetIds.Contains(petId))
+                        {
+                            profile.OwnedPetIds.Add(petId);
+                        }
+
                         break;
                     }
+            
                 case "bg":
                     {
-                        var bg = JsonDocument.Parse(item.PayloadJson).RootElement.GetProperty("background").GetString();
-                        if (!string.IsNullOrWhiteSpace(bg)) inv.Background = bg!;
+                        if (root.TryGetProperty("background", out var background) && !string.IsNullOrWhiteSpace(background.GetString()))
+                        {
+                            inventory.Background = background.GetString()!;
+                        }
+
                         break;
                     }
                 case "item":
                     {
-                        var id = JsonDocument.Parse(item.PayloadJson).RootElement.GetProperty("item").GetString();
-                        if (!string.IsNullOrWhiteSpace(id)) inv.Items.Add(id!);
+                        if (root.TryGetProperty("item", out var itemElement) && !string.IsNullOrWhiteSpace(itemElement.GetString()))
+                        {
+                            inventory.Items.Add(itemElement.GetString()!);
+                        }
+
                         break;
                     }
                 case "food":
-                    // ничего не записываем в инвентарь — еда тратится сразу на фронте действием "buy"
                     break;
                 default:
                     return BadRequest("Unknown item type");
             }
         }
-        catch
+        catch (JsonException)
         {
             return BadRequest("Malformed payload");
         }
@@ -105,10 +165,10 @@ public class ShopController : ControllerBase
             satiety = 50,
             health = 70,
             coins = wallet.Coins,
-            background = inv.Background,
-            items = inv.Items,
-            selectedPetId = inv.SelectedPetId,
-            ownedPetIds = inv.OwnedPets
+            background = inventory.Background,
+            items = inventory.Items,
+            selectedPetId = profile.SelectedPetId,
+            ownedPetIds = profile.OwnedPetIds
         };
 
         return Ok(petState);

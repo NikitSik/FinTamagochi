@@ -14,6 +14,7 @@ namespace Tamagochi.Controllers;
 public class FinanceController : ControllerBase
 {
     private readonly TamagochiDbContext _db;
+
     public FinanceController(TamagochiDbContext db) => _db = db;
 
     private string UserId => HttpContext.GetUserId() ?? "demo"; // fallback для локального теста
@@ -24,30 +25,40 @@ public class FinanceController : ControllerBase
         dto.UserId = UserId;
 
         if (dto.SavingsRate == 0 && dto.Income > 0)
-            dto.SavingsRate = Math.Round((dto.Income - dto.Expenses) / dto.Income, 4);
+        {
+            dto.SavingsRate = decimal.Round((dto.Income - dto.Expenses) / dto.Income, 4, MidpointRounding.AwayFromZero);
+        }
 
         _db.FinanceSnapshots.Add(dto);
         await _db.SaveChangesAsync(ct);
-        return Created("", dto);
+        return Created(string.Empty, dto);
     }
 
     [HttpGet("snapshot/latest")]
     public async Task<IActionResult> GetLatest(CancellationToken ct)
     {
-        var s = await _db.FinanceSnapshots
+        var snapshot = await _db.FinanceSnapshots
             .Where(x => x.UserId == UserId)
             .OrderByDescending(x => x.Date)
             .FirstOrDefaultAsync(ct);
 
-        return s is null ? NotFound() : Ok(s);
+        return snapshot is null ? NotFound() : Ok(snapshot);
     }
 
     // внутри FinanceController
-    private async Task<SavingsAccount> EnsureSavings(CancellationToken ct)
+    private async Task<SavingsAccount> EnsureSavingsAsync(CancellationToken ct)
     {
-        var s = await _db.SavingsAccounts.FindAsync(new object?[] { UserId }, ct);
-        if (s is null) { s = new SavingsAccount { UserId = UserId, Balance = 0m }; _db.SavingsAccounts.Add(s); await _db.SaveChangesAsync(ct); }
-        return s;
+        var account = await _db.SavingsAccounts.FindAsync(new object?[] { UserId }, ct);
+        if (account is not null)
+        {
+            return account;
+        }
+
+        account = new SavingsAccount { UserId = UserId, Balance = 0m };
+        _db.SavingsAccounts.Add(account);
+        await _db.SaveChangesAsync(ct);
+
+        return account;
     }
 
     public record DepositRequest(decimal Amount);
@@ -55,19 +66,24 @@ public class FinanceController : ControllerBase
     [HttpPost("savings/deposit")]
     public async Task<IActionResult> Deposit([FromBody] DepositRequest body, CancellationToken ct)
     {
-        if (body.Amount <= 0) return BadRequest("Сумма должна быть > 0");
-        var acc = await EnsureSavings(ct);
-        acc.Balance += body.Amount;
-        acc.UpdatedAt = DateTime.UtcNow;
+        if (body.Amount <= 0)
+        {
+            return BadRequest("Сумма должна быть > 0");
+        }
+
+        var account = await EnsureSavingsAsync(ct);
+        account.Balance += body.Amount;
+        account.UpdatedAt = DateTime.UtcNow;
+
         await _db.SaveChangesAsync(ct);
-        return Ok(new { balance = acc.Balance });
+        return Ok(new { balance = account.Balance });
     }
 
     [HttpGet("savings")]
     public async Task<IActionResult> GetSavings(CancellationToken ct)
     {
-        var acc = await EnsureSavings(ct);
-        return Ok(new { balance = acc.Balance });
+        var account = await EnsureSavingsAsync(ct);
+        return Ok(new { balance = account.Balance });
     }
 
 }

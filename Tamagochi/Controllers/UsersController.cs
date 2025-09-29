@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Tamagochi.Data;
+using Tamagochi.Infrastructure;
+
+namespace Tamagochi.Controllers;
 
 [ApiController]
 [Route("api/users")]
@@ -15,62 +18,78 @@ public class UsersController : ControllerBase
 
     public UsersController(TamagochiDbContext db, IWebHostEnvironment env)
     {
-        _db = db; _env = env;
+        _db = db;
+        _env = env;
     }
 
     [HttpGet("me")]
     public async Task<IActionResult> Me()
     {
-        var userId = User.FindFirst("sub")?.Value
-                  ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+        var userId = HttpContext.GetUserId() ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
 
-        var u = await _db.Users.AsNoTracking()
+        var user = await _db.Users.AsNoTracking()
             .Where(x => x.PublicId == userId)
             .Select(x => new
             {
                 id = x.PublicId,
                 nickname = x.Nickname,
-                avatarUrl = x.AvatarUrl, // <-- теперь из БД
+                avatarUrl = x.AvatarUrl,
                 level = 1,
                 finHealth = 72
             })
             .FirstOrDefaultAsync();
 
-        return u is null ? NotFound() : Ok(u);
+        return user is null ? NotFound() : Ok(user);
     }
 
-    // === Загрузка аватара ===
     [HttpPost("avatar")]
     public async Task<IActionResult> UploadAvatar(IFormFile file)
     {
-        var userId = User.FindFirst("sub")?.Value
-                  ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userId)) return Unauthorized();
-        if (file is null || file.Length == 0) return BadRequest("Файл пуст");
+        var userId = HttpContext.GetUserId() ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        if (file is null || file.Length == 0)
+        {
+            return BadRequest("Файл пуст");
+        }
 
         var user = await _db.Users.FirstOrDefaultAsync(u => u.PublicId == userId);
-        if (user is null) return NotFound();
+        if (user is null)
+        {
+            return NotFound();
+        }
 
-        var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
         var allowed = new[] { ".jpg", ".jpeg", ".png", ".webp" };
-        if (!allowed.Contains(ext)) return BadRequest("Разрешены: jpg, png, webp");
+        if (!allowed.Contains(extension))
+        {
+            return BadRequest("Разрешены: jpg, png, webp");
+        }
 
-        var fname = $"{user.PublicId}{ext}";
-        var dir = Path.Combine(_env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot"), "avatars");
-        Directory.CreateDirectory(dir);
-        var path = Path.Combine(dir, fname);
-        await using (var fs = System.IO.File.Create(path))
-            await file.CopyToAsync(fs);
+        var fileName = $"{user.PublicId}{extension}";
+        var root = _env.WebRootPath ?? Path.Combine(_env.ContentRootPath, "wwwroot");
+        var avatarDirectory = Path.Combine(root, "avatars");
+        Directory.CreateDirectory(avatarDirectory);
 
-        var publicUrl = $"/avatars/{fname}";
+        var fullPath = Path.Combine(avatarDirectory, fileName);
+        await using (var stream = System.IO.File.Create(fullPath))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        var publicUrl = $"/avatars/{fileName}";
         user.AvatarUrl = publicUrl;
         await _db.SaveChangesAsync();
 
-        var req = HttpContext.Request;
-        var baseUrl = $"{req.Scheme}://{req.Host}";
-        return Ok(new { url = $"{baseUrl}{publicUrl}" }); // фронт ждёт { url }
+        var request = HttpContext.Request;
+        var baseUrl = $"{request.Scheme}://{request.Host}";
+        return Ok(new { url = $"{baseUrl}{publicUrl}" });
     }
-
-
 }

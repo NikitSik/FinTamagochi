@@ -168,3 +168,4 @@ C:\Users\nikit\source\repos\Tamagochi\Tamagochi\bin\Debug\net9.0\Swashbuckle.Asp
 C:\Users\nikit\source\repos\Tamagochi\Tamagochi\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\nikit\source\repos\Tamagochi\Tamagochi\bin\Debug\net9.0\Tamagochi.staticwebassets.runtime.json
 C:\Users\nikit\source\repos\Tamagochi\Tamagochi\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
+C:\Users\nikit\source\repos\Tamagochi\Tamagochi\obj\Debug\net9.0\Tamagochi.sourcelink.json

@@ -5,8 +5,8 @@ using System.Security.Cryptography;
 using System.Text;
 using Tamagochi.Data;
 using Tamagochi.DTOs;
-using Tamagochi.Models;
 using Tamagochi.Infrastructure;
+using Tamagochi.Models;
 
 namespace Tamagochi.Controllers;
 
@@ -49,7 +49,7 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequest req, CancellationToken ct)
     {
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Nickname == req.Nickname, ct);
-        if (user == null || user.PasswordHash != HashPassword(req.Password))
+        if (user is null || user.PasswordHash != HashPassword(req.Password))
             return Unauthorized("Invalid nickname or password");
 
         var token = JwtHelper.IssueJwt(user.PublicId, user.Nickname, _cfg);
@@ -58,8 +58,7 @@ public class AuthController : ControllerBase
 
     private static string HashPassword(string password)
     {
-        using var sha = SHA256.Create();
-        var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(password));
         return Convert.ToBase64String(bytes);
     }
 }

@@ -351,7 +351,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "UsersController",
+    "ContainingType": "Tamagochi.Controllers.UsersController",
     "Method": "UploadAvatar",
     "RelativePath": "api/users/avatar",
     "HttpMethod": "POST",
@@ -367,7 +367,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "UsersController",
+    "ContainingType": "Tamagochi.Controllers.UsersController",
     "Method": "Me",
     "RelativePath": "api/users/me",
     "HttpMethod": "GET",
