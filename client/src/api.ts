@@ -29,12 +29,18 @@ export type User = {
 
 export type Mission = {
   id: number;
+  code: string;
   title: string;
   description?: string;
-  progress: { counter: number; target: number };
-  reward?: number;
-  type?: string;
-  status?: string;
+  productTag?: string;
+  repeatable: boolean;
+  reward: { coins: number; xp: number; petId?: string | null };
+  progress: {
+    counter: number;
+    target: number;
+    status: "New" | "InProgress" | "Done";
+    rewardClaimed?: boolean;
+  };
 };
 
 // ---------- PET ----------
@@ -46,8 +52,10 @@ export type PetState = {
 };
 
 export type ShopItem = {
-  id: string; title: string; price: number;
-  type: "food" | "bg" | "item";
+  id: string;
+  title: string;
+  price: number;
+  type: "food" | "bg" | "item" | "pet";
   enabled: boolean;
 };
 
@@ -118,8 +126,12 @@ export const api = {
     }),
 
   // Missions / Finance — типы ответов точные
-  missionStep: (id: number) => http<void>(`/api/missions/${id}/step`, { method: "POST" }),
-  missionClaim: (id: number) => http<void>(`/api/missions/${id}/claim`, { method: "POST" }),
+  missionStep: (id: number) => http<{ message: string; counter: number; target: number; status: string }>(`/api/missions/${id}/step`, { method: "POST" }),
+  missionClaim: (id: number) =>
+    http<{ coins: number; xp: number; petId?: string | null; repeatable: boolean; message: string }>(
+      `/api/missions/${id}/claim`,
+      { method: "POST" }
+    ),
   createSnapshot: (payload: unknown) =>
     http<void>("/api/finance/snapshot", { method: "POST", body: JSON.stringify(payload) }),
 
@@ -130,21 +142,20 @@ export const api = {
   shopPurchase: (itemId: string) =>
     http<PetState>("/api/shop/purchase", { method: "POST", body: JSON.stringify({ itemId }) }),
 
-     petSelect: (petId: string) =>
+  petSelect: (petId: string) =>
     http<void>("/api/pet/select", {
       method: "POST",
-      body: JSON.stringify({ selectedPetId: petId }),
+      body: JSON.stringify({ petId }),
     }),
 
-    savingsGet: () => http<{ balance: number }>("/api/finance/savings"),
+  savingsGet: () => http<{ balance: number }>("/api/finance/savings"),
   savingsDeposit: (amount: number) =>
     http<{ balance: number }>("/api/finance/savings/deposit", {
       method: "POST",
       body: JSON.stringify({ amount }),
     }),
 
-      financeLatest: () =>
-    http<LatestFinance>("/api/finance/snapshot/latest"),
+      financeLatest: () => http<LatestFinance>("/api/finance/snapshot/latest"),
 
 
 };

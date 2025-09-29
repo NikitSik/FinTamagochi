@@ -5,12 +5,15 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Tamagochi.Data;
 using Microsoft.IdentityModel.Logging;
+using Tamagochi.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // --------------------- Services ---------------------
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddScoped<PetStateService>();
 
 IdentityModelEventSource.ShowPII = true;
 builder.Logging.AddFilter("Microsoft.AspNetCore.Authentication", LogLevel.Debug);

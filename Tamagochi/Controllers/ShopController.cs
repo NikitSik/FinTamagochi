@@ -1,11 +1,10 @@
-﻿// Controllers/ShopController.cs
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tamagochi.Data;
+using Tamagochi.DTOs;
 using Tamagochi.Infrastructure;
-using Tamagochi.Models;
 
 namespace Tamagochi.Controllers;
 
@@ -16,7 +15,12 @@ namespace Tamagochi.Controllers;
 public class ShopController : ControllerBase
 {
     private readonly TamagochiDbContext _db;
-    public ShopController(TamagochiDbContext db) => _db = db;
+    private readonly PetStateService _petState;
+    public ShopController(TamagochiDbContext db, PetStateService petState)
+    {
+        _db = db;
+        _petState = petState;
+    }
 
     private string UserId => HttpContext.GetUserId() ?? "demo";
 
@@ -26,52 +30,10 @@ public class ShopController : ControllerBase
         var items = await _db.ShopItems
             .AsNoTracking()
             .Where(x => x.Enabled)
-            .Select(x => new { x.Id, x.Title, x.Price, x.Type, x.Enabled })
+            .Select(x => new ShopItemDto(x.Id, x.Title, x.Price, x.Type, x.Enabled))
             .ToListAsync(ct);
 
         return Ok(items);
-    }
-
-    private async Task<Wallet> EnsureWalletAsync(CancellationToken ct)
-    {
-        var wallet = await _db.Wallets.FindAsync(new object?[] { UserId }, ct);
-        if (wallet is not null)
-        {
-            return wallet;
-        }
-
-        wallet = new Wallet { UserId = UserId, Coins = 0 };
-        _db.Wallets.Add(wallet);
-        await _db.SaveChangesAsync(ct);
-        return wallet;
-    }
-
-    private async Task<Inventory> EnsureInventoryAsync(CancellationToken ct)
-    {
-        var inventory = await _db.Inventories.FindAsync(new object?[] { UserId }, ct);
-        if (inventory is not null)
-        {
-            return inventory;
-        }
-
-        inventory = new Inventory { UserId = UserId };
-        _db.Inventories.Add(inventory);
-        await _db.SaveChangesAsync(ct);
-        return inventory;
-    }
-
-    private async Task<PetProfile> EnsurePetProfileAsync(CancellationToken ct)
-    {
-        var profile = await _db.PetProfiles.FindAsync(new object?[] { UserId }, ct);
-        if (profile is not null)
-        {
-            return profile;
-        }
-
-        profile = new PetProfile { UserId = UserId, SelectedPetId = "dog", OwnedPetIds = new() { "dog" } };
-        _db.PetProfiles.Add(profile);
-        await _db.SaveChangesAsync(ct);
-        return profile;
     }
 
 
@@ -86,15 +48,11 @@ public class ShopController : ControllerBase
             return NotFound("Item not found");
         }
 
-        var wallet = await EnsureWalletAsync(ct);
+        var (wallet, inventory, profile) = await _petState.EnsureUserStateAsync(UserId, ct);
         if (wallet.Coins < item.Price)
         {
             return BadRequest("Not enough coins");
         }
-
-        // Списываем монеты
-        var inventory = await EnsureInventoryAsync(ct);
-        var profile = await EnsurePetProfileAsync(ct);
 
         wallet.Coins -= item.Price;
 
@@ -140,7 +98,11 @@ public class ShopController : ControllerBase
                     {
                         if (root.TryGetProperty("item", out var itemElement) && !string.IsNullOrWhiteSpace(itemElement.GetString()))
                         {
-                            inventory.Items.Add(itemElement.GetString()!);
+                            var value = itemElement.GetString()!;
+                            if (!inventory.Items.Contains(value))
+                            {
+                                inventory.Items.Add(value);
+                            }
                         }
 
                         break;
@@ -158,19 +120,8 @@ public class ShopController : ControllerBase
 
         await _db.SaveChangesAsync(ct);
 
-        // Вернём актуальное состояние питомца (как /api/pet/state)
-        var petState = new
-        {
-            mood = 70, // без перерасчёта — или собери как в PetStateController
-            satiety = 50,
-            health = 70,
-            coins = wallet.Coins,
-            background = inventory.Background,
-            items = inventory.Items,
-            selectedPetId = profile.SelectedPetId,
-            ownedPetIds = profile.OwnedPetIds
-        };
+        var state = await _petState.BuildStateAsync(UserId, ct);
 
-        return Ok(petState);
+        return Ok(state);
     }
 }

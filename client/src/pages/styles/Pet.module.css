@@ -69,11 +69,13 @@
 }
 .modalTitle { margin: 0 0 10px; font-size: 18px; }
 .shopList { list-style:none; padding:0; margin:0; display:grid; gap:10px; }
+.err { margin-bottom: 10px; padding: 10px 12px; border-radius: 10px; background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.4); color: #fecaca; font-size: 13px; }
 .shopRow {
   display:flex; align-items:center; justify-content:space-between;
   padding:10px 12px; border-radius:12px; background: rgba(255,255,255,.04); border:1px solid var(--card-border);
 }
 .shopTitle { font-weight:600; }
+.shopMeta { color: rgba(255,255,255,.55); font-size: 12px; }
 .shopPrice { color: var(--muted); font-size: 13px; }
 .buyBtn { height:36px; border-radius:10px; background: var(--accent); color:#fff; border:0; padding:0 12px; font-weight:700; cursor:pointer; }
 .buyBtn:disabled { opacity:.5; cursor:not-allowed; }

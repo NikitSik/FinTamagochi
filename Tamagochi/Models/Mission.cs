@@ -11,6 +11,7 @@ public class Mission
     public string ProductTag { get; set; } = default!;
     public int RewardCoins { get; set; }
     public int RewardXp { get; set; }
+    public string? RewardPetId { get; set; }
     public int Target { get; set; } = 1;
     public bool Repeatable { get; set; } = false;
 }

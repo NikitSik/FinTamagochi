@@ -1,14 +1,21 @@
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import styles from "./styles/Pet.module.css";
-import { api, type PetState } from "../api";
+import { api, type PetState, type ShopItem } from "../api";
 import Cat from "../components/pets/cat";
 import Dog from "../components/pets/dog";
+import Parrot from "../components/pets/parrot";
 import PetCarousel, { type PetSlide } from "../components/PetCarousel";
 
 // вместо JSX.Element — ComponentType
 const ALL_PETS: Record<string, ComponentType<any>> = {
   dog: Dog,
   cat: Cat,
+  parrot: Parrot,
+};
+
+const LOCK_HINTS: Record<string, string> = {
+  cat: "Выполни миссию \"Защита от мошенников\"",
+  parrot: "Выполни миссию \"Инвесткопилка\"",
 };
 
 export default function Pet() {
@@ -16,7 +23,11 @@ export default function Pet() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [shopOpen, setShopOpen] = useState(false);
-  const [carouselKey, setCarouselKey] = useState(0);
+  const carouselKey = useMemo(() => (state?.ownedPetIds ?? []).join("-"), [state?.ownedPetIds]);
+  const [shopItems, setShopItems] = useState<ShopItem[]>([]);
+  const [shopLoading, setShopLoading] = useState(false);
+  const [shopErr, setShopErr] = useState<string | null>(null);
+  const [buyingId, setBuyingId] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -40,16 +51,18 @@ export default function Pet() {
   }, [state?.background]);
 
   const slides: PetSlide[] = useMemo(() => {
-  const owned = new Set(state?.ownedPetIds ?? []);
-  return Object.keys(ALL_PETS).map((id) => {
-    const Comp = ALL_PETS[id];
-    return {
-      id,
-      render: <Comp className={styles.pet} />,
-      locked: !owned.has(id), 
-    };
-  });
-}, [state?.ownedPetIds]);
+  const order = Object.keys(ALL_PETS);
+    const owned = new Set(state?.ownedPetIds ?? []);
+    return order.map((id) => {
+      const Comp = ALL_PETS[id];
+      return {
+        id,
+        render: <Comp className={styles.pet} />,
+        locked: !owned.has(id),
+        hint: LOCK_HINTS[id],
+      } satisfies PetSlide;
+    });
+  }, [state?.ownedPetIds]);
 
 
   const initialIndex = useMemo(() => {
@@ -64,6 +77,28 @@ export default function Pet() {
       setState(s);
     } catch (e: any) {
       alert(e?.message ?? "Ошибка");
+    }
+  }
+
+   useEffect(() => {
+    if (!shopOpen || shopItems.length) return;
+    setShopLoading(true);
+    setShopErr(null);
+    api.shopItems()
+      .then((items) => setShopItems(items))
+      .catch((e: any) => setShopErr(e?.message ?? "Не удалось загрузить магазин"))
+      .finally(() => setShopLoading(false));
+  }, [shopOpen, shopItems.length]);
+
+  async function purchase(item: ShopItem) {
+    setBuyingId(item.id);
+    try {
+      const newState = await api.shopPurchase(item.id);
+      setState(newState);
+    } catch (e: any) {
+      alert(e?.message ?? "Не удалось купить предмет");
+    } finally {
+      setBuyingId(null);
     }
   }
 
@@ -123,23 +158,20 @@ export default function Pet() {
           <div className={styles.modalBackdrop} onClick={() => setShopOpen(false)}>
             <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
               <h2 className={styles.modalTitle}>Магазин</h2>
+              {shopErr && <div className={styles.err}>{shopErr}</div>}
               <ul className={styles.shopList}>
-                {[
-                  { id: "food_small", title: "Корм (мал.)", price: 10, type: "food", payload: { satiety: +15 } },
-                  { id: "food_big",   title: "Корм (бол.)", price: 25, type: "food", payload: { satiety: +40 } },
-                  { id: "bg_sky",     title: "Фон: Небо",   price: 30, type: "bg",   payload: { background: "sky" } },
-                  { id: "bg_room",    title: "Фон: Комната",price: 30, type: "bg",   payload: { background: "room" } },
-                  { id: "ball",       title: "Мячик",       price: 20, type: "item", payload: { item: "ball" } },
-                ].map(it => (
+               {shopLoading && <li className={styles.shopRow}>Загрузка…</li>}
+                {!shopLoading && shopItems.map((it) => (
                   <li key={it.id} className={styles.shopRow}>
                     <div>
                       <div className={styles.shopTitle}>{it.title}</div>
+                      <div className={styles.shopMeta}>{prettyType(it.type)}</div>
                       <div className={styles.shopPrice}>{it.price} мон.</div>
                     </div>
                     <button
                       className={styles.buyBtn}
-                      disabled={(state?.coins ?? 0) < it.price}
-                      onClick={() => act("buy", it)}
+                      disabled={(state?.coins ?? 0) < it.price || buyingId === it.id}
+                      onClick={() => purchase(it)}
                     >
                       Купить
                     </button>
@@ -153,6 +185,16 @@ export default function Pet() {
       </main>
     </div>
   );
+}
+
+function prettyType(type: ShopItem["type"]): string {
+  switch (type) {
+    case "food": return "Еда";
+    case "bg": return "Фон";
+    case "item": return "Игрушка";
+    case "pet": return "Питомец";
+    default: return type;
+  }
 }
 
 function Stat({ label, value }: { label: string; value: number }) {

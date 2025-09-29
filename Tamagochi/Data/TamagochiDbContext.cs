@@ -53,9 +53,10 @@ public class TamagochiDbContext : DbContext
 
         // сид миссий (как было)
         modelBuilder.Entity<Mission>().HasData(
-            new Mission { Id = 1, Code = "DEPOSIT_6M", Title = "Открой вклад 6+ мес", Description = "Узнай про вклад на 6–12 месяцев и кликни на продукт", ProductTag = "deposit_6m", RewardCoins = 200, RewardXp = 150, Target = 1, Repeatable = false },
-            new Mission { Id = 2, Code = "SAVINGS_CUSHION", Title = "Финансовая подушка", Description = "Накопи 1× месячных расходов (демо-цель)", ProductTag = "long_savings", RewardCoins = 300, RewardXp = 200, Target = 3, Repeatable = true },
-            new Mission { Id = 3, Code = "ANTIFRAUD_TUTORIAL", Title = "Защита от мошенников", Description = "Пройди мини-урок по антифроду", ProductTag = "antifraud", RewardCoins = 150, RewardXp = 100, Target = 1, Repeatable = false }
+             new Mission { Id = 1, Code = "DEPOSIT_6M", Title = "Открой вклад 6+ мес", Description = "Узнай про вклад на 6–12 месяцев и кликни на продукт", ProductTag = "deposit_6m", RewardCoins = 200, RewardXp = 150, Target = 1, Repeatable = false, RewardPetId = null },
+            new Mission { Id = 2, Code = "SAVINGS_CUSHION", Title = "Финансовая подушка", Description = "Накопи 1× месячных расходов (демо-цель)", ProductTag = "long_savings", RewardCoins = 300, RewardXp = 200, Target = 3, Repeatable = true, RewardPetId = null },
+            new Mission { Id = 3, Code = "ANTIFRAUD_TUTORIAL", Title = "Защита от мошенников", Description = "Пройди мини-урок по антифроду", ProductTag = "antifraud", RewardCoins = 200, RewardXp = 120, Target = 1, Repeatable = false, RewardPetId = "cat" },
+            new Mission { Id = 4, Code = "INVEST_PARROT", Title = "Инвесткопилка", Description = "Запусти инвестиционную копилку и сделай первое пополнение", ProductTag = "invest_piggy", RewardCoins = 350, RewardXp = 240, Target = 1, Repeatable = false, RewardPetId = "parrot" }
         );
 
         // 💾 сид магазина
@@ -66,8 +67,8 @@ public class TamagochiDbContext : DbContext
             new ShopItem { Id = "bg_room", Title = "Фон: Комната", Price = 30, Type = "bg", PayloadJson = "{\"background\":\"room\"}", Enabled = true },
             new ShopItem { Id = "ball", Title = "Мячик", Price = 20, Type = "item", PayloadJson = "{\"item\":\"ball\"}", Enabled = true },
 
-            new ShopItem { Id = "pet_cat", Title = "Открыть кота", Price = 500, Type = "pet", PayloadJson = "{\"petId\":\"cat\"}", Enabled = true },
-            new ShopItem { Id = "pet_dragon", Title = "Открыть дракона", Price = 1500, Type = "pet", PayloadJson = "{\"petId\":\"dragon\"}", Enabled = false } // пока скрыт
+             new ShopItem { Id = "pet_cat", Title = "Открыть кота", Price = 500, Type = "pet", PayloadJson = "{\"petId\":\"cat\"}", Enabled = false },
+            new ShopItem { Id = "pet_dragon", Title = "Открыть дракона", Price = 1500, Type = "pet", PayloadJson = "{\"petId\":\"dragon\"}", Enabled = false }
         );
 
         modelBuilder.Entity<PetProfile>()

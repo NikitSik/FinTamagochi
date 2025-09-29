@@ -14,8 +14,13 @@ namespace Tamagochi.Controllers;
 public class MissionsController : ControllerBase
 {
     private readonly TamagochiDbContext _db;
+    private readonly PetStateService _petState;
 
-    public MissionsController(TamagochiDbContext db) => _db = db;
+    public MissionsController(TamagochiDbContext db, PetStateService petState)
+    {
+        _db = db;
+        _petState = petState;
+    }
 
     // userId берём из клейма "sub" (выдаётся в AuthController.IssueJwt)
     private string UserId => HttpContext.GetUserId() ?? "demo";
@@ -43,8 +48,9 @@ public class MissionsController : ControllerBase
                 m.Title,
                 m.Description,
                 m.ProductTag,
-                reward = new { coins = m.RewardCoins, xp = m.RewardXp },
-                progress = new { p.Counter, target = m.Target, status = p.Status.ToString() }
+                reward = new { coins = m.RewardCoins, xp = m.RewardXp, petId = m.RewardPetId },
+                progress = new { p.Counter, target = m.Target, status = p.Status.ToString(), rewardClaimed = p.RewardClaimed },
+                repeatable = m.Repeatable
             };
         });
 
@@ -69,13 +75,19 @@ public class MissionsController : ControllerBase
             _db.MissionProgresses.Add(progress);
         }
 
-        if (progress.Status == MissionStatus.Done)
+        if (progress.Status == MissionStatus.Done && !mission.Repeatable)
         {
             return BadRequest("Mission already completed.");
         }
 
         progress.Counter++;
         progress.Status = progress.Counter >= mission.Target ? MissionStatus.Done : MissionStatus.InProgress;
+
+        if (progress.Status != MissionStatus.Done)
+        {
+            progress.RewardClaimed = false;
+        }
+
         progress.UpdatedAt = DateTime.UtcNow;
 
         await _db.SaveChangesAsync(ct);
@@ -106,34 +118,40 @@ public class MissionsController : ControllerBase
             return BadRequest("Mission not completed.");
         }
 
-        var wallet = await _db.Wallets.FindAsync(new object?[] { UserId }, ct);
-        if (wallet is null)
+        if (progress.RewardClaimed && !mission.Repeatable)
         {
-            wallet = new Wallet { UserId = UserId, Coins = 0 };
-            _db.Wallets.Add(wallet);
+            return BadRequest("Reward already claimed.");
         }
 
+        var (wallet, _, profile) = await _petState.EnsureUserStateAsync(UserId, ct);
         wallet.Coins += mission.RewardCoins;
 
         // 🔓 пример разблокировки питомца за конкретную миссию
-        if (mission.Code == "ANTIFRAUD_TUTORIAL")
+        if (!string.IsNullOrWhiteSpace(mission.RewardPetId))
         {
-            var profile = await _db.PetProfiles.FindAsync(new object?[] { UserId }, ct);
-            if (profile is null)
+            if (!profile.OwnedPetIds.Contains(mission.RewardPetId))
             {
-                profile = new PetProfile { UserId = UserId, SelectedPetId = "dog", OwnedPetIds = new List<string> { "dog" } };
-                _db.PetProfiles.Add(profile);
+                profile.OwnedPetIds.Add(mission.RewardPetId);
             }
-            if (!profile.OwnedPetIds.Contains("cat"))
-                profile.OwnedPetIds.Add("cat");
         }
 
-        // остаёмся в Done, просто обновим время
+        if (mission.Repeatable)
+        {
+            progress.Counter = 0;
+            progress.Status = MissionStatus.New;
+            progress.RewardClaimed = false;
+        }
+        else
+        {
+            progress.RewardClaimed = true;
+        }
+
+
         progress.UpdatedAt = DateTime.UtcNow;
 
         await _db.SaveChangesAsync(ct);
 
-        return Ok(new { coins = mission.RewardCoins, message = "Reward granted" });
+        return Ok(new { coins = mission.RewardCoins, xp = mission.RewardXp, petId = mission.RewardPetId, repeatable = mission.Repeatable, message = "Reward granted" });
     }
 
 }

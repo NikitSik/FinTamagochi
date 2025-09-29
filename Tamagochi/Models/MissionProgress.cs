@@ -18,4 +18,5 @@ public class MissionProgress
     public MissionStatus Status { get; set; } = MissionStatus.New;
     public int Counter { get; set; } = 0;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public bool RewardClaimed { get; set; } = false;
 }

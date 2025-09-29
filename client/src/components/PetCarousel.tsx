@@ -1,11 +1,12 @@
 // components/PetCarousel.tsx
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "../pages/styles/PetCarousel.module.css";
 
 export type PetSlide = {
   id: string;
   render: React.ReactNode;
-  locked?: boolean;               // 👈 новое
+  locked?: boolean;      
+  hint?: string;
 };
 
 type Props = {
@@ -68,6 +69,7 @@ export default function PetCarousel({ slides, initialIndex = 0, onChange, classN
                 {s.locked && (
                   <div className={styles.lockOverlay} aria-hidden>
                     <span className={styles.lockBadge}>🔒</span>
+                     {s.hint && <span className={styles.lockHint}>{s.hint}</span>}
                   </div>
                 )}
               </div>

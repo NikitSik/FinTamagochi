@@ -1,6 +1,10 @@
 {
   "Files": [
     {
+      "Id": "C:\\Users\\nikit\\source\\repos\\Tamagochi\\Tamagochi\\wwwroot\\avatars\\3576db13-01c4-494e-b325-69e0b3c78e74.png",
+      "PackagePath": "staticwebassets\\avatars\\3576db13-01c4-494e-b325-69e0b3c78e74.png"
+    },
+    {
       "Id": "C:\\Users\\nikit\\source\\repos\\Tamagochi\\Tamagochi\\wwwroot\\avatars\\3da8f882-3e04-4a33-aaab-ab07dfd50740.png",
       "PackagePath": "staticwebassets\\avatars\\3da8f882-3e04-4a33-aaab-ab07dfd50740.png"
     },

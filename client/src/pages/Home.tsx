@@ -3,12 +3,13 @@ import styles from "./styles/Home.module.css";
 import { api } from "../api";
 import Dog from "../components/pets/dog";
 import Cat from "../components/pets/cat";
+import Parrot from "../components/pets/parrot";
 
 type View = {
   coins: number;
-  savings: number;     // ₽ накопительный
-  current: number;     // ₽ текущий счёт (из latest snapshot balance)
-  selectedPetId: "dog" | "cat";
+  savings: number;     
+  current: number;    
+   selectedPetId: "dog" | "cat" | "parrot";
 };
 
 export default function Home() {
@@ -32,7 +33,7 @@ export default function Home() {
     ]);
     setView({
       coins: pet.coins,
-      selectedPetId: (pet.selectedPetId as "dog" | "cat") ?? "dog",
+      selectedPetId: (pet.selectedPetId as View["selectedPetId"]) ?? "dog",
       savings: sav.balance ?? 0,
       current: latest?.balance ?? 0,
     });
@@ -67,7 +68,14 @@ export default function Home() {
 
   function PetHead() {
     const common = { className: styles.petCircleSvg } as any;
-    return view.selectedPetId === "cat" ? <Cat {...common} /> : <Dog {...common} />;
+    switch (view.selectedPetId) {
+      case "cat":
+        return <Cat {...common} />;
+      case "parrot":
+        return <Parrot {...common} />;
+      default:
+        return <Dog {...common} />;
+    }
   }
 
   return (

@@ -69,6 +69,11 @@
 }
 .metaText { color: rgba(255,255,255,.55); font-size: 12px; }
 
+.rewardRow { margin-top: 12px; display:flex; align-items:center; gap:6px; font-size: 13px; }
+.rewardLabel { color: rgba(255,255,255,.55); }
+.rewardValue { font-weight: 600; }
+.repeatable { margin-top: 6px; font-size: 12px; color: rgba(16, 185, 129, 0.85); }
+
 .actions { display: flex; gap: 10px; margin-top: 10px; }
 
 /* Кнопки — выглядят как в Home */

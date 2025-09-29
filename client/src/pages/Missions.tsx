@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import styles from "./styles/Missions.module.css";
 import { Button, Card, Pill, Screen } from "../components/UI";
-import { api, type Mission } from "../api"; // берём тип отсюда
+import { api, type Mission } from "../api"; 
 
 export default function Missions() {
   const [items, setItems] = useState<Mission[]>([]);
@@ -25,14 +25,22 @@ export default function Missions() {
 
   useEffect(() => { load(); }, []);
 
-  const canClaim = (m: Mission) => m.progress.counter >= m.progress.target;
+  const canClaim = (m: Mission) =>
+    m.progress.status === "Done" && !(m.progress.rewardClaimed ?? false);
+
+  const canStep = (m: Mission) => m.progress.status !== "Done" || m.repeatable;
 
   const percent = (m: Mission) =>
     Math.min(100, Math.round((m.progress.counter / Math.max(1, m.progress.target)) * 100));
 
   const handleStep = async (id: number) => {
     setActingId(id);
-    try { await api.missionStep(id); }
+    try {
+      const res = await api.missionClaim(id);
+      if (res.petId) {
+        alert(`Новый питомец разблокирован! (${res.petId})`);
+      }
+    }
     finally { setActingId(null); await load(); }
   };
 
@@ -84,11 +92,20 @@ export default function Missions() {
                   <span className={styles.metaText}>{percent(m)}%</span>
                 </div>
 
+                <div className={styles.rewardRow}>
+                  <span className={styles.rewardLabel}>Награда:</span>
+                  <span className={styles.rewardValue}>{formatReward(m)}</span>
+                </div>
+
+                {m.repeatable && (
+                  <div className={styles.repeatable}>Повторяемая миссия</div>
+                )}
+
                 <div className={styles.actions}>
                   <Button
                     className={styles.stepBtn}
                     onClick={() => handleStep(m.id)}
-                    disabled={actingId === m.id}
+                    disabled={actingId === m.id || !canStep(m)}
                   >
                     Шаг
                   </Button>
@@ -98,8 +115,7 @@ export default function Missions() {
                     onClick={() => handleClaim(m.id)}
                     disabled={!canClaim(m) || actingId === m.id}
                   >
-                    Забрать награду
-                    {typeof m.reward === "number" ? ` (+${m.reward})` : ""}
+                    {canClaim(m) ? "Забрать награду" : statusLabel(m)}
                   </Button>
                 </div>
               </Card>
@@ -108,4 +124,26 @@ export default function Missions() {
       </div>
     </Screen>
   );
+}
+
+function formatReward(m: Mission): string {
+  const parts: string[] = [];
+  if (m.reward?.coins) parts.push(`${m.reward.coins} монет`);
+  if (m.reward?.xp) parts.push(`${m.reward.xp} XP`);
+  if (m.reward?.petId) {
+    const petNames: Record<string, string> = {
+      cat: "Котик",
+      dog: "Щенок",
+      parrot: "Попугай",
+    };
+    parts.push(`питомец: ${petNames[m.reward.petId] ?? m.reward.petId}`);
+  }
+  return parts.join(" · ") || "—";
+}
+
+function statusLabel(m: Mission): string {
+  if (m.progress.status === "Done") {
+    return m.progress.rewardClaimed ? "Награда получена" : "Готово";
+  }
+  return "В процессе";
 }
