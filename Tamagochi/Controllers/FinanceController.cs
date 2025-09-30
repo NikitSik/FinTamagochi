@@ -75,8 +75,53 @@ public class FinanceController : ControllerBase
         account.Balance += body.Amount;
         account.UpdatedAt = DateTime.UtcNow;
 
+        await TrackSavingsMissionProgressAsync(ct);
+
         await _db.SaveChangesAsync(ct);
         return Ok(new { balance = account.Balance });
+    }
+
+    private async Task TrackSavingsMissionProgressAsync(CancellationToken ct)
+    {
+        const string MissionCode = "SAVINGS_CUSHION";
+
+        var mission = await _db.Missions.FirstOrDefaultAsync(x => x.Code == MissionCode, ct);
+        if (mission is null)
+        {
+            return;
+        }
+
+        var progress = await _db.MissionProgresses
+            .FirstOrDefaultAsync(x => x.MissionId == mission.Id && x.UserId == UserId, ct);
+
+        if (progress is null)
+        {
+            progress = new MissionProgress
+            {
+                MissionId = mission.Id,
+                UserId = UserId,
+                Status = MissionStatus.InProgress,
+                Counter = 0
+            };
+
+            _db.MissionProgresses.Add(progress);
+        }
+
+        if (progress.Status == MissionStatus.Done)
+        {
+            if (!mission.Repeatable || !progress.RewardClaimed)
+            {
+                return;
+            }
+
+            progress.Counter = 0;
+            progress.Status = MissionStatus.New;
+            progress.RewardClaimed = false;
+        }
+
+        progress.Counter++;
+        progress.Status = progress.Counter >= mission.Target ? MissionStatus.Done : MissionStatus.InProgress;
+        progress.UpdatedAt = DateTime.UtcNow;
     }
 
     [HttpGet("savings")]
