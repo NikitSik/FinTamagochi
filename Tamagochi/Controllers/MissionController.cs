@@ -123,15 +123,17 @@ public class MissionsController : ControllerBase
             return BadRequest("Reward already claimed.");
         }
 
-        var (wallet, _, profile) = await _petState.EnsureUserStateAsync(UserId, ct);
+        var state = await _petState.EnsureUserStateAsync(UserId, ct);
+        var wallet = state.Wallet;
         wallet.Coins += mission.RewardCoins;
+        wallet.UpdatedAt = DateTime.UtcNow;
 
         // 🔓 пример разблокировки питомца за конкретную миссию
         if (!string.IsNullOrWhiteSpace(mission.RewardPetId))
         {
-            if (!profile.OwnedPetIds.Contains(mission.RewardPetId))
+            if (!state.Profile.OwnedPetIds.Contains(mission.RewardPetId))
             {
-                profile.OwnedPetIds.Add(mission.RewardPetId);
+                state.Profile.OwnedPetIds.Add(mission.RewardPetId);
             }
         }
 

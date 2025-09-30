@@ -690,6 +690,9 @@
           "name": {
             "type": "string",
             "nullable": true
+          },
+          "payload": {
+            "nullable": true
           }
         },
         "additionalProperties": false

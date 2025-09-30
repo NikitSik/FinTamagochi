@@ -20,6 +20,7 @@ public class TamagochiDbContext : DbContext
     public DbSet<Wallet> Wallets => Set<Wallet>();
     public DbSet<Inventory> Inventories => Set<Inventory>();
     public DbSet<ShopItem> ShopItems => Set<ShopItem>();
+    public DbSet<PetStatus> PetStatuses => Set<PetStatus>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -33,6 +34,7 @@ public class TamagochiDbContext : DbContext
         modelBuilder.Entity<Wallet>().HasKey(x => x.UserId);
         modelBuilder.Entity<Inventory>().HasKey(x => x.UserId);
         modelBuilder.Entity<ShopItem>().HasKey(x => x.Id);
+        modelBuilder.Entity<PetStatus>().HasKey(x => x.UserId);
         modelBuilder.Entity<PetProfile>().HasKey(x => x.UserId);
         modelBuilder.Entity<SavingsAccount>().HasKey(x => x.UserId);
 
@@ -61,12 +63,13 @@ public class TamagochiDbContext : DbContext
 
         // 💾 сид магазина
         modelBuilder.Entity<ShopItem>().HasData(
-            new ShopItem { Id = "food_balanced_meal", Title = "Рацион \"Баланс инвестора\"", Price = 18, Type = "food", PayloadJson = "{\"satiety\":20}", Enabled = true },
-            new ShopItem { Id = "food_energy_bowl", Title = "Боул \"Энергия рынка\"", Price = 32, Type = "food", PayloadJson = "{\"satiety\":45}", Enabled = true },
-            new ShopItem { Id = "bg_city_lights", Title = "Фон: Городские огни", Price = 40, Type = "bg", PayloadJson = "{\"background\":\"city\"}", Enabled = true },
-            new ShopItem { Id = "bg_cozy_home", Title = "Фон: Домашний уют", Price = 40, Type = "bg", PayloadJson = "{\"background\":\"cozy\"}", Enabled = true },
-            new ShopItem { Id = "item_budget_planner", Title = "Гаджет \"Планировщик бюджета\"", Price = 28, Type = "item", PayloadJson = "{\"item\":\"planner\"}", Enabled = true },
-            new ShopItem { Id = "item_travel_insurance", Title = "Папка \"Защита путешествий\"", Price = 35, Type = "item", PayloadJson = "{\"item\":\"travel_insurance\"}", Enabled = true }
+            new ShopItem { Id = "food_small", Title = "Корм (мал.)", Description = "+15 к сытости", Price = 10, Type = "food", PayloadJson = "{\"satiety\":15}", Enabled = true },
+            new ShopItem { Id = "food_big", Title = "Корм (бол.)", Description = "+40 к сытости", Price = 25, Type = "food", PayloadJson = "{\"satiety\":40,\"mood\":5}", Enabled = true },
+            new ShopItem { Id = "bg_sky", Title = "Фон: Небо", Description = "Лёгкие облака", Price = 30, Type = "bg", PayloadJson = "{\"background\":\"sky\"}", Enabled = true },
+            new ShopItem { Id = "bg_room", Title = "Фон: Комната", Description = "Уютное убежище", Price = 30, Type = "bg", PayloadJson = "{\"background\":\"room\"}", Enabled = true },
+            new ShopItem { Id = "ball", Title = "Мячик", Description = "Игра повышает настроение", Price = 20, Type = "item", PayloadJson = "{\"item\":\"ball\"}", Enabled = true },
+            new ShopItem { Id = "pet_cat", Title = "Открыть кота", Description = "Компаньон с миссии", Price = 500, Type = "pet", PayloadJson = "{\"petId\":\"cat\"}", Enabled = false },
+            new ShopItem { Id = "pet_dragon", Title = "Открыть дракона", Description = "Эпический друг", Price = 1500, Type = "pet", PayloadJson = "{\"petId\":\"dragon\"}", Enabled = false }
         );
 
         modelBuilder.Entity<PetProfile>()

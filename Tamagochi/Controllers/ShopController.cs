@@ -27,13 +27,48 @@ public class ShopController : ControllerBase
     [HttpGet("items")]
     public async Task<IActionResult> Items(CancellationToken ct)
     {
-        var items = await _db.ShopItems
+        var entities = await _db.ShopItems
             .AsNoTracking()
             .Where(x => x.Enabled)
-            .Select(x => new ShopItemDto(x.Id, x.Title, x.Price, x.Type, x.Enabled))
             .ToListAsync(ct);
 
+        var items = entities
+           .Select(x => new ShopItemDto(
+               x.Id,
+               x.Title,
+               x.Description,
+               x.Price,
+               x.Type,
+               x.Enabled,
+               x.Type == "food" && x.PayloadJson is not null ? MapEffect(x.PayloadJson) : null
+           ))
+           .ToList();
+
         return Ok(items);
+    }
+
+    private static ShopItemEffectDto? MapEffect(string payloadJson)
+    {
+        try
+        {
+            using var payload = JsonDocument.Parse(payloadJson);
+            var root = payload.RootElement;
+
+            int? satiety = root.TryGetProperty("satiety", out var satietyEl) ? satietyEl.GetInt32() : null;
+            int? mood = root.TryGetProperty("mood", out var moodEl) ? moodEl.GetInt32() : null;
+            int? health = root.TryGetProperty("health", out var healthEl) ? healthEl.GetInt32() : null;
+
+            if (satiety is null && mood is null && health is null)
+            {
+                return null;
+            }
+
+            return new ShopItemEffectDto(satiety, mood, health);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
     }
 
 
@@ -48,13 +83,20 @@ public class ShopController : ControllerBase
             return NotFound("Item not found");
         }
 
-        var (wallet, inventory, profile) = await _petState.EnsureUserStateAsync(UserId, ct);
+        var userState = await _petState.EnsureUserStateAsync(UserId, ct);
+        var wallet = userState.Wallet;
         if (wallet.Coins < item.Price)
         {
             return BadRequest("Not enough coins");
         }
 
         wallet.Coins -= item.Price;
+        wallet.UpdatedAt = DateTime.UtcNow;
+
+        if (item.PayloadJson is null)
+        {
+            return BadRequest("Item is missing payload");
+        }
 
         // Применяем покупку
         try
@@ -77,9 +119,9 @@ public class ShopController : ControllerBase
                             return BadRequest("Bad pet payload");
                         }
 
-                        if (!profile.OwnedPetIds.Contains(petId))
+                        if (!userState.Profile.OwnedPetIds.Contains(petId))
                         {
-                            profile.OwnedPetIds.Add(petId);
+                            userState.Profile.OwnedPetIds.Add(petId);
                         }
 
                         break;
@@ -89,7 +131,7 @@ public class ShopController : ControllerBase
                     {
                         if (root.TryGetProperty("background", out var background) && !string.IsNullOrWhiteSpace(background.GetString()))
                         {
-                            inventory.Background = background.GetString()!;
+                            userState.Inventory.Background = background.GetString()!;
                         }
 
                         break;
@@ -99,16 +141,24 @@ public class ShopController : ControllerBase
                         if (root.TryGetProperty("item", out var itemElement) && !string.IsNullOrWhiteSpace(itemElement.GetString()))
                         {
                             var value = itemElement.GetString()!;
-                            if (!inventory.Items.Contains(value))
+                            if (!userState.Inventory.Items.Contains(value))
                             {
-                                inventory.Items.Add(value);
+                                userState.Inventory.Items.Add(value);
                             }
                         }
 
                         break;
                     }
                 case "food":
-                    break;
+                    {
+                        var applied = _petState.ApplyFoodPayload(userState.Status, root);
+                        if (!applied)
+                        {
+                            return BadRequest("Bad food payload");
+                        }
+
+                        break;
+                    }
                 default:
                     return BadRequest("Unknown item type");
             }
@@ -120,8 +170,8 @@ public class ShopController : ControllerBase
 
         await _db.SaveChangesAsync(ct);
 
-        var state = await _petState.BuildStateAsync(UserId, ct);
+        var dto = await _petState.BuildStateAsync(UserId, ct);
 
-        return Ok(state);
+        return Ok(dto);
     }
 }

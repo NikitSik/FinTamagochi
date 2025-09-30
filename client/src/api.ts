@@ -51,12 +51,15 @@ export type PetState = {
   ownedPetIds: string[];           // 👈 новое
 };
 
+export type ShopItemEffect = { satiety?: number | null; mood?: number | null; health?: number | null };
 export type ShopItem = {
   id: string;
   title: string;
+  description?: string | null;
   price: number;
   type: "food" | "bg" | "item" | "pet";
   enabled: boolean;
+  effect?: ShopItemEffect | null;
 };
 
 export type LatestFinance = { balance: number };
@@ -119,7 +122,7 @@ export const api = {
 
   // PET
   petState: () => http<PetState>("/api/pet/state"),
-  petAction: (name: "play" | "heal" | "buy" | "set-bg", payload?: unknown) =>
+  petAction: (name: "play" | "heal" | "feed", payload?: unknown) =>
     http<PetState>("/api/pet/action", {
       method: "POST",
       body: JSON.stringify({ name, payload }),

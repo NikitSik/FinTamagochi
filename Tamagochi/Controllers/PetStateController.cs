@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tamagochi.Data;
 using Tamagochi.DTOs;
-using Tamagochi.Models;
 using Tamagochi.Infrastructure;
 
 namespace Tamagochi.Controllers;
@@ -21,21 +21,6 @@ public class PetStateController : ControllerBase
         _petState = petState;
     }
 
-    private async Task<PetProfile> EnsurePetAsync(CancellationToken ct)
-    {
-        var profile = await _db.PetProfiles.FindAsync(new object?[] { UserId }, ct);
-        if (profile is not null)
-        {
-            return profile;
-        }
-
-        profile = new PetProfile { UserId = UserId, SelectedPetId = "dog", OwnedPetIds = new() { "dog" } };
-        _db.PetProfiles.Add(profile);
-        await _db.SaveChangesAsync(ct);
-
-        return profile;
-    }
-
     private string UserId => HttpContext.GetUserId() ?? "demo";
 
     [HttpGet("state")]
@@ -50,7 +35,8 @@ public class PetStateController : ControllerBase
     [HttpPost("select")]
     public async Task<IActionResult> Select([FromBody] SelectPetRequest req, CancellationToken ct)
     {
-        var (_, _, profile) = await _petState.EnsureUserStateAsync(UserId, ct);
+        var state = await _petState.EnsureUserStateAsync(UserId, ct);
+        var profile = state.Profile;
         if (!profile.OwnedPetIds.Contains(req.PetId))
             return BadRequest("Питомец не доступен пользователю");
 
@@ -60,12 +46,19 @@ public class PetStateController : ControllerBase
     }
 
     // ---- ACTION ----
-    public record PetActionRequest(string Name);
+    public record PetActionRequest(string Name, JsonElement? Payload);
 
     [HttpPost("action")]
     public async Task<ActionResult<PetStateDto>> Action([FromBody] PetActionRequest req, CancellationToken ct)
     {
-        var state = await _petState.BuildStateAsync(UserId, ct);
-        return Ok(state);
+        try
+        {
+            var state = await _petState.PerformActionAsync(UserId, req.Name, req.Payload, ct);
+            return Ok(state);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

@@ -1,0 +1,8 @@
+C:\Users\nikit\source\repos\Tamagochi\Tamagochi.Tests\bin\Debug\net9.0\.msCoverageSourceRootsMapping_Tamagochi.Tests
+C:\Users\nikit\source\repos\Tamagochi\Tamagochi.Tests\bin\Debug\net9.0\CoverletSourceRootsMapping_Tamagochi.Tests
+C:\Users\nikit\source\repos\Tamagochi\Tamagochi.Tests\obj\Debug\net9.0\Tamagochi.Tests.csproj.AssemblyReference.cache
+C:\Users\nikit\source\repos\Tamagochi\Tamagochi.Tests\obj\Debug\net9.0\Tamagochi.Tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\nikit\source\repos\Tamagochi\Tamagochi.Tests\obj\Debug\net9.0\Tamagochi.Tests.AssemblyInfoInputs.cache
+C:\Users\nikit\source\repos\Tamagochi\Tamagochi.Tests\obj\Debug\net9.0\Tamagochi.Tests.AssemblyInfo.cs
+C:\Users\nikit\source\repos\Tamagochi\Tamagochi.Tests\obj\Debug\net9.0\Tamagochi.Tests.csproj.CoreCompileInputs.cache
+C:\Users\nikit\source\repos\Tamagochi\Tamagochi.Tests\obj\Debug\net9.0\Tamagochi.Tests.sourcelink.json
