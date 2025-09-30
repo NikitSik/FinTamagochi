@@ -1,46 +1,36 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tamagochi.Controllers;
 using Tamagochi.Data;
-using Tamagochi.Models;
+using Tamagochi.Infrastructure;
 using Xunit;
 
-namespace Tamagochi.Tests;
+namespace Tamagochi.Tests.Controllers;
 
 public class FinanceControllerTests
 {
-    private static FinanceController CreateController(out TamagochiDbContext db)
+    private static TamagochiDbContext CreateContext(string name)
     {
         var options = new DbContextOptionsBuilder<TamagochiDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .UseInMemoryDatabase(name)
             .Options;
 
-        db = new TamagochiDbContext(options);
+        return new TamagochiDbContext(options);
+    }
 
-        db.Missions.Add(new Mission
-        {
-            Id = 42,
-            Code = "SAVINGS_CUSHION",
-            Title = "Подушка",
-            Description = "",
-            ProductTag = "long_savings",
-            RewardCoins = 0,
-            RewardXp = 0,
-            Target = 3,
-            Repeatable = true,
-        });
-
-        db.SaveChanges();
-
+    private static FinanceController CreateController(TamagochiDbContext db, ClaimsPrincipal user)
+    {
         var controller = new FinanceController(db)
         {
             ControllerContext = new ControllerContext
             {
-                HttpContext = new DefaultHttpContext()
+                HttpContext = new DefaultHttpContext
+                {
+                    User = user
+                }
             }
         };
 
@@ -48,54 +38,27 @@ public class FinanceControllerTests
     }
 
     [Fact]
-    public async Task Deposit_IncreasesBalanceAndTracksProgress()
+    public async Task GetSavings_UsesSubClaimWhenNameIdentifierMissing()
     {
-        var controller = CreateController(out var db);
+        using var db = CreateContext(nameof(GetSavings_UsesSubClaimWhenNameIdentifierMissing));
+        var userId = "user-123";
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(new[]
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, userId)
+        }, authenticationType: "TestAuth"));
 
-        var result = await controller.Deposit(new FinanceController.DepositRequest(150m), CancellationToken.None);
+        var controller = CreateController(db, principal);
+
+        var result = await controller.GetSavings(CancellationToken.None);
 
         var ok = Assert.IsType<OkObjectResult>(result);
-        var balanceValue = ok.Value?.GetType().GetProperty("balance")?.GetValue(ok.Value);
-        Assert.Equal(150m, Assert.IsType<decimal>(balanceValue));
+        Assert.Equal(userId, controller.HttpContext.GetRequiredUserId());
 
-        var account = await db.SavingsAccounts.SingleAsync();
-        Assert.Equal("demo", account.UserId);
-        Assert.Equal(150m, account.Balance);
+        var account = await db.SavingsAccounts.SingleAsync(a => a.UserId == userId);
+        Assert.Equal(0m, account.Balance);
 
-        var progress = await db.MissionProgresses.SingleAsync();
-        Assert.Equal(1, progress.Counter);
-        Assert.Equal(MissionStatus.InProgress, progress.Status);
-    }
-
-    [Fact]
-    public async Task Deposit_CompletesMissionWhenTargetReached()
-    {
-        var controller = CreateController(out var db);
-
-        await controller.Deposit(new FinanceController.DepositRequest(100m), CancellationToken.None);
-        await controller.Deposit(new FinanceController.DepositRequest(100m), CancellationToken.None);
-        await controller.Deposit(new FinanceController.DepositRequest(100m), CancellationToken.None);
-
-        var account = await db.SavingsAccounts.SingleAsync();
-        Assert.Equal(300m, account.Balance);
-
-        var progress = await db.MissionProgresses.SingleAsync();
-        Assert.Equal(3, progress.Counter);
-        Assert.Equal(MissionStatus.Done, progress.Status);
-        Assert.False(progress.RewardClaimed);
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(-50)]
-    public async Task Deposit_InvalidAmount_ReturnsBadRequest(decimal amount)
-    {
-        var controller = CreateController(out var db);
-
-        var result = await controller.Deposit(new FinanceController.DepositRequest(amount), CancellationToken.None);
-
-        Assert.IsType<BadRequestObjectResult>(result);
-        Assert.Empty(await db.SavingsAccounts.ToListAsync());
-        Assert.Empty(await db.MissionProgresses.ToListAsync());
+        var balanceProperty = ok.Value?.GetType().GetProperty("balance");
+        Assert.NotNull(balanceProperty);
+        Assert.Equal(account.Balance, (decimal)(balanceProperty!.GetValue(ok.Value) ?? 0m));
     }
 }

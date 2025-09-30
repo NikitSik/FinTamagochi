@@ -23,7 +23,7 @@ public class MissionsController : ControllerBase
     }
 
     // userId берём из клейма "sub" (выдаётся в AuthController.IssueJwt)
-    private string UserId => HttpContext.GetUserId() ?? "demo";
+    private string UserId => HttpContext.GetRequiredUserId();
 
     // GET /api/missions — список миссий + Мой прогресс
     [HttpGet]

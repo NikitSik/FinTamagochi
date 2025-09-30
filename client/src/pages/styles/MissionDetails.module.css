@@ -112,6 +112,24 @@
   color: rgba(8, 12, 24, 0.92);
 }
 
+.heroLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(15,23,42,.15);
+  color: #0f172a;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid rgba(15,23,42,.25);
+}
+
+.heroLink:hover {
+  background: rgba(15,23,42,.25);
+}
+
 .heroStats {
   display: grid;
   gap: 12px;

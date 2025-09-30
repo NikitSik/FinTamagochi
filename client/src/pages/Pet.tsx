@@ -1,12 +1,18 @@
 import { useEffect, useMemo, useState, type ComponentType } from "react";
+import { Link } from "react-router-dom";
 import styles from "./styles/Pet.module.css";
 import { api, type PetState, type ShopItem } from "../api";
 import Cat from "../components/pets/cat";
 import Dog from "../components/pets/dog";
 import PetCarousel, { type PetSlide } from "../components/PetCarousel";
+import {
+  SHOP_FILTERS,
+  effectText,
+  filterItems,
+  prettyType,
+  type ShopFilter,
+} from "../utils/shop";
 
-
-type ShopFilter = "all" | "food" | "bg" | "item" | "pet";
 
 const ALL_PETS: Record<string, ComponentType<any>> = {
   dog: Dog,
@@ -17,14 +23,6 @@ const LOCK_HINTS: Record<string, string> = {
   cat: "Выполни миссию \"Защита от мошенников\"",
   parrot: "Выполни миссию \"Инвесткопилка\"",
 };
-
-const SHOP_FILTERS: { id: ShopFilter; label: string }[] = [
-  { id: "all", label: "Все" },
-  { id: "food", label: "Еда" },
-  { id: "bg", label: "Фоны" },
-  { id: "item", label: "Игрушки" },
-  { id: "pet", label: "Питомцы" },
-];
 
 const HEAL_COST = 25;
 const FEED_COST = 5;
@@ -153,12 +151,10 @@ export default function Pet() {
     }
   }
 
-  const filteredItems = useMemo(() => {
-    if (!shopItems.length) return [] as ShopItem[];
-    return shopItems
-      .filter((it) => shopFilter === "all" ? true : it.type === shopFilter)
-      .sort((a, b) => a.price - b.price);
-  }, [shopItems, shopFilter]);
+ const filteredItems = useMemo(
+    () => filterItems(shopItems, shopFilter),
+    [shopItems, shopFilter]
+  );
 
   if (loading) {
     return (
@@ -187,8 +183,19 @@ export default function Pet() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Питомец</h1>
-        <div className={styles.coins}><i />{coins}</div>
+        <div className={styles.headerRow}>
+          <h1 className={styles.title}>Питомец</h1>
+          <button
+            className={styles.headerShopBtn}
+            onClick={() => { setShopOpen(true); setShopFilter("all"); }}
+          >
+            Магазин
+          </button>
+        </div>
+        <div className={styles.walletCard}>
+          <span className={styles.walletCaption}>Игровых монет</span>
+          <strong className={styles.walletValue}>{coins}</strong>
+        </div>
       </header>
 
       <main className={styles.main}>
@@ -212,13 +219,15 @@ export default function Pet() {
           />
         </section>
 
-        {message && <div className={styles.message}>{message}</div>}
-        {state.satiety < 25 && <div className={styles.warning}>Питомец проголодался — накормите его!</div>}
-        {state.health < 40 && <div className={styles.warning}>Здоровье на исходе — ему нужна забота.</div>}
+        <div className={styles.alerts}>
+          {message && <div className={`${styles.note} ${styles.noteInfo}`}>{message}</div>}
+          {state.satiety < 25 && <div className={`${styles.note} ${styles.noteWarn}`}>Питомец проголодался — накормите его!</div>}
+          {state.health < 40 && <div className={`${styles.note} ${styles.noteWarn}`}>Здоровье на исходе — ему нужна забота.</div>}
+        </div>
 
         <section className={styles.card}>
           <h2 className={styles.sectionTitle}>Состояние</h2>
-          <div className={styles.stats}>
+          <div className={styles.statsGrid}>
             <Stat label="Настроение" value={state.mood} />
             <Stat label="Сытость" value={state.satiety} />
             <Stat label="Здоровье" value={state.health} />
@@ -227,6 +236,22 @@ export default function Pet() {
             <button className={styles.playBtn} onClick={() => act("play")}>Поиграть</button>
           </div>
         </section>
+
+         <section className={`${styles.card} ${styles.summaryCard}`}>
+          <div className={styles.summaryRow}>
+            <div>
+              <span className={styles.summaryLabel}>Выбранный питомец</span>
+              <div className={styles.summaryValue}>{prettyPetName(state.selectedPetId)}</div>
+            </div>
+            <div>
+              <span className={styles.summaryLabel}>Питомцев собрано</span>
+              <div className={styles.summaryValue}>{state.ownedPetIds.length} / {slides.length}</div>
+            </div>
+          </div>
+          <p className={styles.summaryHint}>Выполняйте миссии и заглядывайте в магазин, чтобы открыть новых друзей.</p>
+          <Link className={styles.testsLink} to="/tests">Пройти обучающие тесты</Link>
+        </section>
+
 
         <section className={styles.card}>
           <h2 className={styles.sectionTitle}>Инвентарь</h2>
@@ -244,7 +269,7 @@ export default function Pet() {
 
       <footer className={styles.actionBar}>
         <button
-          className={`${styles.actionButton} ${styles.actionButtonPrimary}`}
+          className={`${styles.actionButton} ${styles.actionButtonPrimary} ${styles.actionButtonWide}`}
           onClick={() => { setShopOpen(true); setShopFilter("all"); }}
         >
           Магазин
@@ -263,6 +288,9 @@ export default function Pet() {
         >
           {pendingAction === "feed" ? "Кормим…" : `Кормить (${FEED_COST})`}
         </button>
+        <Link className={`${styles.actionButton} ${styles.actionButtonLink}`} to="/tests">
+          Тесты
+        </Link>
       </footer>
 
       {shopOpen && (
@@ -318,24 +346,7 @@ export default function Pet() {
   );
 }
 
-function prettyType(type: ShopItem["type"]): string {
-  switch (type) {
-    case "food": return "Еда";
-    case "bg": return "Фон";
-    case "item": return "Игрушка";
-    case "pet": return "Питомец";
-    default: return type;
-  }
-}
 
-function effectText(effect?: ShopItem["effect"] | null): string | null {
-  if (!effect) return null;
-  const parts: string[] = [];
-  if (effect.satiety) parts.push(`+${effect.satiety} к сытости`);
-  if (effect.mood) parts.push(`+${effect.mood} к настроению`);
-  if (effect.health) parts.push(`+${effect.health} к здоровью`);
-  return parts.length ? parts.join(" · ") : null;
-}
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
@@ -347,4 +358,12 @@ function Stat({ label, value }: { label: string; value: number }) {
       <div className={styles.progress}><i style={{ width: `${value}%` }} /></div>
     </div>
   );
+  }
+
+function prettyPetName(id?: string | null) {
+  switch (id) {
+    case "cat": return "Кот";
+    case "dog": return "Пёс";
+    default: return "Питомец";
+  }
 }

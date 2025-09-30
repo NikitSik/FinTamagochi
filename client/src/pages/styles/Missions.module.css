@@ -83,6 +83,7 @@
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 12px;
+  align-items: center;
 }
 
 /* Кнопки — выглядят как в Home */
@@ -111,7 +112,13 @@
 .claimBtn:hover { background: #18c694; }
 .claimBtn:disabled { opacity: .5; cursor: not-allowed; }
 
-.moreLink {
+.extraLinks {
+  display: flex;
+  gap: 8px;
+}
+
+.moreLink,
+.testLink {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -125,8 +132,19 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
-.moreLink:hover {
+.moreLink:hover,
+.testLink:hover {
   background: rgba(255, 255, 255, 0.12);
+}
+
+.testLink {
+  color: #c4b5fd;
+  border-color: rgba(127,90,240,.4);
+  background: rgba(127,90,240,.12);
+}
+
+.testLink:hover {
+  background: rgba(127,90,240,.2);
 }
 
 .err {
@@ -142,6 +160,63 @@
   color: rgba(255, 255, 255, 0.6);
   text-align: center;
   padding: 24px 0;
+}
+
+.rewardBanner {
+  margin: 12px auto 0;
+  max-width: 420px;
+  background: rgba(127,90,240,.12);
+  border: 1px solid rgba(127,90,240,.3);
+  color: #ede9fe;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.rewardXp { color: #bbf7d0; font-weight: 500; }
+.rewardPet { color: #fcd34d; font-weight: 500; }
+
+.rewardActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.rewardLink {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(127,90,240,.3);
+  color: #fff;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.rewardClose {
+  background: transparent;
+  border: 0;
+  color: rgba(255,255,255,.75);
+  cursor: pointer;
+  font-size: 12px;
+  text-decoration: underline;
+}
+
+@media (max-width: 420px) {
+  .rewardBanner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .extraLinks {
+    flex-direction: column;
+    width: 100%;
+  }
+  .moreLink,
+  .testLink {
+    width: 100%;
+  }
 }
 
 /* Скелетоны */

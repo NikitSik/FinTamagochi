@@ -7,6 +7,8 @@ import Profile from "./pages/Profile";
 import Missions from "./pages/Missions";
 import MissionDetails from "./pages/MissionDetails";
 import Pet from "./pages/Pet";
+import Shop from "./pages/Shop";
+import Tests from "./pages/Tests";
 
 import BottomNav from "./components/BottomNav";
 
@@ -19,8 +21,10 @@ function AppRoutes() {
       <Route path="/register" element={<Register />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/missions" element={<Missions />} />
-       <Route path="/missions/:code" element={<MissionDetails />} />
+      <Route path="/missions/:code" element={<MissionDetails />} />
       <Route path="/pet" element={<Pet />} />
+      <Route path="/shop" element={<Shop />} />
+      <Route path="/tests" element={<Tests />} />
       <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
   );

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import styles from "./styles/MissionDetails.module.css";
 import { api, type Mission } from "../api";
 import { Button, Screen } from "../components/UI";
@@ -116,6 +116,10 @@ export default function MissionDetails() {
                   {meta?.tagline && <span className={styles.heroTag}>{meta.tagline}</span>}
                   <h2 className={styles.heroTitle}>{mission.title}</h2>
                   {meta?.summary && <p className={styles.heroSummary}>{meta.summary}</p>}
+
+                  {mission.code === "ANTIFRAUD_TUTORIAL" && (
+                    <Link to="/tests" className={styles.heroLink}>Пройти тест</Link>
+                  )}
 
                   <div className={styles.heroStats}>
                     <div className={styles.progressBlock}>

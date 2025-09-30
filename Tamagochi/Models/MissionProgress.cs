@@ -14,7 +14,7 @@ public class MissionProgress
 {
     public int Id { get; set; }
     public int MissionId { get; set; }
-    public string UserId { get; set; } = "demo";
+    public string UserId { get; set; } = string.Empty;
     public MissionStatus Status { get; set; } = MissionStatus.New;
     public int Counter { get; set; } = 0;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

@@ -21,7 +21,7 @@ public class PetStateController : ControllerBase
         _petState = petState;
     }
 
-    private string UserId => HttpContext.GetUserId() ?? "demo";
+    private string UserId => HttpContext.GetRequiredUserId();
 
     [HttpGet("state")]
     public async Task<ActionResult<PetStateDto>> GetState(CancellationToken ct)

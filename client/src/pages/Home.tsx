@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import styles from "./styles/Home.module.css";
-import { api } from "../api";
+import { api, type User } from "../api";
 import Dog from "../components/pets/dog";
 import Cat from "../components/pets/cat";
 
@@ -9,32 +10,37 @@ type View = {
   savings: number;
   current: number;
   selectedPetId: "dog" | "cat";
+  owner: string;
 };
 
 export default function Home() {
-  const [view, setView] = useState<View>({ coins: 0, savings: 0, current: 0, selectedPetId: "dog" });
+  const [view, setView] = useState<View>({ coins: 0, savings: 0, current: 0, selectedPetId: "dog", owner: "мой счёт" });
   const [opened, setOpened] = useState<"snapshot" | "deposit" | null>(null);
   const [busy, setBusy] = useState(false);
 
   // формы
-  const [income, setIncome]   = useState(0);
-  const [expenses, setExpenses] = useState(0);
-  const [balance, setBalance] = useState(0);
-  const [amount, setAmount]   = useState(0);
+  const [income, setIncome]   = useState("");
+  const [expenses, setExpenses] = useState("");
+  const [balance, setBalance] = useState("");
+  const [amount, setAmount]   = useState("");
 
   const totalRUB = Math.round(view.current + view.savings);
+  const parsedAmount = Number(amount.trim().replace(",", "."));
+  const isAmountValid = !Number.isNaN(parsedAmount) && parsedAmount > 0;
 
   async function load() {
-    const [pet, sav, latest] = await Promise.all([
+    const [pet, sav, latest, me] = await Promise.all([
       api.petState(),
       api.savingsGet(),
       api.financeLatest().catch(() => ({ balance: 0 } as any)),
+      api.me().catch(() => null as User | null),
     ]);
     setView({
       coins: pet.coins,
       selectedPetId: (pet.selectedPetId as View["selectedPetId"]) ?? "dog",
       savings: sav.balance ?? 0,
       current: latest?.balance ?? 0,
+      owner: me?.nickname ?? me?.email ?? "мой счёт",
     });
   }
 
@@ -44,24 +50,34 @@ export default function Home() {
     e.preventDefault();
     setBusy(true);
     try {
+      const incomeValue = Number((income || "0").replace(",", "."));
+      const expenseValue = Number((expenses || "0").replace(",", "."));
+      const balanceValue = Number((balance || "0").replace(",", "."));
       await api.createSnapshot({
         date: new Date().toISOString().slice(0,10),
-        income, expenses, balance
+        income: incomeValue,
+        expenses: expenseValue,
+        balance: balanceValue,
       });
       await load();
       setOpened(null);
+      setIncome("");
+      setExpenses("");
+      setBalance("");
     } finally { setBusy(false); }
   }
 
   async function deposit(e: React.FormEvent) {
     e.preventDefault();
-    if (amount <= 0) return;
+    const raw = amount.trim().replace(",", ".");
+    const numeric = Number(raw);
+    if (!numeric || numeric <= 0) return;
     setBusy(true);
     try {
-      await api.savingsDeposit(amount);
+            await api.savingsDeposit(numeric);
       await load();
       setOpened(null);
-      setAmount(0);
+      setAmount("");
     } finally { setBusy(false); }
   }
 
@@ -95,7 +111,7 @@ export default function Home() {
             <li className={styles.accountRow}>
               <div className={styles.accountInfo}>
                 <span className={styles.accountTitle}>Текущий счёт</span>
-                <span className={styles.accountNumber}>• демо</span>
+                <span className={styles.accountNumber}>• {view.owner}</span>
               </div>
               <div className={styles.accountAmt}>
                 ₽ {new Intl.NumberFormat("ru-RU").format(view.current)}
@@ -105,7 +121,7 @@ export default function Home() {
             <li className={styles.accountRow}>
               <div className={styles.accountInfo}>
                 <span className={styles.accountTitle}>Накопительный</span>
-                <span className={styles.accountNumber}>• демо</span>
+                <span className={styles.accountNumber}>• {view.owner}</span>
               </div>
               <div className={styles.accountAmt}>
                 ₽ {new Intl.NumberFormat("ru-RU").format(view.savings)}
@@ -156,6 +172,7 @@ export default function Home() {
             <div className={styles.petCircle}>
               <PetHead />
             </div>
+              <Link className={styles.linkBtn} to="/tests">Пройти тесты</Link>
           </div>
         </section>
       </main>
@@ -164,9 +181,9 @@ export default function Home() {
       {opened === "snapshot" && (
         <Modal onClose={() => setOpened(null)} title="Изменить финансы">
           <form onSubmit={saveSnapshot} className="grid gap-3">
-            <L label="Доход (₽)"><input type="number" value={income} onChange={e=>setIncome(+e.target.value)} /></L>
-            <L label="Расходы (₽)"><input type="number" value={expenses} onChange={e=>setExpenses(+e.target.value)} /></L>
-            <L label="Баланс текущего (₽)"><input type="number" value={balance} onChange={e=>setBalance(+e.target.value)} /></L>
+            <L label="Доход (₽)"><input type="number" inputMode="decimal" value={income} placeholder="Например, 120000" onChange={e=>setIncome(e.target.value)} /></L>
+            <L label="Расходы (₽)"><input type="number" inputMode="decimal" value={expenses} placeholder="Например, 85000" onChange={e=>setExpenses(e.target.value)} /></L>
+            <L label="Баланс текущего (₽)"><input type="number" inputMode="decimal" value={balance} placeholder="Сколько осталось" onChange={e=>setBalance(e.target.value)} /></L>
             <button className={styles.primaryBtn} disabled={busy}>{busy ? "Сохраняем..." : "Сохранить"}</button>
           </form>
         </Modal>
@@ -176,8 +193,8 @@ export default function Home() {
       {opened === "deposit" && (
         <Modal onClose={() => setOpened(null)} title="Перевод в накопительный">
           <form onSubmit={deposit} className="grid gap-3">
-            <L label="Сумма (₽)"><input type="number" value={amount} onChange={e=>setAmount(+e.target.value)} /></L>
-            <button className={styles.primaryBtn} disabled={busy || amount<=0}>{busy ? "Отправляем..." : "Перевести"}</button>
+            <L label="Сумма (₽)"><input type="number" inputMode="decimal" value={amount} placeholder="Например, 5000" onChange={e=>setAmount(e.target.value)} /></L>
+            <button className={styles.primaryBtn} disabled={busy || !isAmountValid}>{busy ? "Отправляем..." : "Перевести"}</button>
           </form>
         </Modal>
       )}
@@ -188,17 +205,19 @@ export default function Home() {
 /* простые утилки модалки */
 function Modal({ children, onClose, title }: { children: React.ReactNode; onClose: () => void; title: string }) {
   return (
-    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.5)", display:"grid", placeItems:"center", zIndex:1000 }} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{ width:"90%", maxWidth:420, background:"rgba(20,22,35,.95)", border:"1px solid rgba(255,255,255,.08)", borderRadius:16, padding:16, color:"#fff" }}>
-        <div style={{fontWeight:700, marginBottom:8}}>{title}</div>
-        {children}
+    <div className={styles.modalBackdrop} onClick={onClose}>
+      <div className={styles.modalPanel} onClick={e=>e.stopPropagation()}>
+        <div className={styles.modalTitle}>{title}</div>
+        <div className={styles.modalBody}>{children}</div>
       </div>
     </div>
   );
 }
 function L({label, children}:{label:string; children:React.ReactNode}) {
-  return (<label style={{display:"grid", gap:6}}>
-    <span style={{opacity:.7, fontSize:12}}>{label}</span>
-    {children}
-  </label>);
+  return (
+    <label className={styles.modalField}>
+      <span>{label}</span>
+      {children}
+    </label>
+  );
 }

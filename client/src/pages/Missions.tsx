@@ -11,6 +11,7 @@ export default function Missions() {
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [actingId, setActingId] = useState<number | null>(null);
+  const [reward, setReward] = useState<null | { coins: number; xp: number; petId?: string | null }>(null);
 
   async function load() {
     setErr(null);
@@ -26,6 +27,12 @@ export default function Missions() {
   }
 
   useEffect(() => { load(); }, []);
+
+    useEffect(() => {
+    if (!reward) return;
+    const timer = window.setTimeout(() => setReward(null), 6000);
+    return () => window.clearTimeout(timer);
+  }, [reward]);
 
   const canClaim = (m: Mission) =>
     m.progress.status === "Done" && !(m.progress.rewardClaimed ?? false);
@@ -45,7 +52,10 @@ export default function Missions() {
 
   const handleClaim = async (id: number) => {
     setActingId(id);
-    try { await api.missionClaim(id); }
+        try {
+      const data = await api.missionClaim(id);
+      setReward({ coins: data.coins, xp: data.xp, petId: data.petId });
+    }
     finally { setActingId(null); await load(); }
   };
 
@@ -121,14 +131,42 @@ export default function Missions() {
                   >
                     {canClaim(m) ? "Забрать награду" : statusLabel(m)}
                   </Button>
-                  <Link className={styles.moreLink} to={`/missions/${m.code}`}>
-                    Подробнее
-                  </Link>
+                  <div className={styles.extraLinks}>
+                    <Link className={styles.moreLink} to={`/missions/${m.code}`}>
+                      Подробнее
+                    </Link>
+                    {m.code === "ANTIFRAUD_TUTORIAL" && (
+                      <Link className={styles.testLink} to="/tests">
+                        Пройти тест
+                      </Link>
+                    )}
+                  </div>
                 </div>
               </Card>
             );
             })}
         </main>
+         {reward && (
+          <div className={styles.rewardBanner} role="status">
+            <div>
+              <strong>Награда: +{reward.coins} монет</strong>
+              {reward.xp ? <span className={styles.rewardXp}> · {reward.xp} XP</span> : null}
+              {reward.petId && (
+                <span className={styles.rewardPet}>
+                  · Новый питомец: {reward.petId === "cat" ? "Кот" : reward.petId === "dog" ? "Пёс" : reward.petId}
+                </span>
+              )}
+            </div>
+            <div className={styles.rewardActions}>
+              {reward.petId && (
+                <Link className={styles.rewardLink} to="/pet">
+                  К питомцу
+                </Link>
+              )}
+              <button className={styles.rewardClose} onClick={() => setReward(null)}>Закрыть</button>
+            </div>
+          </div>
+        )}
       </div>
     </Screen>
   );

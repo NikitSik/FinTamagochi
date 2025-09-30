@@ -22,7 +22,7 @@ public class ShopController : ControllerBase
         _petState = petState;
     }
 
-    private string UserId => HttpContext.GetUserId() ?? "demo";
+    private string UserId => HttpContext.GetRequiredUserId();
 
     [HttpGet("items")]
     public async Task<IActionResult> Items(CancellationToken ct)

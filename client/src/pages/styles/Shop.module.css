@@ -1,0 +1,152 @@
+.page {
+  padding-top: 20px;
+  padding-bottom: 32px;
+}
+
+.header {
+  display: grid;
+  gap: 12px;
+  text-align: left;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--muted);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255,255,255,.7);
+}
+
+.wallet {
+  font-size: 14px;
+  color: rgba(255,255,255,.75);
+}
+
+.wallet strong { font-size: 18px; color: #fff; }
+
+.main {
+  margin-top: 24px;
+  display: grid;
+  gap: 18px;
+}
+
+.tabs {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.tab {
+  min-width: 110px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.8);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tabActive {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
+}
+
+.err {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(248,113,113,.12);
+  border: 1px solid rgba(248,113,113,.35);
+  color: #fecaca;
+  font-size: 13px;
+}
+
+.note {
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  border: 1px solid transparent;
+}
+
+.noteInfo {
+  background: rgba(56,189,248,.18);
+  border-color: rgba(56,189,248,.45);
+  color: #bae6fd;
+}
+
+.loader,
+.empty {
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  text-align: center;
+  color: rgba(255,255,255,.7);
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+.card {
+  gap: 14px;
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.cardMeta {
+  font-size: 13px;
+  color: rgba(255,255,255,.6);
+}
+
+.price {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.description {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255,255,255,.75);
+}
+
+.effect {
+  font-size: 13px;
+  color: #bef264;
+}
+
+.buyBtn {
+  margin-top: 4px;
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .tabs {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .tab { min-width: 0; }
+}

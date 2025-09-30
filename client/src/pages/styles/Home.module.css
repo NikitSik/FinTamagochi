@@ -79,7 +79,54 @@
 }
 .linkBtn:hover { text-decoration: underline; }
 
-.petRight { display: grid; place-items: center; }
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalPanel {
+  width: min(420px, 100%);
+  background: rgba(20,22,35,.95);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 18px;
+  padding: 20px;
+  color: #fff;
+  display: grid;
+  gap: 14px;
+}
+
+.modalTitle {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.modalBody { display: grid; gap: 12px; }
+
+.modalField {
+  display: grid;
+  gap: 6px;
+}
+
+.modalField span {
+  opacity: .7;
+  font-size: 12px;
+}
+
+.modalField input {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(255,255,255,.06);
+  color: #fff;
+  padding: 10px 12px;
+}
+
+.petRight { display: grid; justify-items: center; gap: 8px; }
 .petCircle {
   width: 92px; height: 92px; border-radius: 999px;
   background: radial-gradient(100% 100% at 50% 0%, #2a2d3f 0%, #1a1c2b 100%);
@@ -90,16 +137,24 @@
 /* Нижняя навигация */
 .bottomNav {
   position: fixed; left: 0; right: 0; bottom: 0;
-  background: var(--nav-bg);                /* было rgba(10,12,24,.9) */
-  border-top: 1px solid var(--nav-border);  /* было rgba(255,255,255,.08) */
+  background: var(--nav-bg);
+  border-top: 1px solid var(--nav-border);
   backdrop-filter: blur(10px);
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  padding: 8px 10px 10px;
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px 12px;
 }
 .navItem {
-  display: grid; gap: 4px; justify-items: center;
-  color: rgba(255,255,255,.6); text-decoration: none; font-size: 12px;
-  padding: 6px 8px; border-radius: 10px;
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  color: rgba(255,255,255,.6);
+  text-decoration: none;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 10px;
 }
 .navItem:hover { background: rgba(255,255,255,.04); }
 .active { color: #ffffff; background: rgba(127,90,240,.12); }

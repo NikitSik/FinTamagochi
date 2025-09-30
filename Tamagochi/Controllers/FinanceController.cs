@@ -17,7 +17,7 @@ public class FinanceController : ControllerBase
 
     public FinanceController(TamagochiDbContext db) => _db = db;
 
-    private string UserId => HttpContext.GetUserId() ?? "demo"; // fallback для локального теста
+    private string UserId => HttpContext.GetRequiredUserId();
 
     [HttpPost("snapshot")]
     public async Task<IActionResult> CreateSnapshot([FromBody] FinanceSnapshot dto, CancellationToken ct)
