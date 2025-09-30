@@ -53,22 +53,20 @@ public class TamagochiDbContext : DbContext
 
         // сид миссий (как было)
         modelBuilder.Entity<Mission>().HasData(
-             new Mission { Id = 1, Code = "DEPOSIT_6M", Title = "Открой вклад 6+ мес", Description = "Узнай про вклад на 6–12 месяцев и кликни на продукт", ProductTag = "deposit_6m", RewardCoins = 200, RewardXp = 150, Target = 1, Repeatable = false, RewardPetId = null },
+            new Mission { Id = 1, Code = "DEPOSIT_6M", Title = "Открой вклад 6+ мес", Description = "Узнай про вклад на 6–12 месяцев и кликни на продукт", ProductTag = "deposit_6m", RewardCoins = 200, RewardXp = 150, Target = 1, Repeatable = false, RewardPetId = null },
             new Mission { Id = 2, Code = "SAVINGS_CUSHION", Title = "Финансовая подушка", Description = "Накопи 1× месячных расходов (демо-цель)", ProductTag = "long_savings", RewardCoins = 300, RewardXp = 200, Target = 3, Repeatable = true, RewardPetId = null },
-            new Mission { Id = 3, Code = "ANTIFRAUD_TUTORIAL", Title = "Защита от мошенников", Description = "Пройди мини-урок по антифроду", ProductTag = "antifraud", RewardCoins = 200, RewardXp = 120, Target = 1, Repeatable = false, RewardPetId = "cat" },
-            new Mission { Id = 4, Code = "INVEST_PARROT", Title = "Инвесткопилка", Description = "Запусти инвестиционную копилку и сделай первое пополнение", ProductTag = "invest_piggy", RewardCoins = 350, RewardXp = 240, Target = 1, Repeatable = false, RewardPetId = "parrot" }
+            new Mission { Id = 3, Code = "ANTIFRAUD_TUTORIAL", Title = "Защита от мошенников", Description = "Пройди мини-урок по антифроду", ProductTag = "antifraud", RewardCoins = 200, RewardXp = 120, Target = 3, Repeatable = false, RewardPetId = "cat" },
+            new Mission { Id = 4, Code = "WEEKLY_BUDGET", Title = "Неделя осознанных трат", Description = "Составь план покупок и отметь три дня без импульсивных трат", ProductTag = "weekly_budget", RewardCoins = 250, RewardXp = 200, Target = 3, Repeatable = true, RewardPetId = null }
         );
 
         // 💾 сид магазина
         modelBuilder.Entity<ShopItem>().HasData(
-            new ShopItem { Id = "food_small", Title = "Корм (мал.)", Price = 10, Type = "food", PayloadJson = "{\"satiety\":15}", Enabled = true },
-            new ShopItem { Id = "food_big", Title = "Корм (бол.)", Price = 25, Type = "food", PayloadJson = "{\"satiety\":40}", Enabled = true },
-            new ShopItem { Id = "bg_sky", Title = "Фон: Небо", Price = 30, Type = "bg", PayloadJson = "{\"background\":\"sky\"}", Enabled = true },
-            new ShopItem { Id = "bg_room", Title = "Фон: Комната", Price = 30, Type = "bg", PayloadJson = "{\"background\":\"room\"}", Enabled = true },
-            new ShopItem { Id = "ball", Title = "Мячик", Price = 20, Type = "item", PayloadJson = "{\"item\":\"ball\"}", Enabled = true },
-
-             new ShopItem { Id = "pet_cat", Title = "Открыть кота", Price = 500, Type = "pet", PayloadJson = "{\"petId\":\"cat\"}", Enabled = false },
-            new ShopItem { Id = "pet_dragon", Title = "Открыть дракона", Price = 1500, Type = "pet", PayloadJson = "{\"petId\":\"dragon\"}", Enabled = false }
+            new ShopItem { Id = "food_balanced_meal", Title = "Рацион \"Баланс инвестора\"", Price = 18, Type = "food", PayloadJson = "{\"satiety\":20}", Enabled = true },
+            new ShopItem { Id = "food_energy_bowl", Title = "Боул \"Энергия рынка\"", Price = 32, Type = "food", PayloadJson = "{\"satiety\":45}", Enabled = true },
+            new ShopItem { Id = "bg_city_lights", Title = "Фон: Городские огни", Price = 40, Type = "bg", PayloadJson = "{\"background\":\"city\"}", Enabled = true },
+            new ShopItem { Id = "bg_cozy_home", Title = "Фон: Домашний уют", Price = 40, Type = "bg", PayloadJson = "{\"background\":\"cozy\"}", Enabled = true },
+            new ShopItem { Id = "item_budget_planner", Title = "Гаджет \"Планировщик бюджета\"", Price = 28, Type = "item", PayloadJson = "{\"item\":\"planner\"}", Enabled = true },
+            new ShopItem { Id = "item_travel_insurance", Title = "Папка \"Защита путешествий\"", Price = 35, Type = "item", PayloadJson = "{\"item\":\"travel_insurance\"}", Enabled = true }
         );
 
         modelBuilder.Entity<PetProfile>()

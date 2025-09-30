@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tamagochi.Data;
 
@@ -11,9 +12,11 @@ using Tamagochi.Data;
 namespace Tamagochi.Migrations
 {
     [DbContext(typeof(TamagochiDbContext))]
-    partial class TamagochiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250929232815_UpdateMissionsAndShop")]
+    partial class UpdateMissionsAndShop
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

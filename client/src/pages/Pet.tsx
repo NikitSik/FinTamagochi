@@ -1,22 +1,149 @@
-import { useEffect, useMemo, useState, type ComponentType } from "react";
+import { useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
 import styles from "./styles/Pet.module.css";
 import { api, type PetState, type ShopItem } from "../api";
 import Cat from "../components/pets/cat";
 import Dog from "../components/pets/dog";
-import Parrot from "../components/pets/parrot";
 import PetCarousel, { type PetSlide } from "../components/PetCarousel";
 
 // вместо JSX.Element — ComponentType
 const ALL_PETS: Record<string, ComponentType<any>> = {
   dog: Dog,
   cat: Cat,
-  parrot: Parrot,
 };
 
 const LOCK_HINTS: Record<string, string> = {
   cat: "Выполни миссию \"Защита от мошенников\"",
-  parrot: "Выполни миссию \"Инвесткопилка\"",
 };
+
+type ShopMeta = {
+  badge: string;
+  subtitle: string;
+  description: string;
+  accent: string;
+  icon: ReactNode;
+};
+
+const IconMeal = () => (
+  <svg viewBox="0 0 64 64" role="img" aria-hidden focusable="false" className={styles.shopSvg}>
+    <rect x="6" y="28" width="52" height="26" rx="13" fill="#FFB74D" />
+    <path d="M12 30c6-16 34-16 40 0" fill="#FFE082" />
+    <rect x="12" y="44" width="40" height="6" rx="3" fill="#F57C00" />
+    <circle cx="24" cy="34" r="4" fill="#FF7043" />
+    <circle cx="40" cy="34" r="4" fill="#FF7043" />
+  </svg>
+);
+
+const IconEnergy = () => (
+  <svg viewBox="0 0 64 64" role="img" aria-hidden focusable="false" className={styles.shopSvg}>
+    <rect x="10" y="18" width="44" height="28" rx="14" fill="#80DEEA" />
+    <path d="M22 12l8 8h-6l10 14-4-12h6z" fill="#00ACC1" />
+    <path d="M20 46h24" stroke="#006064" strokeWidth="4" strokeLinecap="round" />
+  </svg>
+);
+
+const IconCity = () => (
+  <svg viewBox="0 0 64 64" role="img" aria-hidden focusable="false" className={styles.shopSvg}>
+    <rect x="8" y="24" width="16" height="32" rx="3" fill="#4FC3F7" />
+    <rect x="28" y="16" width="16" height="40" rx="3" fill="#0288D1" />
+    <rect x="48" y="28" width="10" height="28" rx="3" fill="#01579B" />
+    <circle cx="18" cy="12" r="6" fill="#FFC107" />
+    <path d="M4 56h56" stroke="#0D47A1" strokeWidth="4" strokeLinecap="round" />
+  </svg>
+);
+
+const IconCozy = () => (
+  <svg viewBox="0 0 64 64" role="img" aria-hidden focusable="false" className={styles.shopSvg}>
+    <path d="M8 36l24-18 24 18v18H8z" fill="#FFAB91" />
+    <rect x="20" y="40" width="12" height="14" rx="2" fill="#FBE9E7" />
+    <rect x="36" y="44" width="10" height="10" rx="2" fill="#FFF3E0" />
+    <path d="M4 36h56" stroke="#D84315" strokeWidth="4" strokeLinecap="round" />
+  </svg>
+);
+
+const IconPlanner = () => (
+  <svg viewBox="0 0 64 64" role="img" aria-hidden focusable="false" className={styles.shopSvg}>
+    <rect x="12" y="10" width="40" height="44" rx="6" fill="#B39DDB" />
+    <rect x="18" y="20" width="28" height="4" rx="2" fill="#311B92" />
+    <rect x="18" y="30" width="20" height="4" rx="2" fill="#311B92" />
+    <circle cx="42" cy="32" r="4" fill="#FFC400" />
+    <path d="M22 42h20" stroke="#5E35B1" strokeWidth="4" strokeLinecap="round" />
+  </svg>
+);
+
+const IconInsurance = () => (
+  <svg viewBox="0 0 64 64" role="img" aria-hidden focusable="false" className={styles.shopSvg}>
+    <path d="M12 18h40v30L32 54 12 48z" fill="#81C784" />
+    <path d="M22 30l8 8 12-14" stroke="#1B5E20" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    <rect x="16" y="14" width="32" height="6" rx="3" fill="#388E3C" />
+  </svg>
+);
+
+const IconDefault = () => (
+  <svg viewBox="0 0 64 64" role="img" aria-hidden focusable="false" className={styles.shopSvg}>
+    <circle cx="32" cy="32" r="22" fill="#B0BEC5" />
+    <path d="M32 16v32M16 32h32" stroke="#37474F" strokeWidth="4" strokeLinecap="round" />
+  </svg>
+);
+
+const TYPE_LABEL: Record<ShopItem["type"], string> = {
+  food: "Еда",
+  bg: "Фон",
+  item: "Предмет",
+  pet: "Питомец",
+};
+
+const SHOP_META: Record<string, ShopMeta> = {
+  food_balanced_meal: {
+    badge: "Еда",
+    subtitle: "Старт дня без финансового стресса",
+    description: "Рацион \"Баланс инвестора\" повышает сытость на 20% и поднимает настроение питомца.",
+    accent: "linear-gradient(140deg,#FFECB3 0%,#FFB74D 100%)",
+    icon: <IconMeal />,
+  },
+  food_energy_bowl: {
+    badge: "Еда",
+    subtitle: "Бодрость перед инвестиционной сессией",
+    description: "Боул \"Энергия рынка\" восполняет 45% сытости и помогает сфокусироваться.",
+    accent: "linear-gradient(140deg,#E0F7FA 0%,#26C6DA 100%)",
+    icon: <IconEnergy />,
+  },
+  bg_city_lights: {
+    badge: "Фон",
+    subtitle: "Вечерний вид на деловой центр",
+    description: "Ночной мегаполис с подсветкой небоскрёбов — идеальный фон для достижения целей.",
+    accent: "linear-gradient(140deg,#E3F2FD 0%,#1565C0 100%)",
+    icon: <IconCity />,
+  },
+  bg_cozy_home: {
+    badge: "Фон",
+    subtitle: "Тихий вечер в тёплом доме",
+    description: "Тёплый домик с мягким светом напоминает, зачем вы копите финансовую подушку.",
+    accent: "linear-gradient(140deg,#FBE9E7 0%,#FF8A65 100%)",
+    icon: <IconCozy />,
+  },
+  item_budget_planner: {
+    badge: "Гаджет",
+    subtitle: "Организуй доходы и расходы",
+    description: "Цифровой помощник помогает фиксировать траты и ускоряет прогресс в миссиях.",
+    accent: "linear-gradient(140deg,#EDE7F6 0%,#7E57C2 100%)",
+    icon: <IconPlanner />,
+  },
+  item_travel_insurance: {
+    badge: "Сервис",
+    subtitle: "Защита поездок по всему миру",
+    description: "Уверенность в поездках дарит питомцу +10 к здоровью и спокойствию.",
+    accent: "linear-gradient(140deg,#E8F5E9 0%,#66BB6A 100%)",
+    icon: <IconInsurance />,
+  },
+};
+
+const fallbackMeta = (item: ShopItem): ShopMeta => ({
+  badge: TYPE_LABEL[item.type] ?? "Предмет",
+  subtitle: item.title,
+  description: "Описание скоро появится.",
+  accent: "linear-gradient(140deg,#ECEFF1 0%,#CFD8DC 100%)",
+  icon: <IconDefault />,
+});
 
 export default function Pet() {
   const [state, setState] = useState<PetState | null>(null);
@@ -44,9 +171,16 @@ export default function Pet() {
 
   const bgClass = useMemo(() => {
     switch (state?.background) {
-      case "sky":  return styles.bgSky;
-      case "room": return styles.bgRoom;
-      default:     return styles.bgDefault;
+       case "sky":
+        return styles.bgSky;
+      case "room":
+        return styles.bgRoom;
+      case "city":
+        return styles.bgCity;
+      case "cozy":
+        return styles.bgCozy;
+      default:
+        return styles.bgDefault;
     }
   }, [state?.background]);
 
@@ -81,14 +215,14 @@ export default function Pet() {
   }
 
    useEffect(() => {
-    if (!shopOpen || shopItems.length) return;
+    if (!shopOpen) return;
     setShopLoading(true);
     setShopErr(null);
     api.shopItems()
       .then((items) => setShopItems(items))
       .catch((e: any) => setShopErr(e?.message ?? "Не удалось загрузить магазин"))
       .finally(() => setShopLoading(false));
-  }, [shopOpen, shopItems.length]);
+  }, [shopOpen]);
 
   async function purchase(item: ShopItem) {
     setBuyingId(item.id);
@@ -157,28 +291,55 @@ export default function Pet() {
         {shopOpen && (
           <div className={styles.modalBackdrop} onClick={() => setShopOpen(false)}>
             <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-              <h2 className={styles.modalTitle}>Магазин</h2>
+              <div className={styles.modalHead}>
+                <h2 className={styles.modalTitle}>Магазин</h2>
+                <button className={styles.closeIcon} aria-label="Закрыть" onClick={() => setShopOpen(false)}>
+                  ×
+                </button>
+              </div>
+              <p className={styles.modalLead}>
+                Подбирайте продукты, которые помогают растить финансовые привычки и радуют питомца.
+              </p>
               {shopErr && <div className={styles.err}>{shopErr}</div>}
-              <ul className={styles.shopList}>
-               {shopLoading && <li className={styles.shopRow}>Загрузка…</li>}
-                {!shopLoading && shopItems.map((it) => (
-                  <li key={it.id} className={styles.shopRow}>
-                    <div>
-                      <div className={styles.shopTitle}>{it.title}</div>
-                      <div className={styles.shopMeta}>{prettyType(it.type)}</div>
-                      <div className={styles.shopPrice}>{it.price} мон.</div>
-                    </div>
-                    <button
-                      className={styles.buyBtn}
-                      disabled={(state?.coins ?? 0) < it.price || buyingId === it.id}
-                      onClick={() => purchase(it)}
-                    >
-                      Купить
-                    </button>
-                  </li>
-                ))}
-              </ul>
-              <button className={styles.closeBtn} onClick={() => setShopOpen(false)}>Закрыть</button>
+               {shopLoading ? (
+                <ul className={`${styles.shopGrid} ${styles.shopGridSkeleton}`}>
+                  <li className={styles.shopSkeleton} />
+                  <li className={styles.shopSkeleton} />
+                  <li className={styles.shopSkeleton} />
+                </ul>
+              ) : (
+                <ul className={styles.shopGrid}>
+                  {shopItems.map((it) => {
+                    const meta = SHOP_META[it.id] ?? fallbackMeta(it);
+                    const disabled = (state?.coins ?? 0) < it.price || buyingId === it.id;
+                    return (
+                      <li key={it.id} className={styles.shopProduct}>
+                        <div className={styles.shopIllustration} style={{ backgroundImage: meta.accent }}>
+                          {meta.icon}
+                        </div>
+                        <div className={styles.shopInfo}>
+                          <div className={styles.shopTagRow}>
+                            <span className={styles.shopBadge}>{meta.badge}</span>
+                            <span className={styles.shopPrice}>{it.price} мон.</span>
+                          </div>
+                          <h3 className={styles.shopName}>{it.title}</h3>
+                          <p className={styles.shopSubtitle}>{meta.subtitle}</p>
+                          <p className={styles.shopDescription}>{meta.description}</p>
+                          <div className={styles.shopActions}>
+                            <button
+                              className={styles.buyBtn}
+                              disabled={disabled}
+                              onClick={() => purchase(it)}
+                            >
+                              {buyingId === it.id ? "Покупаем..." : "Купить"}
+                            </button>
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
             </div>
           </div>
         )}
@@ -187,15 +348,6 @@ export default function Pet() {
   );
 }
 
-function prettyType(type: ShopItem["type"]): string {
-  switch (type) {
-    case "food": return "Еда";
-    case "bg": return "Фон";
-    case "item": return "Игрушка";
-    case "pet": return "Питомец";
-    default: return type;
-  }
-}
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (

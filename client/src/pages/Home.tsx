@@ -3,13 +3,12 @@ import styles from "./styles/Home.module.css";
 import { api } from "../api";
 import Dog from "../components/pets/dog";
 import Cat from "../components/pets/cat";
-import Parrot from "../components/pets/parrot";
 
 type View = {
   coins: number;
-  savings: number;     
-  current: number;    
-   selectedPetId: "dog" | "cat" | "parrot";
+  savings: number;
+  current: number;
+  selectedPetId: "dog" | "cat";
 };
 
 export default function Home() {
@@ -71,8 +70,6 @@ export default function Home() {
     switch (view.selectedPetId) {
       case "cat":
         return <Cat {...common} />;
-      case "parrot":
-        return <Parrot {...common} />;
       default:
         return <Dog {...common} />;
     }

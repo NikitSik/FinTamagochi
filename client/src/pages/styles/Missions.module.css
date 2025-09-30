@@ -46,6 +46,10 @@
   font-weight: 700;
   letter-spacing: 0.2px;
 }
+.missionTagline {
+  font-size: 12px;
+  color: rgba(148, 163, 184, 0.85);
+}
 .missionDesc { margin: 0; color: rgba(255,255,255,.7); font-size: 13px; }
 .pill { white-space: nowrap; }
 
@@ -74,7 +78,12 @@
 .rewardValue { font-weight: 600; }
 .repeatable { margin-top: 6px; font-size: 12px; color: rgba(16, 185, 129, 0.85); }
 
-.actions { display: flex; gap: 10px; margin-top: 10px; }
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
 
 /* Кнопки — выглядят как в Home */
 .stepBtn {
@@ -101,6 +110,24 @@
 }
 .claimBtn:hover { background: #18c694; }
 .claimBtn:disabled { opacity: .5; cursor: not-allowed; }
+
+.moreLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.moreLink:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
 
 .err {
   color: #fecaca;

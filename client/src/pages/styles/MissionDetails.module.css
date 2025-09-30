@@ -1,0 +1,312 @@
+.page {
+  min-height: 100dvh;
+  background: #0e1220;
+  color: #fff;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.header {
+  padding: 24px 20px 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.backBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.main {
+  padding: 8px 20px 90px;
+  display: grid;
+  gap: 16px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.heroSkeleton,
+.cardSkeleton {
+  border-radius: 20px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+  background-size: 300% 100%;
+  animation: shimmer 1.6s infinite;
+}
+
+.heroSkeleton { height: 220px; }
+.cardSkeleton { height: 140px; }
+
+@keyframes shimmer {
+  0% { background-position: 0 0; }
+  100% { background-position: -300% 0; }
+}
+
+.err {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fecaca;
+  font-size: 14px;
+}
+
+.hero {
+  position: relative;
+  border-radius: 22px;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  background: inherit;
+  opacity: 0.85;
+  z-index: -1;
+}
+
+.heroContent { display: grid; gap: 12px; z-index: 1; }
+
+.heroTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #0e1220;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.heroTitle {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.heroSummary {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(8, 12, 24, 0.92);
+}
+
+.heroStats {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.progressBlock,
+.rewardBlock {
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(10, 12, 22, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: grid;
+  gap: 8px;
+}
+
+.progressLabel {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.progressBar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+
+.progressBar i {
+  display: block;
+  height: 100%;
+  background: #7f5af0;
+}
+
+.progressValue {
+  font-weight: 700;
+  color: #fff;
+  font-size: 14px;
+}
+
+.rewardValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fcd34d;
+}
+
+.heroArt {
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  padding: 8px;
+}
+
+.heroSvg {
+  width: 140px;
+  height: auto;
+}
+
+.card {
+  border-radius: 18px;
+  background: rgba(15, 18, 32, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.statusChip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(127, 90, 240, 0.15);
+  border: 1px solid rgba(127, 90, 240, 0.3);
+  font-size: 12px;
+}
+
+.taskList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.taskItem {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.taskDone {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.taskCurrent {
+  border-color: rgba(127, 90, 240, 0.5);
+  box-shadow: 0 0 0 1px rgba(127, 90, 240, 0.4);
+}
+
+.taskIndex {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: rgba(127, 90, 240, 0.18);
+  font-weight: 700;
+}
+
+.taskBody { display: grid; gap: 4px; }
+
+.taskTitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.taskDescription {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.78);
+  line-height: 1.4;
+}
+
+.benefitList,
+.resourceList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.benefitItem {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 13px;
+}
+
+.resourceLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #93c5fd;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.resourceLink::after {
+  content: "↗";
+  font-size: 12px;
+}
+
+.actionsCard { padding-top: 14px; }
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.actionBtn {
+  width: 100%;
+  height: 44px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.claimBtn {
+  background: #10b981;
+  color: #04100b;
+}
+
+.claimBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

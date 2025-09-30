@@ -1,8 +1,10 @@
 // src/pages/Missions.tsx
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import styles from "./styles/Missions.module.css";
 import { Button, Card, Pill, Screen } from "../components/UI";
-import { api, type Mission } from "../api"; 
+import { api, type Mission } from "../api";
+import { formatMissionReward, getMissionMeta } from "./MissionData";
 
 export default function Missions() {
   const [items, setItems] = useState<Mission[]>([]);
@@ -36,10 +38,7 @@ export default function Missions() {
   const handleStep = async (id: number) => {
     setActingId(id);
     try {
-      const res = await api.missionClaim(id);
-      if (res.petId) {
-        alert(`Новый питомец разблокирован! (${res.petId})`);
-      }
+      await api.missionStep(id);
     }
     finally { setActingId(null); await load(); }
   };
@@ -73,16 +72,21 @@ export default function Missions() {
           )}
 
           {!loading &&
-            items.map((m) => (
-              <Card key={m.id} className={styles.missionCard}>
-                <div className={styles.top}>
-                  <div className={styles.titleRow}>
-                    <h3 className={styles.missionTitle}>{m.title}</h3>
-                    {m.description && <p className={styles.missionDesc}>{m.description}</p>}
-                  </div>
-                  <Pill className={styles.pill}>
-                    {m.progress.counter}/{m.progress.target}
-                  </Pill>
+            items.map((m) => {
+              const meta = getMissionMeta(m);
+              return (
+                <Card key={m.id} className={styles.missionCard}>
+                  <div className={styles.top}>
+                    <div className={styles.titleRow}>
+                      <h3 className={styles.missionTitle}>{m.title}</h3>
+                       {meta?.tagline && (
+                      <span className={styles.missionTagline}>{meta.tagline}</span>
+                    )}
+                      {m.description && <p className={styles.missionDesc}>{m.description}</p>}
+                    </div>
+                    <Pill className={styles.pill}>
+                      {m.progress.counter}/{m.progress.target}
+                    </Pill>
                 </div>
 
                 <div className={styles.meta}>
@@ -94,7 +98,7 @@ export default function Missions() {
 
                 <div className={styles.rewardRow}>
                   <span className={styles.rewardLabel}>Награда:</span>
-                  <span className={styles.rewardValue}>{formatReward(m)}</span>
+                  <span className={styles.rewardValue}>{formatMissionReward(m)}</span>
                 </div>
 
                 {m.repeatable && (
@@ -117,29 +121,19 @@ export default function Missions() {
                   >
                     {canClaim(m) ? "Забрать награду" : statusLabel(m)}
                   </Button>
+                  <Link className={styles.moreLink} to={`/missions/${m.code}`}>
+                    Подробнее
+                  </Link>
                 </div>
               </Card>
-            ))}
+            );
+            })}
         </main>
       </div>
     </Screen>
   );
 }
 
-function formatReward(m: Mission): string {
-  const parts: string[] = [];
-  if (m.reward?.coins) parts.push(`${m.reward.coins} монет`);
-  if (m.reward?.xp) parts.push(`${m.reward.xp} XP`);
-  if (m.reward?.petId) {
-    const petNames: Record<string, string> = {
-      cat: "Котик",
-      dog: "Щенок",
-      parrot: "Попугай",
-    };
-    parts.push(`питомец: ${petNames[m.reward.petId] ?? m.reward.petId}`);
-  }
-  return parts.join(" · ") || "—";
-}
 
 function statusLabel(m: Mission): string {
   if (m.progress.status === "Done") {
