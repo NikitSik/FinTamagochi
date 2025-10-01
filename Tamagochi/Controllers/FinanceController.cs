@@ -61,22 +61,82 @@ public class FinanceController : ControllerBase
         return account;
     }
 
-    public record DepositRequest(decimal Amount);
+    public record AmountRequest(decimal Amount);
 
-    [HttpPost("savings/deposit")]
-    public async Task<IActionResult> Deposit([FromBody] DepositRequest body, CancellationToken ct)
+    private async Task<FinanceSnapshot?> GetLatestSnapshotAsync(CancellationToken ct)
     {
-        if (body.Amount <= 0)
-        {
-            return BadRequest("Сумма должна быть > 0");
-        }
-
-        var account = await EnsureSavingsAsync(ct);
-        var latestSnapshot = await _db.FinanceSnapshots
+        return await _db.FinanceSnapshots
             .Where(x => x.UserId == UserId)
             .OrderByDescending(x => x.Date)
             .ThenByDescending(x => x.Id)
             .FirstOrDefaultAsync(ct);
+    }
+
+    private static IActionResult? ValidateAmount(AmountRequest body)
+    {
+        if (body.Amount <= 0)
+        {
+            return new BadRequestObjectResult("Сумма должна быть > 0");
+        }
+
+        return null;
+    }
+
+    [HttpPost("balance/deposit")]
+    public async Task<IActionResult> TopUpBalance([FromBody] AmountRequest body, CancellationToken ct)
+    {
+        if (ValidateAmount(body) is { } bad)
+        {
+            return bad;
+        }
+
+        var snapshot = await GetLatestSnapshotAsync(ct);
+        if (snapshot is null)
+        {
+            return BadRequest("Сначала зафиксируйте баланс текущего счёта");
+        }
+
+        snapshot.Balance += body.Amount;
+
+        await _db.SaveChangesAsync(ct);
+        return Ok(new { balance = snapshot.Balance });
+    }
+
+    [HttpPost("balance/withdraw")]
+    public async Task<IActionResult> WithdrawBalance([FromBody] AmountRequest body, CancellationToken ct)
+    {
+        if (ValidateAmount(body) is { } bad)
+        {
+            return bad;
+        }
+
+        var snapshot = await GetLatestSnapshotAsync(ct);
+        if (snapshot is null)
+        {
+            return BadRequest("Сначала зафиксируйте баланс текущего счёта");
+        }
+
+        if (snapshot.Balance < body.Amount)
+        {
+            return BadRequest("Недостаточно средств на текущем счёте");
+        }
+
+        snapshot.Balance -= body.Amount;
+
+        await _db.SaveChangesAsync(ct);
+        return Ok(new { balance = snapshot.Balance });
+    }
+
+    [HttpPost("savings/deposit")]
+    public async Task<IActionResult> Deposit([FromBody] AmountRequest body, CancellationToken ct)
+    {
+        if (ValidateAmount(body) is { } bad)
+        {
+            return bad;
+        }
+
+        var account = await EnsureSavingsAsync(ct);
+        var latestSnapshot = await GetLatestSnapshotAsync(ct);
 
         if (latestSnapshot is null)
         {
@@ -97,6 +157,36 @@ public class FinanceController : ControllerBase
 
         await _db.SaveChangesAsync(ct);
         return Ok(new { balance = account.Balance });
+    }
+
+    [HttpPost("savings/withdraw")]
+    public async Task<IActionResult> Withdraw([FromBody] AmountRequest body, CancellationToken ct)
+    {
+        if (ValidateAmount(body) is { } bad)
+        {
+            return bad;
+        }
+
+        var account = await EnsureSavingsAsync(ct);
+
+        if (account.Balance < body.Amount)
+        {
+            return BadRequest("Недостаточно средств на накопительном счёте");
+        }
+
+        var latestSnapshot = await GetLatestSnapshotAsync(ct);
+        if (latestSnapshot is null)
+        {
+            return BadRequest("Сначала зафиксируйте баланс текущего счёта");
+        }
+
+        account.Balance -= body.Amount;
+        account.UpdatedAt = DateTime.UtcNow;
+
+        latestSnapshot.Balance += body.Amount;
+
+        await _db.SaveChangesAsync(ct);
+        return Ok(new { balance = account.Balance, currentBalance = latestSnapshot.Balance });
     }
 
     private async Task TrackSavingsMissionProgressAsync(CancellationToken ct)

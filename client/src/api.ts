@@ -157,6 +157,22 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ amount }),
     }),
+  savingsWithdraw: (amount: number) =>
+    http<{ balance: number; currentBalance: number }>("/api/finance/savings/withdraw", {
+      method: "POST",
+      body: JSON.stringify({ amount }),
+    }),
+
+  balanceDeposit: (amount: number) =>
+    http<{ balance: number }>("/api/finance/balance/deposit", {
+      method: "POST",
+      body: JSON.stringify({ amount }),
+    }),
+  balanceWithdraw: (amount: number) =>
+    http<{ balance: number }>("/api/finance/balance/withdraw", {
+      method: "POST",
+      body: JSON.stringify({ amount }),
+    }),
 
       financeLatest: () => http<LatestFinance>("/api/finance/snapshot/latest"),
 
