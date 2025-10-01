@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import type { FormEvent } from "react";
+import type { FormEvent, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import styles from "./styles/Home.module.css";
 import { api, type User } from "../api";
 import Dog from "../components/pets/dog";
 import Cat from "../components/pets/cat";
+
+const rubFormatter = new Intl.NumberFormat("ru-RU");
 
 type View = {
   coins: number;
@@ -40,6 +42,43 @@ export default function Home() {
   const totalRUB = Math.round(view.current + view.savings);
   const parsedAmount = Number(amount.trim().replace(",", "."));
   const isAmountValid = !Number.isNaN(parsedAmount) && parsedAmount > 0;
+
+  const stats = [
+    { label: "Настроение", value: view.mood },
+    { label: "Сытость", value: view.satiety },
+    { label: "Здоровье", value: view.health },
+  ];
+
+  const accounts = [
+    {
+      key: "current",
+      title: "Текущий счёт",
+      subtitle: `• ${view.owner}`,
+      amount: view.current,
+      currency: "₽",
+      note: "Свободные средства",
+    },
+    {
+      key: "savings",
+      title: "Накопительный",
+      subtitle: `• ${view.owner}`,
+      amount: view.savings,
+      currency: "₽",
+      note: "Отложено на цели",
+    },
+    {
+      key: "coins",
+      title: "Игровые монеты",
+      subtitle: "• внутриигровые",
+      amount: view.coins,
+      currency: null,
+      note: "Потратьте в магазине",
+    },
+  ] as const;
+
+  function formatRUB(value: number) {
+    return rubFormatter.format(Math.round(value));
+  }
 
   async function load() {
     const [pet, sav, latest, me] = await Promise.all([
@@ -112,98 +151,112 @@ export default function Home() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <h1 className={styles.title}>ФинТамагочи</h1>
+        <div className={styles.hero}>
+          <div>
+            <p className={styles.subtitle}>Добро пожаловать, {view.owner}</p>
+            <h1 className={styles.title}>ФинТамагочи</h1>
+          </div>
+          <div className={styles.totalPill} aria-live="polite">
+            <span className={styles.totalLabel}>Общий баланс</span>
+            <strong className={styles.totalValue}>₽ {formatRUB(totalRUB)}</strong>
+          </div>
+        </div>
       </header>
 
       <main className={styles.main}>
-        {/* Общий баланс + список счетов */}
-        <section className={styles.balanceCard}>
-          <div className={styles.balanceTop}>
-            <span className={styles.balanceCaption}>Баланс (₽)</span>
-            <strong className={styles.balanceValue}>
-              {new Intl.NumberFormat("ru-RU").format(totalRUB)}
-            </strong>
-          </div>
+        <section className={styles.grid}>
+          <article className={`${styles.surface} ${styles.summaryCard}`}>
+            <div className={styles.summaryHeader}>
+              <div>
+                <h2>Финансовый обзор</h2>
+                <p className={styles.summaryHint}>Следите за ежедневными балансами и быстро фиксируйте изменения.</p>
+              </div>
+              <span className={styles.badge}>Рубли</span>
+            </div>
 
-          <ul className={styles.accounts}>
-            <li className={styles.accountRow}>
-              <div className={styles.accountInfo}>
-                <span className={styles.accountTitle}>Текущий счёт</span>
-                <span className={styles.accountNumber}>• {view.owner}</span>
-              </div>
-              <div className={styles.accountAmt}>
-                ₽ {new Intl.NumberFormat("ru-RU").format(view.current)}
-              </div>
-            </li>
+            <p className={styles.summaryTotal}>₽ {formatRUB(totalRUB)}</p>
 
-            <li className={styles.accountRow}>
-              <div className={styles.accountInfo}>
-                <span className={styles.accountTitle}>Накопительный</span>
-                <span className={styles.accountNumber}>• {view.owner}</span>
+            <div className={styles.summaryBreakdown}>
+              <div className={styles.breakdownItem}>
+                <span className={styles.breakdownLabel}>Текущий счёт</span>
+                <span className={styles.breakdownValue}>₽ {formatRUB(view.current)}</span>
+                <span className={styles.breakdownNote}>Свободные средства на сегодня</span>
               </div>
-              <div className={styles.accountAmt}>
-                ₽ {new Intl.NumberFormat("ru-RU").format(view.savings)}
+              <div className={styles.breakdownItem}>
+                <span className={styles.breakdownLabel}>Накопительный</span>
+                <span className={styles.breakdownValue}>₽ {formatRUB(view.savings)}</span>
+                <span className={styles.breakdownNote}>Отложено на ваши цели</span>
               </div>
-            </li>
+              <div className={styles.breakdownItem}>
+                <span className={styles.breakdownLabel}>Игровые монеты</span>
+                <span className={styles.breakdownValue}>{view.coins}</span>
+                <span className={styles.breakdownNote}>Заработайте больше в миссиях</span>
+              </div>
+            </div>
 
-            {/* Игровые монеты — отдельная строка, не входит в ₽ баланс */}
-            <li className={styles.accountRow}>
-              <div className={styles.accountInfo}>
-                <span className={styles.accountTitle}>Игровые монеты</span>
-                <span className={styles.accountNumber}>• внутриигровые</span>
-              </div>
-              <div className={styles.accountAmt}>
-                {view.coins}
-              </div>
-            </li>
-          </ul>
+            <div className={styles.quickActions}>
+              <button className={styles.primaryBtn} onClick={() => setOpened("snapshot")}>
+                Зафиксировать доход
+              </button>
+              <button className={styles.secondaryBtn} onClick={() => setOpened("deposit")}>
+                Перевести в накопления
+              </button>
+            </div>
+          </article>
 
-          <div className={styles.actions}>
-            <button className={styles.primaryBtn} onClick={() => setOpened("snapshot")}>
-              Пополнить доход
-            </button>
-            <button className={styles.secondaryBtn} onClick={() => setOpened("deposit")}>
-              В накопительный
-            </button>
-          </div>
+          <article className={`${styles.surface} ${styles.petCard}`}>
+            <div className={styles.petContent}>
+              <div>
+                <h2 className={styles.petTitle}>Твой питомец</h2>
+                <p className={styles.petHint}>Кормите, заботьтесь и выполняйте миссии, чтобы улучшать финансовое здоровье.</p>
+              </div>
+              <div className={styles.petStats}>
+                {stats.map((stat) => (
+                  <div className={styles.statCard} key={stat.label}>
+                    <span className={styles.statLabel}>{stat.label}</span>
+                    <span className={styles.statValue}>{stat.value}%</span>
+                    <div className={styles.statBar}>
+                      <span className={styles.statBarFill} style={{ width: `${Math.min(stat.value, 100)}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className={styles.petVisual} aria-label="Питомец">
+              <div className={styles.petCircle}>
+                <PetHead />
+              </div>
+              <Link className={styles.missionLink} to="/missions/ANTIFRAUD_TUTORIAL">Миссия с тестом</Link>
+            </div>
+          </article>
         </section>
 
-        {/* Питомец */}
-        <section className={styles.petCard}>
-          <div className={styles.petLeft}>
-            <h2 className={styles.petTitle}>Твой питомец</h2>
-            <p className={styles.petHint}>Кормите и выполняйте миссии — повышайте уровень финансового здоровья.</p>
-
-            <div className={styles.petStats}>
-              <div className={styles.stat}>
-                <div className={styles.statRow}>
-                  <span className={styles.statLabel}>Настроение</span>
-                  <span className={styles.statValue}>{view.mood}%</span>
-                </div>
-                <div className={styles.progress}><i style={{ width: `${view.mood}%` }} /></div>
-              </div>
-              <div className={styles.stat}>
-                <div className={styles.statRow}>
-                  <span className={styles.statLabel}>Сытость</span>
-                  <span className={styles.statValue}>{view.satiety}%</span>
-                </div>
-                <div className={styles.progress}><i style={{ width: `${view.satiety}%` }} /></div>
-              </div>
-              <div className={styles.stat}>
-                <div className={styles.statRow}>
-                  <span className={styles.statLabel}>Здоровье</span>
-                  <span className={styles.statValue}>{view.health}%</span>
-                </div>
-                <div className={styles.progress}><i style={{ width: `${view.health}%` }} /></div>
-              </div>
-            </div>
+        <section className={`${styles.surface} ${styles.accountsSection}`}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>Счета и балансы</h2>
+            <p className={styles.sectionText}>Смотрите детали по каждому счёту и контролируйте прогресс накоплений.</p>
           </div>
 
-          <div className={styles.petRight} aria-label="Питомец">
-            <div className={styles.petCircle}>
-              <PetHead />
-            </div>
-              <Link className={styles.linkBtn} to="/missions/ANTIFRAUD_TUTORIAL">Миссия с тестом</Link>
+          <div className={styles.accountsGrid}>
+            {accounts.map((account) => (
+              <div className={styles.accountCard} key={account.key}>
+                <span className={styles.accountLabel}>{account.title}</span>
+                <span className={styles.accountValue}>
+                  {account.currency ? (
+                    <>
+                      <span className={styles.accountCurrency}>{account.currency}</span>
+                      {" "}
+                      {formatRUB(account.amount)}
+                    </>
+                  ) : (
+                    account.amount
+                  )}
+                </span>
+                <span className={styles.accountMeta}>{account.subtitle}</span>
+                <span className={styles.accountNote}>{account.note}</span>
+              </div>
+            ))}
           </div>
         </section>
       </main>
@@ -234,7 +287,7 @@ export default function Home() {
 }
 
 /* простые утилки модалки */
-function Modal({ children, onClose, title }: { children: React.ReactNode; onClose: () => void; title: string }) {
+function Modal({ children, onClose, title }: { children: ReactNode; onClose: () => void; title: string }) {
   return (
     <div className={styles.modalBackdrop} onClick={onClose}>
       <div className={styles.modalPanel} onClick={e=>e.stopPropagation()}>
@@ -244,7 +297,7 @@ function Modal({ children, onClose, title }: { children: React.ReactNode; onClos
     </div>
   );
 }
-function L({label, children}:{label:string; children:React.ReactNode}) {
+function L({label, children}:{label:string; children:ReactNode}) {
   return (
     <label className={styles.modalField}>
       <span>{label}</span>

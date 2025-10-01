@@ -43,7 +43,8 @@ namespace Tamagochi.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("SavingsRate")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(5,4)")
+                        .HasPrecision(5, 4);
 
                     b.Property<string>("UserId")
                         .IsRequired()

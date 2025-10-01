@@ -1,4 +1,13 @@
+<<<<<<< ours
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Linq;
+=======
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
+using System.Collections.Generic;
+>>>>>>> theirs
 using System.Text.Json;
 using Tamagochi.Models;
 
@@ -6,6 +15,11 @@ namespace Tamagochi.Data;
 
 public class TamagochiDbContext : DbContext
 {
+    private static readonly ValueComparer<List<string>> StringListComparer = ValueComparer.Create<List<string>>(
+        (left, right) => AreStringListsEqual(left, right),
+        list => GetStringListHashCode(list),
+        list => CloneStringList(list));
+
     public TamagochiDbContext(DbContextOptions<TamagochiDbContext> options) : base(options) { }
 
     public DbSet<User> Users => Set<User>();
@@ -38,13 +52,33 @@ public class TamagochiDbContext : DbContext
         modelBuilder.Entity<PetProfile>().HasKey(x => x.UserId);
         modelBuilder.Entity<SavingsAccount>().HasKey(x => x.UserId);
 
+        modelBuilder.Entity<FinanceSnapshot>()
+            .Property(e => e.SavingsRate)
+            .HasPrecision(5, 4);
+
         // Inventory.Items как JSON
+        var listComparer = new ValueComparer<List<string>>(
+            (left, right) =>
+                ReferenceEquals(left, right) ||
+                (left is not null && right is not null && left.SequenceEqual(right)),
+            list =>
+                list is null
+                    ? 0
+                    : list.Aggregate(0, (hash, item) => HashCode.Combine(hash, item?.GetHashCode() ?? 0)),
+            list => list is null ? new List<string>() : list.ToList()
+        );
+
         modelBuilder.Entity<Inventory>()
             .Property(e => e.Items)
             .HasConversion(
                 v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
                 v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new()
-            );
+            )
+<<<<<<< ours
+            .Metadata.SetValueComparer(listComparer);
+=======
+            .Metadata.SetValueComparer(StringListComparer);
+>>>>>>> theirs
 
         // сид питомцев (как было)
         modelBuilder.Entity<Tamagochi.Models.Tamagochi>().HasData(
@@ -73,10 +107,70 @@ public class TamagochiDbContext : DbContext
         );
 
         modelBuilder.Entity<PetProfile>()
+<<<<<<< ours
           .Property(e => e.OwnedPetIds)
           .HasConversion(
             v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
             v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new()
-  );
+          )
+          .Metadata.SetValueComparer(listComparer);
+=======
+            .Property(e => e.OwnedPetIds)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new()
+            )
+            .Metadata.SetValueComparer(StringListComparer);
+    }
+
+    private static bool AreStringListsEqual(List<string>? left, List<string>? right)
+    {
+        if (ReferenceEquals(left, right))
+        {
+            return true;
+        }
+
+        if (left == null || right == null)
+        {
+            return false;
+        }
+
+        if (left.Count != right.Count)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < left.Count; i++)
+        {
+            if (!string.Equals(left[i], right[i], StringComparison.Ordinal))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static int GetStringListHashCode(List<string>? source)
+    {
+        if (source == null)
+        {
+            return 0;
+        }
+
+        var hash = new HashCode();
+
+        for (var i = 0; i < source.Count; i++)
+        {
+            hash.Add(source[i], StringComparer.Ordinal);
+        }
+
+        return hash.ToHashCode();
+    }
+
+    private static List<string> CloneStringList(List<string>? source)
+    {
+        return source == null ? new List<string>() : new List<string>(source);
+>>>>>>> theirs
     }
 }
