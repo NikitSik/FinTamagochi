@@ -132,6 +132,10 @@
   font-size: 13px;
   color: #bef264;
 }
+.owned {
+  font-size: 12px;
+  color: #a3e635;
+}
 
 .buyBtn {
   margin-top: 4px;

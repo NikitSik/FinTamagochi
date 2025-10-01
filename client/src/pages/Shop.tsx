@@ -39,6 +39,7 @@ export default function Shop() {
   }, [message]);
 
   const coins = petState?.coins ?? 0;
+  const ownedItemIds = useMemo(() => new Set(petState?.items ?? []), [petState?.items]);
   const filteredItems = useMemo(() => filterItems(items, filter), [items, filter]);
 
   async function purchase(item: ShopItem) {
@@ -94,7 +95,8 @@ export default function Shop() {
 
           <div className={styles.grid}>
             {filteredItems.map((item) => {
-              const canBuy = coins >= item.price && buyingId !== item.id;
+              const owned = item.type === "item" && ownedItemIds.has(item.id);
+              const canBuy = coins >= item.price && buyingId !== item.id && !owned;
               return (
                 <Card key={item.id} className={styles.card}>
                   <div className={styles.cardTop}>
@@ -112,12 +114,14 @@ export default function Shop() {
                     <div className={styles.effect}>{effectText(item.effect)}</div>
                   )}
 
+                  {owned && <div className={styles.owned}>Уже в инвентаре</div>}
+
                   <Button
                     className={styles.buyBtn}
                     disabled={!canBuy}
                     onClick={() => purchase(item)}
                   >
-                    {buyingId === item.id ? "Покупаем…" : "Купить"}
+                    {owned ? "Недоступно" : buyingId === item.id ? "Покупаем…" : "Купить"}
                   </Button>
                 </Card>
               );

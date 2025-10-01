@@ -90,15 +90,16 @@ public class ShopController : ControllerBase
             return BadRequest("Not enough coins");
         }
 
-        wallet.Coins -= item.Price;
-        wallet.UpdatedAt = DateTime.UtcNow;
-
         if (item.PayloadJson is null)
         {
             return BadRequest("Item is missing payload");
         }
 
-        // Применяем покупку
+        string? inventoryItemId = null;
+        string? backgroundId = null;
+        string? petId = null;
+        JsonElement? foodPayload = null;
+
         try
         {
             using var payload = JsonDocument.Parse(item.PayloadJson);
@@ -113,50 +114,78 @@ public class ShopController : ControllerBase
                             return BadRequest("Bad pet payload");
                         }
 
-                        var petId = petElement.GetString();
+                        petId = petElement.GetString();
                         if (string.IsNullOrWhiteSpace(petId))
                         {
                             return BadRequest("Bad pet payload");
                         }
 
-                        if (!userState.Profile.OwnedPetIds.Contains(petId))
+                        if (userState.Profile.OwnedPetIds.Contains(petId))
                         {
-                            userState.Profile.OwnedPetIds.Add(petId);
+                            return BadRequest("Питомец уже открыт");
                         }
 
                         break;
                     }
-            
+
                 case "bg":
                     {
-                        if (root.TryGetProperty("background", out var background) && !string.IsNullOrWhiteSpace(background.GetString()))
+                        if (root.TryGetProperty("background", out var background))
                         {
-                            userState.Inventory.Background = background.GetString()!;
+                            backgroundId = background.GetString();
+                        }
+                        if (string.IsNullOrWhiteSpace(backgroundId))
+                        {
+                            return BadRequest("Bad background payload");
                         }
 
                         break;
                     }
                 case "item":
                     {
-                        if (root.TryGetProperty("item", out var itemElement) && !string.IsNullOrWhiteSpace(itemElement.GetString()))
+                        if (root.TryGetProperty("item", out var itemElement))
                         {
-                            var value = itemElement.GetString()!;
-                            if (!userState.Inventory.Items.Contains(value))
-                            {
-                                userState.Inventory.Items.Add(value);
-                            }
+                            inventoryItemId = itemElement.GetString();
+                        }
+                        if (string.IsNullOrWhiteSpace(inventoryItemId))
+                        {
+                            return BadRequest("Bad item payload");
+                        }
+
+                        if (userState.Inventory.Items.Contains(inventoryItemId!))
+                        {
+                            return BadRequest("Предмет уже куплен");
                         }
 
                         break;
                     }
                 case "food":
                     {
-                        var applied = _petState.ApplyFoodPayload(userState.Status, root);
-                        if (!applied)
+                        if (root.ValueKind != JsonValueKind.Object)
                         {
                             return BadRequest("Bad food payload");
                         }
 
+                        var hasEffect = false;
+                        if (root.TryGetProperty("satiety", out var satietyEl) && satietyEl.ValueKind == JsonValueKind.Number && satietyEl.GetInt32() != 0)
+                        {
+                            hasEffect = true;
+                        }
+                        if (root.TryGetProperty("mood", out var moodEl) && moodEl.ValueKind == JsonValueKind.Number && moodEl.GetInt32() != 0)
+                        {
+                            hasEffect = true;
+                        }
+                        if (root.TryGetProperty("health", out var healthEl) && healthEl.ValueKind == JsonValueKind.Number && healthEl.GetInt32() != 0)
+                        {
+                            hasEffect = true;
+                        }
+
+                        if (!hasEffect)
+                        {
+                            return BadRequest("Bad food payload");
+                        }
+
+                        foodPayload = root.Clone();
                         break;
                     }
                 default:
@@ -166,6 +195,43 @@ public class ShopController : ControllerBase
         catch (JsonException)
         {
             return BadRequest("Malformed payload");
+        }
+
+        if (wallet.Coins < item.Price)
+        {
+            return BadRequest("Not enough coins");
+        }
+
+        wallet.Coins -= item.Price;
+        wallet.UpdatedAt = DateTime.UtcNow;
+
+        switch (item.Type)
+        {
+            case "pet":
+                if (petId is not null && !userState.Profile.OwnedPetIds.Contains(petId))
+                {
+                    userState.Profile.OwnedPetIds.Add(petId);
+                }
+                break;
+            case "bg":
+                if (!string.IsNullOrWhiteSpace(backgroundId))
+                {
+                    userState.Inventory.Background = backgroundId!;
+                }
+                break;
+            case "item":
+                userState.Inventory.Items.Add(inventoryItemId!);
+                break;
+            case "food":
+                if (foodPayload is JsonElement payloadElement)
+                {
+                    var applied = _petState.ApplyFoodPayload(userState.Status, payloadElement);
+                    if (!applied)
+                    {
+                        return BadRequest("Bad food payload");
+                    }
+                }
+                break;
         }
 
         await _db.SaveChangesAsync(ct);

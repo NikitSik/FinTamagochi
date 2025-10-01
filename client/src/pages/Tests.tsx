@@ -2,64 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import styles from "./styles/Tests.module.css";
 import { api, type Mission } from "../api";
 import { Button, Card, Screen } from "../components/UI";
-
-const QUESTIONS = [
-  {
-    id: "q1",
-    text: "Вам звонят из \"банка\" и просят назвать код из SMS. Что делаете?",
-    options: [
-      { value: "a", label: "Называю код, чтобы не блокировали счёт" },
-      { value: "b", label: "Кладу трубку и перезваниваю по номеру с карты" },
-      { value: "c", label: "Прошу перезвонить позже" },
-    ],
-    correct: "b",
-    explanation: "Настоящий банк не попросит код. Перезвоните по официальному номеру.",
-  },
-  {
-    id: "q2",
-    text: "Сообщение в мессенджере предлагает срочно перевести деньги родственнику. Как поступить?",
-    options: [
-      { value: "a", label: "Перевожу сразу — вдруг беда" },
-      { value: "b", label: "Проверяю звонком, действительно ли помощь нужна" },
-      { value: "c", label: "Отправляю данные карты для подтверждения" },
-    ],
-    correct: "b",
-    explanation: "Позвоните родному человеку или свяжитесь другим способом.",
-  },
-  {
-    id: "q3",
-    text: "На сайте увидели акцию с подарками за опрос и просят ввести номер карты. Ваши действия?",
-    options: [
-      { value: "a", label: "Ввожу номер и CVC — подарок же бесплатный" },
-      { value: "b", label: "Закрываю сайт, это похоже на фишинг" },
-      { value: "c", label: "Пишу данные в чат поддержки" },
-    ],
-    correct: "b",
-    explanation: "Фишинговые сайты маскируются под акции — не вводите данные карты.",
-  },
-  {
-    id: "q4",
-    text: "Аноним просит установить приложение для удалённого доступа \"чтобы помочь\". Что ответите?",
-    options: [
-      { value: "a", label: "Ставлю приложение — вдруг и правда поможет" },
-      { value: "b", label: "Отказываюсь и сообщаю в банк" },
-      { value: "c", label: "Разрешаю доступ, но только на 5 минут" },
-    ],
-    correct: "b",
-    explanation: "Удалённый доступ дают только мошенникам. Никогда не устанавливайте такие программы по просьбе незнакомцев.",
-  },
-  {
-    id: "q5",
-    text: "Получили письмо о выигрыше, нужно оплатить комиссию для перевода приза. Как реагируете?",
-    options: [
-      { value: "a", label: "Оплачиваю комиссию — вдруг повезло" },
-      { value: "b", label: "Пересылаю письмо друзьям" },
-      { value: "c", label: "Удаляю письмо — это мошенничество" },
-    ],
-    correct: "c",
-    explanation: "Любые просьбы оплатить \"комиссию\" за приз — явный обман.",
-  },
-] as const;
+import { ANTIFRAUD_QUESTIONS } from "../utils/antifraudQuestions";
 
 export default function Tests() {
   const [mission, setMission] = useState<Mission | null>(null);
@@ -71,11 +14,11 @@ export default function Tests() {
   const [claiming, setClaiming] = useState(false);
 
   const correctCount = useMemo(
-    () => QUESTIONS.reduce((acc, q) => acc + (answers[q.id] === q.correct ? 1 : 0), 0),
+    () => ANTIFRAUD_QUESTIONS.reduce((acc, q) => acc + (answers[q.id] === q.correct ? 1 : 0), 0),
     [answers]
   );
 
-  const completed = correctCount === QUESTIONS.length;
+  const completed = correctCount === ANTIFRAUD_QUESTIONS.length;
   const progressText = mission
     ? `${mission.progress.counter}/${mission.progress.target}`
     : "—";
@@ -165,7 +108,7 @@ export default function Tests() {
         </section>
 
         <form className={styles.quiz} onSubmit={handleSubmit}>
-          {QUESTIONS.map((q, idx) => (
+          {ANTIFRAUD_QUESTIONS.map((q, idx) => (
             <Card key={q.id} className={styles.question}>
               <div className={styles.questionHead}>
                 <span className={styles.questionIndex}>{idx + 1}</span>
@@ -220,7 +163,7 @@ export default function Tests() {
           <div className={`${styles.result} ${completed ? styles.resultSuccess : styles.resultWarn}`}>
             {completed
               ? "Все ответы верные — можно зачесть прогресс миссии."
-              : `Правильных ответов: ${correctCount} из ${QUESTIONS.length}. Исправьте ошибки и попробуйте ещё раз.`}
+              : `Правильных ответов: ${correctCount} из ${ANTIFRAUD_QUESTIONS.length}. Исправьте ошибки и попробуйте ещё раз.`}
           </div>
         )}
 

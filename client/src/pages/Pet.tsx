@@ -151,10 +151,11 @@ export default function Pet() {
     }
   }
 
- const filteredItems = useMemo(
+  const filteredItems = useMemo(
     () => filterItems(shopItems, shopFilter),
     [shopItems, shopFilter]
   );
+  const ownedItemIds = useMemo(() => new Set(state?.items ?? []), [state?.items]);
 
   if (loading) {
     return (
@@ -249,7 +250,7 @@ export default function Pet() {
             </div>
           </div>
           <p className={styles.summaryHint}>Выполняйте миссии и заглядывайте в магазин, чтобы открыть новых друзей.</p>
-          <Link className={styles.testsLink} to="/tests">Пройти обучающие тесты</Link>
+          <Link className={styles.testsLink} to="/missions/ANTIFRAUD_TUTORIAL">Перейти к миссии с тестом</Link>
         </section>
 
 
@@ -288,8 +289,8 @@ export default function Pet() {
         >
           {pendingAction === "feed" ? "Кормим…" : `Кормить (${FEED_COST})`}
         </button>
-        <Link className={`${styles.actionButton} ${styles.actionButtonLink}`} to="/tests">
-          Тесты
+        <Link className={`${styles.actionButton} ${styles.actionButtonLink}`} to="/missions/ANTIFRAUD_TUTORIAL">
+          Миссия
         </Link>
       </footer>
 
@@ -315,7 +316,8 @@ export default function Pet() {
                 <li className={styles.shopRow}>Подходящих товаров нет</li>
               )}
               {!shopLoading && filteredItems.map((it) => {
-                const canBuy = coins >= it.price && buyingId !== it.id;
+                const owned = it.type === "item" && ownedItemIds.has(it.id);
+                const canBuy = coins >= it.price && buyingId !== it.id && !owned;
                 return (
                   <li key={it.id} className={styles.shopRow}>
                     <div>
@@ -324,13 +326,14 @@ export default function Pet() {
                       {it.description && <div className={styles.shopDescription}>{it.description}</div>}
                       {effectText(it.effect) && <div className={styles.shopEffect}>{effectText(it.effect)}</div>}
                       <div className={styles.shopPrice}>{it.price} мон.</div>
+                      {owned && <div className={styles.shopOwned}>Уже в инвентаре</div>}
                     </div>
                     <button
                       className={styles.buyBtn}
                       disabled={!canBuy || buyingId === it.id}
                       onClick={() => purchase(it)}
                     >
-                      {buyingId === it.id ? "Покупаем…" : "Купить"}
+                      {owned ? "Недоступно" : buyingId === it.id ? "Покупаем…" : "Купить"}
                     </button>
                   </li>
                 );

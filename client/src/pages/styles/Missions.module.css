@@ -3,33 +3,37 @@
   background: #0e1220;
   color: #fff;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
 }
 
-.header { padding: 24px 20px 8px; }
+.header {
+  padding: var(--page-padding-top) var(--page-padding-x) clamp(8px, 2vw, 16px);
+}
+
 .title {
   margin: 0;
   text-align: center;
   color: rgba(255, 255, 255, 0.7);
   font-weight: 700;
-  font-size: 24px;
+  font-size: var(--title-size);
   letter-spacing: 0.3px;
 }
 
 .main {
-  padding: 8px 20px 90px; /* место под нижнюю навигацию */
+  padding: clamp(8px, 2vw, 16px) var(--page-padding-x)
+    calc(var(--page-padding-bottom) + env(safe-area-inset-bottom));
   display: grid;
-  gap: 16px;
-  max-width: 420px;
+  gap: var(--page-gap);
+  width: min(100%, var(--page-max-width));
   margin: 0 auto;
 }
 
 /* Карточка миссии — стеклянный стиль как на Home */
 .missionCard {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  padding: 14px 14px 12px;
+  background: var(--glass-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--card-radius);
+  padding: clamp(14px, 4vw, 24px);
   backdrop-filter: blur(6px);
 }
 
@@ -37,28 +41,43 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: clamp(12px, 3.5vw, 20px);
 }
-.titleRow { display: grid; gap: 4px; }
+
+.titleRow {
+  display: grid;
+  gap: clamp(4px, 1.5vw, 8px);
+}
+
 .missionTitle {
   margin: 0;
-  font-size: 16px;
+  font-size: clamp(16px, 4.6vw, 20px);
   font-weight: 700;
   letter-spacing: 0.2px;
 }
+
 .missionTagline {
-  font-size: 12px;
+  font-size: clamp(12px, 3.3vw, 14px);
   color: rgba(148, 163, 184, 0.85);
 }
-.missionDesc { margin: 0; color: rgba(255,255,255,.7); font-size: 13px; }
-.pill { white-space: nowrap; }
+
+.missionDesc {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: clamp(13px, 3.5vw, 16px);
+}
+
+.pill {
+  white-space: nowrap;
+}
 
 .progress {
-  height: 8px;
+  height: clamp(8px, 2vw, 10px);
   background: rgba(255, 255, 255, 0.07);
   border-radius: 999px;
   overflow: hidden;
 }
+
 .progress i {
   display: block;
   height: 100%;
@@ -69,160 +88,123 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 10px;
+  gap: clamp(10px, 3vw, 18px);
+  margin-top: clamp(10px, 3vw, 18px);
 }
-.metaText { color: rgba(255,255,255,.55); font-size: 12px; }
 
-.rewardRow { margin-top: 12px; display:flex; align-items:center; gap:6px; font-size: 13px; }
-.rewardLabel { color: rgba(255,255,255,.55); }
-.rewardValue { font-weight: 600; }
-.repeatable { margin-top: 6px; font-size: 12px; color: rgba(16, 185, 129, 0.85); }
+.metaText {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: clamp(12px, 3.2vw, 14px);
+}
+
+.rewardRow {
+  margin-top: clamp(10px, 3vw, 18px);
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 2vw, 10px);
+  font-size: clamp(13px, 3.6vw, 16px);
+}
+
+.rewardLabel {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.rewardValue {
+  font-weight: 600;
+}
+
+.repeatable {
+  margin-top: clamp(6px, 2vw, 10px);
+  font-size: clamp(12px, 3.2vw, 14px);
+  color: rgba(16, 185, 129, 0.85);
+}
 
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 12px;
-  align-items: center;
+  gap: clamp(10px, 3vw, 16px);
+  margin-top: clamp(12px, 3.5vw, 20px);
 }
 
-/* Кнопки — выглядят как в Home */
-.stepBtn {
-  height: 40px;
-  border-radius: 10px;
+.stepBtn,
+.claimBtn,
+.moreLink {
+  height: clamp(40px, 11vw, 48px);
+  border-radius: clamp(10px, 3vw, 14px);
   font-weight: 600;
   cursor: pointer;
   border: 0;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.stepBtn {
+  padding: 0 clamp(14px, 4vw, 20px);
   background: rgba(255, 255, 255, 0.06);
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
-.stepBtn:hover { background: rgba(255, 255, 255, 0.12); }
+
+.stepBtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
 
 .claimBtn {
-  height: 40px;
-  border-radius: 10px;
+  padding: 0 clamp(18px, 5vw, 24px);
   font-weight: 700;
-  cursor: pointer;
-  border: 0;
   background: #10b981;
   color: #0a0e1a;
   box-shadow: 0 10px 24px rgba(16, 185, 129, 0.25);
 }
-.claimBtn:hover { background: #18c694; }
-.claimBtn:disabled { opacity: .5; cursor: not-allowed; }
 
-.extraLinks {
-  display: flex;
-  gap: 8px;
+.claimBtn:hover {
+  background: #18c694;
 }
 
-.moreLink,
-.testLink {
+.claimBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.moreLink {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 40px;
-  padding: 0 14px;
-  border-radius: 10px;
+  padding: 0 clamp(16px, 4.5vw, 22px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
-  font-weight: 600;
   background: rgba(255, 255, 255, 0.05);
 }
 
-.moreLink:hover,
-.testLink:hover {
+.moreLink:hover {
   background: rgba(255, 255, 255, 0.12);
 }
 
-.testLink {
-  color: #c4b5fd;
-  border-color: rgba(127,90,240,.4);
-  background: rgba(127,90,240,.12);
-}
-
-.testLink:hover {
-  background: rgba(127,90,240,.2);
+.moreLink:active,
+.stepBtn:active,
+.claimBtn:active {
+  transform: scale(0.97);
 }
 
 .err {
   color: #fecaca;
   background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.25);
-  padding: 10px 12px;
-  border-radius: 12px;
-  font-size: 13px;
+  padding: clamp(10px, 3vw, 16px) clamp(12px, 3.5vw, 18px);
+  border-radius: clamp(12px, 3.5vw, 18px);
+  font-size: clamp(13px, 3.5vw, 15px);
 }
 
 .empty {
   color: rgba(255, 255, 255, 0.6);
   text-align: center;
-  padding: 24px 0;
-}
-
-.rewardBanner {
-  margin: 12px auto 0;
-  max-width: 420px;
-  background: rgba(127,90,240,.12);
-  border: 1px solid rgba(127,90,240,.3);
-  color: #ede9fe;
-  border-radius: 14px;
-  padding: 14px 16px;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
-}
-
-.rewardXp { color: #bbf7d0; font-weight: 500; }
-.rewardPet { color: #fcd34d; font-weight: 500; }
-
-.rewardActions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.rewardLink {
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(127,90,240,.3);
-  color: #fff;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.rewardClose {
-  background: transparent;
-  border: 0;
-  color: rgba(255,255,255,.75);
-  cursor: pointer;
-  font-size: 12px;
-  text-decoration: underline;
-}
-
-@media (max-width: 420px) {
-  .rewardBanner {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .extraLinks {
-    flex-direction: column;
-    width: 100%;
-  }
-  .moreLink,
-  .testLink {
-    width: 100%;
-  }
+  padding: clamp(20px, 6vw, 32px) 0;
 }
 
 /* Скелетоны */
 .skelCard {
-  height: 96px;
-  border-radius: 16px;
+  height: clamp(88px, 24vw, 110px);
+  border-radius: var(--card-radius);
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0.06) 25%,
@@ -231,37 +213,71 @@
   );
   background-size: 400% 100%;
   animation: shimmer 1.2s infinite;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-@keyframes shimmer {
-  0% { background-position: 100% 0; }
-  100% { background-position: -100% 0; }
+  border: 1px solid var(--card-border-color);
 }
 
-/* Если нужна локальная нижняя навигация — можешь раскомментить и наполнить */
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
 .bottomNav {
   position: fixed;
-  left: 0; right: 0; bottom: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(10, 12, 24, 0.9);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  padding: 8px 10px 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: clamp(8px, 2.5vw, 12px) clamp(10px, 4vw, 18px)
+    calc(clamp(10px, 3.5vw, 18px) + env(safe-area-inset-bottom));
 }
+
 .navItem {
   display: grid;
-  gap: 4px;
+  gap: clamp(3px, 1vw, 6px);
   justify-items: center;
   color: rgba(255, 255, 255, 0.6);
   text-decoration: none;
-  font-size: 12px;
-  padding: 6px 8px;
-  border-radius: 10px;
+  font-size: clamp(11px, 3.3vw, 13px);
+  padding: clamp(6px, 1.8vw, 10px) clamp(6px, 2vw, 12px);
+  border-radius: clamp(10px, 3vw, 14px);
+  transition: background 0.2s ease, color 0.2s ease;
 }
-.navItem:hover { background: rgba(255, 255, 255, 0.04); }
-.active { color: #ffffff; background: rgba(127, 90, 240, 0.12); }
 
+.navItem:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
 
+.active {
+  color: #fff;
+  background: rgba(127, 90, 240, 0.12);
+}
 
+@media (max-width: 520px) {
+  .top {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
+  .meta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions {
+    justify-content: stretch;
+  }
+
+  .stepBtn,
+  .claimBtn,
+  .moreLink {
+    width: 100%;
+  }
+}

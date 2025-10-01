@@ -1,59 +1,134 @@
 .page {
   min-height: 100dvh;
-  background: var(--bg);      /* было #0e1220 */
-  color: var(--text);         /* было #fff   */
+  background: var(--bg);
+  color: var(--text);
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
 }
 
-.header { padding: 24px 20px 8px; }
+.header {
+  padding: var(--page-padding-top) var(--page-padding-x) clamp(8px, 2vw, 16px);
+}
+
 .title {
   margin: 0;
   text-align: center;
-  color: rgba(255,255,255,.7);
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 700;
-  font-size: 24px;
-  letter-spacing: .3px;
+  font-size: var(--title-size);
+  letter-spacing: 0.3px;
 }
 
-
 .main {
-  padding: 8px 20px 90px; /* место под навигацию */
+  padding: clamp(8px, 2vw, 16px) var(--page-padding-x)
+    calc(var(--page-padding-bottom) + env(safe-area-inset-bottom));
   display: grid;
-  gap: 16px;
-  max-width: 420px;
+  gap: var(--page-gap);
+  width: min(100%, var(--page-max-width));
   margin: 0 auto;
 }
 
 /* Баланс */
 .balanceCard {
-  background: rgba(0,0,0,.25);
-  border: 1px solid rgba(255,255,255,.06);
-  border-radius: 16px;
-  padding: 16px;
-  padding-top: 30px;
+  background: var(--glass-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--card-radius);
+  padding: clamp(14px, 4vw, 24px);
+  padding-top: clamp(24px, 6vw, 36px);
   backdrop-filter: blur(6px);
 }
+
 .balanceTop {
-  display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: clamp(8px, 3vw, 16px);
+  margin-bottom: clamp(8px, 2vw, 14px);
 }
-.balanceCaption { color: rgba(255,255,255,.6); font-size: 14px; }
-.balanceValue { font-size: 24px; font-weight: 700; }
 
-.accounts { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 10px; }
+.balanceCaption {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: clamp(13px, 3.5vw, 16px);
+}
+
+.balanceValue {
+  font-size: clamp(22px, 6vw, 32px);
+  font-weight: 700;
+}
+
+.accounts {
+  list-style: none;
+  margin: clamp(6px, 2vw, 12px) 0 clamp(8px, 2vw, 14px);
+  padding: 0;
+  display: grid;
+  gap: clamp(8px, 2.5vw, 14px);
+}
+
 .accountRow {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 12px; border: 1px solid rgba(255,255,255,.08);
-  background: rgba(255,255,255,.04); border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: clamp(6px, 2vw, 12px);
+  padding: clamp(10px, 2.5vw, 16px) clamp(12px, 3vw, 18px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: clamp(12px, 3.5vw, 18px);
 }
-.accountInfo { display: grid; }
-.accountTitle { font-size: 14px; }
-.accountNumber { font-size: 12px; color: rgba(255,255,255,.55); }
-.accountAmt { font-weight: 600; font-size: 14px; }
 
-.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.primaryBtn, .secondaryBtn {
-  height: 40px; border-radius: 10px; font-weight: 600; cursor: pointer; border: 0;
+.accountInfo {
+  display: grid;
+  gap: 2px;
+}
+
+.accountTitle {
+  font-size: clamp(14px, 3.8vw, 17px);
+}
+
+.accountNumber {
+  font-size: clamp(12px, 3.2vw, 14px);
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.accountAmt {
+  font-weight: 600;
+  font-size: clamp(14px, 3.8vw, 18px);
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: clamp(10px, 2.5vw, 16px);
+}
+
+.primaryBtn,
+.secondaryBtn {
+  height: clamp(44px, 12vw, 52px);
+  border-radius: clamp(10px, 3vw, 14px);
+  font-weight: 600;
+  cursor: pointer;
+  border: 0;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.primaryBtn {
+  background: #6d4cff;
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(109, 76, 255, 0.35);
+}
+
+.primaryBtn:hover {
+  background: #7b5dff;
+}
+
+.secondaryBtn {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.primaryBtn:active,
+.secondaryBtn:active {
+  transform: scale(0.97);
 }
 .primaryBtn { background:#6d4cff; color:#fff; box-shadow:0 10px 24px rgba(109,76,255,.35); }
 .primaryBtn:hover { background:#7b5dff; }
@@ -61,6 +136,14 @@
 
 /* Питомец */
 .petCard {
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(12px, 3vw, 20px);
+  background: var(--glass-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--card-radius);
+  padding: var(--card-padding);
   display: grid; grid-template-columns: 1fr auto; gap: 12px;
   background: rgba(0,0,0,.25); border: 1px solid rgba(255,255,255,.06);
   border-radius: 16px; padding: 16px;
@@ -70,110 +153,152 @@
 .petHint { margin: 0; color: rgba(255,255,255,.6); font-size: 13px; }
 .petStats { display: grid; gap: 8px; margin-top: 4px; }
 .stat { display: grid; gap: 6px; }
+.statRow { display: flex; align-items: center; justify-content: space-between; }
 .statLabel { color: rgba(255,255,255,.6); font-size: 12px; }
+.statValue { font-weight: 600; font-size: 12px; }
 .progress { height: 8px; background: rgba(255,255,255,.07); border-radius: 999px; overflow: hidden; }
 .progress i { display:block; height:100%; background:#7f5af0; }
 
-.linkBtn {
-  margin-top: 4px; display: inline-block; font-size: 13px; color:#cbb6ff; text-decoration: none;
+.petLeft {
+  display: grid;
+  gap: clamp(8px, 2.4vw, 14px);
 }
-.linkBtn:hover { text-decoration: underline; }
 
-.modalBackdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.55);
+.petTitle {
+  margin: 0;
+  font-size: clamp(16px, 4.5vw, 20px);
+}
+
+.petHint {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: clamp(13px, 3.5vw, 16px);
+}
+
+.petStats {
+  display: grid;
+  gap: clamp(8px, 2.4vw, 12px);
+  margin-top: 4px;
+}
+
+.stat {
+  display: grid;
+  gap: clamp(6px, 2vw, 10px);
+}
+
+.statLabel {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: clamp(12px, 3.2vw, 14px);
+}
+
+.progress {
+  height: clamp(8px, 2vw, 10px);
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress i {
+  display: block;
+  height: 100%;
+  background: #7f5af0;
+}
+
+.linkBtn {
+  margin-top: 4px;
+  display: inline-block;
+  font-size: clamp(13px, 3.5vw, 15px);
+  color: #cbb6ff;
+  text-decoration: none;
+}
+
+.linkBtn:hover {
+  text-decoration: underline;
+}
+
+.petRight {
   display: grid;
   place-items: center;
-  z-index: 1000;
-  padding: 20px;
 }
 
-.modalPanel {
-  width: min(420px, 100%);
-  background: rgba(20,22,35,.95);
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 18px;
-  padding: 20px;
-  color: #fff;
-  display: grid;
-  gap: 14px;
-}
-
-.modalTitle {
-  font-weight: 700;
-  font-size: 18px;
-}
-
-.modalBody { display: grid; gap: 12px; }
-
-.modalField {
-  display: grid;
-  gap: 6px;
-}
-
-.modalField span {
-  opacity: .7;
-  font-size: 12px;
-}
-
-.modalField input {
-  width: 100%;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.16);
-  background: rgba(255,255,255,.06);
-  color: #fff;
-  padding: 10px 12px;
-}
-
-.petRight { display: grid; justify-items: center; gap: 8px; }
 .petCircle {
-  width: 92px; height: 92px; border-radius: 999px;
+  width: clamp(88px, 22vw, 112px);
+  height: clamp(88px, 22vw, 112px);
+  border-radius: 999px;
   background: radial-gradient(100% 100% at 50% 0%, #2a2d3f 0%, #1a1c2b 100%);
-  border: 1px solid rgba(255,255,255,.08);
-  font-size: 44px; display: grid; place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: clamp(40px, 10vw, 50px);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.petCircleSvg {
+  width: clamp(64px, 18vw, 84px);
+  height: clamp(64px, 18vw, 84px);
 }
 
 /* Нижняя навигация */
 .bottomNav {
-  position: fixed; left: 0; right: 0; bottom: 0;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: var(--nav-bg);
   border-top: 1px solid var(--nav-border);
   backdrop-filter: blur(10px);
-  display: flex;
-  gap: 6px;
-  padding: 8px 12px 12px;
-}
-.navItem {
-  flex: 1;
-  min-width: 0;
   display: grid;
-  gap: 4px;
-  justify-items: center;
-  color: rgba(255,255,255,.6);
-  text-decoration: none;
-  font-size: 12px;
-  padding: 6px 8px;
-  border-radius: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: clamp(8px, 2.5vw, 12px) clamp(10px, 4vw, 18px)
+    calc(clamp(10px, 3.5vw, 18px) + env(safe-area-inset-bottom));
 }
-.navItem:hover { background: rgba(255,255,255,.04); }
-.active { color: #ffffff; background: rgba(127,90,240,.12); }
-.navIcon { width: 22px; height: 22px; fill: currentColor; }
+
+.navItem {
+  display: grid;
+  gap: clamp(3px, 1vw, 6px);
+  justify-items: center;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-size: clamp(11px, 3.3vw, 13px);
+  padding: clamp(6px, 1.8vw, 10px) clamp(6px, 2vw, 12px);
+  border-radius: clamp(10px, 3vw, 14px);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.navItem:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.active {
+  color: #ffffff;
+  background: rgba(127, 90, 240, 0.12);
+}
+
+.navIcon {
+  width: var(--nav-icon-size);
+  height: var(--nav-icon-size);
+  fill: currentColor;
+}
 
 .themeToggle {
-  margin-top: 50px;
+  margin-top: clamp(32px, 8vw, 56px);
   width: 100%;
   height: 10%;
 }
 
-.petCircle {              /* уже есть у тебя — оставляем */
-  width: 92px; height: 92px; border-radius: 999px;
-  background: radial-gradient(100% 100% at 50% 0%, #2a2d3f 0%, #1a1c2b 100%);
-  border: 1px solid rgba(255,255,255,.08);
-  display: grid; place-items: center;
-  overflow: hidden;       /* 👈 чтобы голова не вылезала за круг */
+@media (max-width: 620px) {
+  .petCard {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .petRight {
+    justify-content: center;
+  }
 }
 
-.petCircleSvg {
-  width: 72px; height: 72px;   /* компактная «голова» */
+@media (max-width: 480px) {
+  .actions {
+    grid-template-columns: 1fr;
+  }
 }

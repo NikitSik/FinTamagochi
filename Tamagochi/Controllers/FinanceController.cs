@@ -72,6 +72,24 @@ public class FinanceController : ControllerBase
         }
 
         var account = await EnsureSavingsAsync(ct);
+        var latestSnapshot = await _db.FinanceSnapshots
+            .Where(x => x.UserId == UserId)
+            .OrderByDescending(x => x.Date)
+            .ThenByDescending(x => x.Id)
+            .FirstOrDefaultAsync(ct);
+
+        if (latestSnapshot is null)
+        {
+            return BadRequest("Сначала зафиксируйте баланс текущего счёта");
+        }
+
+        if (latestSnapshot.Balance < body.Amount)
+        {
+            return BadRequest("Недостаточно средств на текущем счёте");
+        }
+
+        latestSnapshot.Balance -= body.Amount;
+
         account.Balance += body.Amount;
         account.UpdatedAt = DateTime.UtcNow;
 

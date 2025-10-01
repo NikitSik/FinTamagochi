@@ -3,23 +3,27 @@
   background: #0e1220;
   color: #fff;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
 }
 
-.header { padding: 24px 20px 8px; }
+.header {
+  padding: var(--page-padding-top) var(--page-padding-x) clamp(8px, 2vw, 16px);
+}
+
 .title {
   margin: 0;
   text-align: center;
-  color: rgba(255,255,255,.7);
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 700;
-  font-size: 24px;
+  font-size: var(--title-size);
 }
 
 .main {
-  padding: 8px 20px 100px;
+  padding: clamp(8px, 2vw, 16px) var(--page-padding-x)
+    calc(var(--page-padding-bottom) + env(safe-area-inset-bottom));
   display: grid;
-  gap: 14px;
-  max-width: 420px;
+  gap: clamp(12px, 4vw, 24px);
+  width: min(100%, var(--page-max-width));
   margin: 0 auto;
 }
 
@@ -27,130 +31,239 @@
 .userCard {
   display: grid;
   grid-template-columns: auto 1fr auto;
-  gap: 12px;
+  gap: clamp(12px, 3vw, 20px);
   align-items: center;
-  background: rgba(0,0,0,.25);
-  border: 1px solid rgba(255,255,255,.06);
-  border-radius: 16px;
-  padding: 14px;
+  background: var(--glass-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--card-radius);
+  padding: clamp(14px, 4vw, 24px);
 }
 
-.avatarWrap { width: 64px; height: 64px; }
-.avatar, .avatarWrap img {
-  width: 64px; height: 64px; border-radius: 50%;
-  display: grid; place-items: center;
-  background: radial-gradient(100% 100% at 50% 0%, #2a2d3f 0%, #1a1c2b 100%);
-  border: 1px solid rgba(255,255,255,.08);
-  font-weight: 700; font-size: 24px;
-}
-
-.userInfo { display: grid; gap: 4px; }
-.userName { font-weight: 600; font-size: 16px; }
-.userMeta { color: rgba(255,255,255,.6); font-size: 13px; }
-.badges { display: flex; gap: 6px; flex-wrap: wrap; }
-.badge {
-  background: #6d4cff; color: #fff; padding: 4px 8px;
-  border-radius: 999px; font-size: 12px; font-weight: 600;
-}
-.badgeSoft {
-  background: rgba(255,255,255,.06); color: #fff; padding: 4px 8px;
-  border: 1px solid rgba(255,255,255,.08); border-radius: 999px; font-size: 12px;
-}
-
-.editBtn {
-  height: 36px; padding: 0 12px; border-radius: 10px; border: 0;
-  background: rgba(255,255,255,.08); color: #fff; cursor: pointer;
-}
-
-/* generic card */
-.card {
-  background: rgba(0,0,0,.25);
-  border: 1px solid rgba(255,255,255,.06);
-  border-radius: 16px;
-  padding: 14px;
-}
-.cardTitle { margin: 0 0 8px; font-size: 15px; color: rgba(255,255,255,.8); }
-
-.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.row, .rowLink {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 12px; border-radius: 12px;
-  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
-}
-.muted { color: rgba(255,255,255,.6); }
-.linkBtn {
-  background: transparent; color: #cbb6ff; border: 0; cursor: pointer;
-}
-.tag {
-  padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.08); font-size: 12px;
-}
-
-/* switch */
-.switch { position: relative; width: 44px; height: 26px; display: inline-block; }
-.switch input { display: none; }
-.switch i {
-  position: absolute; inset: 0; background: rgba(255,255,255,.15); border-radius: 999px;
-}
-.switch i::after {
-  content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px;
-  background: #fff; border-radius: 50%; transition: transform .2s;
-}
-.switch input:checked + i { background: #7f5af0; }
-.switch input:checked + i::after { transform: translateX(18px); }
-
-/* logout */
-.logout {
-  height: 44px; border-radius: 12px; border: 1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.06); color: #fff; font-weight: 600;
-  cursor: pointer; margin-top: 4px;
-}
-
-/* bottom nav (временная простая) */
-.bottomNav {
-  position: fixed; left: 0; right: 0; bottom: 0;
-  background: rgba(10,12,24,.9);
-  border-top: 1px solid rgba(255,255,255,.08);
-  backdrop-filter: blur(10px);
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  padding: 10px;
-}
-.navItem {
-  text-align: center; color: rgba(255,255,255,.65); text-decoration: none; font-size: 12px;
-  padding: 6px 8px; border-radius: 10px;
-}
-.navItem:hover { background: rgba(255,255,255,.04); }
-.active { color: #fff; background: rgba(127,90,240,.12); }
-
-/* Avatar */
 .avatarWrap {
   position: relative;
-  width: 64px;
-  height: 64px;
+  width: clamp(64px, 18vw, 80px);
+  height: clamp(64px, 18vw, 80px);
   border-radius: 50%;
-  overflow: hidden;                 /* обрезаем содержимое по кругу */
-  border: 1px solid rgba(255,255,255,.08);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Плейсхолдер с буквой */
-.avatar {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  font-weight: 700;
-  font-size: 24px;
-  color: #fff;
-  background: radial-gradient(100% 100% at 50% 0%, #2a2d3f 0%, #1a1c2b 100%);
-}
-
-/* Картинка внутри */
+.avatar,
 .avatarWrap img {
   width: 100%;
   height: 100%;
-  display: block;
-  object-fit: cover;               /* главное — не искажать */
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(100% 100% at 50% 0%, #2a2d3f 0%, #1a1c2b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-weight: 700;
+  font-size: clamp(24px, 6vw, 30px);
+  object-fit: cover;
   object-position: center;
+  color: #fff;
+}
+
+.userInfo {
+  display: grid;
+  gap: clamp(4px, 1.5vw, 8px);
+}
+
+.userName {
+  font-weight: 600;
+  font-size: clamp(16px, 4.5vw, 20px);
+}
+
+.userMeta {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: clamp(13px, 3.4vw, 15px);
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(6px, 2vw, 10px);
+}
+
+.badge,
+.badgeSoft {
+  padding: clamp(4px, 1.8vw, 8px) clamp(8px, 2.5vw, 14px);
+  border-radius: 999px;
+  font-size: clamp(12px, 3.2vw, 14px);
+  font-weight: 600;
+}
+
+.badge {
+  background: #6d4cff;
+  color: #fff;
+}
+
+.badgeSoft {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.editBtn {
+  height: clamp(36px, 10vw, 44px);
+  padding: 0 clamp(12px, 3.5vw, 18px);
+  border-radius: clamp(10px, 3vw, 14px);
+  border: 0;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.editBtn:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.editBtn:active {
+  transform: scale(0.97);
+}
+
+.card {
+  background: var(--glass-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--card-radius);
+  padding: clamp(14px, 4vw, 24px);
+}
+
+.cardTitle {
+  margin: 0 0 clamp(8px, 2vw, 14px);
+  font-size: clamp(15px, 4vw, 18px);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(10px, 3vw, 16px);
+}
+
+.row,
+.rowLink {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: clamp(8px, 2.5vw, 14px);
+  padding: clamp(10px, 2.8vw, 16px) clamp(12px, 3.2vw, 18px);
+  border-radius: clamp(12px, 3.5vw, 18px);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.muted {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.linkBtn {
+  background: transparent;
+  color: #cbb6ff;
+  border: 0;
+  cursor: pointer;
+  font-size: clamp(13px, 3.5vw, 15px);
+}
+
+.tag {
+  padding: clamp(2px, 1vw, 6px) clamp(8px, 2.5vw, 14px);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: clamp(12px, 3.2vw, 14px);
+}
+
+.switch {
+  position: relative;
+  width: clamp(44px, 12vw, 56px);
+  height: clamp(26px, 7vw, 32px);
+  display: inline-block;
+}
+
+.switch input {
+  display: none;
+}
+
+.switch i {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+}
+
+.switch i::after {
+  content: "";
+  position: absolute;
+  top: clamp(3px, 1vw, 4px);
+  left: clamp(3px, 1vw, 4px);
+  width: clamp(20px, 5.5vw, 26px);
+  height: clamp(20px, 5.5vw, 26px);
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.switch input:checked + i {
+  background: #7f5af0;
+}
+
+.switch input:checked + i::after {
+  transform: translateX(clamp(18px, 5vw, 24px));
+}
+
+.logout {
+  height: clamp(44px, 12vw, 52px);
+  border-radius: clamp(12px, 3.5vw, 18px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.logout:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.logout:active {
+  transform: scale(0.97);
+}
+
+.bottomNav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 12, 24, 0.9);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: clamp(8px, 2.5vw, 12px) clamp(10px, 4vw, 18px)
+    calc(clamp(10px, 3.5vw, 18px) + env(safe-area-inset-bottom));
+}
+
+.navItem {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  font-size: clamp(11px, 3.3vw, 13px);
+  padding: clamp(6px, 1.8vw, 10px) clamp(6px, 2vw, 12px);
+  border-radius: clamp(10px, 3vw, 14px);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.navItem:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.active {
+  color: #fff;
+  background: rgba(127, 90, 240, 0.12);
 }
 
 /* Скелетон/индикатор загрузки */
@@ -158,14 +271,33 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,.25);
+  background: rgba(0, 0, 0, 0.25);
   animation: pulse 1s infinite;
 }
 
 @keyframes pulse {
-  0%   { opacity: .4; }
-  50%  { opacity: .8; }
-  100% { opacity: .4; }
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.4;
+  }
 }
 
+@media (max-width: 560px) {
+  .userCard {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
 
+  .userInfo {
+    justify-items: center;
+  }
+
+  .editBtn {
+    width: 100%;
+  }
+}

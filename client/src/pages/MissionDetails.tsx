@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { FormEvent } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import styles from "./styles/MissionDetails.module.css";
 import { api, type Mission } from "../api";
 import { Button, Screen } from "../components/UI";
 import { formatMissionReward, getMissionMeta } from "./MissionData";
+import { ANTIFRAUD_QUESTIONS } from "../utils/antifraudQuestions";
 
 export default function MissionDetails() {
   const { code } = useParams<{ code: string }>();
@@ -12,6 +14,11 @@ export default function MissionDetails() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [acting, setActing] = useState<null | "step" | "claim">(null);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [quizChecked, setQuizChecked] = useState(false);
+  const [quizSubmitting, setQuizSubmitting] = useState(false);
+  const [quizClaiming, setQuizClaiming] = useState(false);
+  const quizRef = useRef<HTMLDivElement | null>(null);
 
   async function load(currentCode: string) {
     setLoading(true);
@@ -38,6 +45,11 @@ export default function MissionDetails() {
     load(code).catch(console.error);
   }, [code, navigate]);
 
+  useEffect(() => {
+    setAnswers({});
+    setQuizChecked(false);
+  }, [mission?.id]);
+
   const meta = useMemo(() => getMissionMeta(mission ?? undefined), [mission]);
   const progressPercent = useMemo(() => {
     if (!mission) return 0;
@@ -46,6 +58,13 @@ export default function MissionDetails() {
 
   const canClaim = mission && mission.progress.status === "Done" && !(mission.progress.rewardClaimed ?? false);
   const canStep = mission && (mission.repeatable || mission.progress.status !== "Done");
+  const isAntifraudMission = mission?.code === "ANTIFRAUD_TUTORIAL";
+  const progressText = mission ? `${mission.progress.counter}/${mission.progress.target}` : "—";
+  const correctCount = useMemo(
+    () => ANTIFRAUD_QUESTIONS.reduce((acc, q) => acc + (answers[q.id] === q.correct ? 1 : 0), 0),
+    [answers]
+  );
+  const quizCompleted = correctCount === ANTIFRAUD_QUESTIONS.length;
 
   async function step() {
     if (!mission) return;
@@ -70,6 +89,55 @@ export default function MissionDetails() {
       alert(e?.message ?? "Не удалось получить награду");
     } finally {
       setActing(null);
+    }
+  }
+
+  async function handleQuizSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!mission || mission.progress.counter >= mission.progress.target) {
+      setQuizChecked(true);
+      return;
+    }
+    setQuizChecked(true);
+    if (!quizCompleted) {
+      return;
+    }
+
+    setQuizSubmitting(true);
+    try {
+      await api.missionStep(mission.id);
+      await load(mission.code);
+    } catch (err: any) {
+      alert(err?.message ?? "Не удалось засчитать прогресс");
+    } finally {
+      setQuizSubmitting(false);
+    }
+  }
+
+  async function handleQuizClaim() {
+    if (!mission || !canClaim) return;
+    setActing("claim");
+    setQuizClaiming(true);
+    try {
+      await api.missionClaim(mission.id);
+      await load(mission.code);
+      alert("Награда получена! Загляните к питомцу, чтобы встретить нового друга.");
+    } catch (err: any) {
+      alert(err?.message ?? "Не удалось получить награду");
+    } finally {
+      setQuizClaiming(false);
+      setActing(null);
+    }
+  }
+
+  function resetQuiz() {
+    setAnswers({});
+    setQuizChecked(false);
+  }
+
+  function scrollToQuiz() {
+    if (quizRef.current) {
+      quizRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }
 
@@ -117,8 +185,8 @@ export default function MissionDetails() {
                   <h2 className={styles.heroTitle}>{mission.title}</h2>
                   {meta?.summary && <p className={styles.heroSummary}>{meta.summary}</p>}
 
-                  {mission.code === "ANTIFRAUD_TUTORIAL" && (
-                    <Link to="/tests" className={styles.heroLink}>Пройти тест</Link>
+                  {isAntifraudMission && (
+                    <button type="button" className={styles.heroLink} onClick={scrollToQuiz}>Пройти тест</button>
                   )}
 
                   <div className={styles.heroStats}>
@@ -192,6 +260,103 @@ export default function MissionDetails() {
                   </ul>
                 </section>
               ) : null}
+
+              {isAntifraudMission && (
+                <section ref={quizRef} className={`${styles.card} ${styles.quizCard}`}>
+                  <div className={styles.sectionHeader}>
+                    <h3 className={styles.sectionTitle}>Тест по безопасности</h3>
+                    <span className={styles.quizProgress}>{progressText}</span>
+                  </div>
+                  <p className={styles.quizLead}>
+                    Ответьте правильно на все вопросы, чтобы зачесть шаг миссии «Защита от мошенников».
+                  </p>
+
+                  <form className={styles.quizForm} onSubmit={handleQuizSubmit}>
+                    {ANTIFRAUD_QUESTIONS.map((question, idx) => {
+                      const active = answers[question.id];
+                      return (
+                        <div key={question.id} className={styles.quizQuestion}>
+                          <div className={styles.quizQuestionHead}>
+                            <span className={styles.quizIndex}>{idx + 1}</span>
+                            <h4 className={styles.quizQuestionText}>{question.text}</h4>
+                          </div>
+
+                          <div className={styles.quizOptions}>
+                            {question.options.map((option) => {
+                              const isCorrect = option.value === question.correct;
+                              const selected = active === option.value;
+                              const showState = quizChecked;
+                              const wrongChoice = showState && selected && !isCorrect;
+                              const rightChoice = showState && isCorrect;
+                              return (
+                                <label
+                                  key={option.value}
+                                  className={`${styles.quizOption} ${selected ? styles.quizOptionActive : ""} ${rightChoice ? styles.quizOptionCorrect : ""} ${wrongChoice ? styles.quizOptionWrong : ""}`}
+                                >
+                                  <input
+                                    type="radio"
+                                    name={question.id}
+                                    value={option.value}
+                                    checked={selected}
+                                    onChange={() => setAnswers((prev) => ({ ...prev, [question.id]: option.value }))}
+                                    disabled={quizSubmitting || quizClaiming}
+                                  />
+                                  <span>{option.label}</span>
+                                </label>
+                              );
+                            })}
+                          </div>
+
+                          {quizChecked && <p className={styles.quizExplanation}>{question.explanation}</p>}
+                        </div>
+                      );
+                    })}
+
+                    <div className={styles.quizActions}>
+                      <Button
+                        type="submit"
+                        className={styles.quizSubmitBtn}
+                        disabled={quizSubmitting || quizClaiming || acting === "step" || acting === "claim"}
+                      >
+                        {quizSubmitting
+                          ? "Отмечаем..."
+                          : quizCompleted
+                          ? "Засчитать прогресс"
+                          : "Проверить ответы"}
+                      </Button>
+                      <button
+                        type="button"
+                        className={styles.quizResetBtn}
+                        onClick={resetQuiz}
+                        disabled={quizSubmitting || quizClaiming}
+                      >
+                        Сбросить ответы
+                      </button>
+                    </div>
+                  </form>
+
+                  {quizChecked && (
+                    <div
+                      className={`${styles.quizResult} ${quizCompleted ? styles.quizResultSuccess : styles.quizResultWarn}`}
+                    >
+                      {quizCompleted
+                        ? "Все ответы верные — можно зачесть прогресс миссии."
+                        : `Правильных ответов: ${correctCount} из ${ANTIFRAUD_QUESTIONS.length}. Исправьте ошибки и попробуйте ещё раз.`}
+                    </div>
+                  )}
+
+                  {canClaim && (
+                    <Button
+                      className={`${styles.quizSubmitBtn} ${styles.quizClaimBtn}`}
+                      onClick={handleQuizClaim}
+                      disabled={quizClaiming}
+                      type="button"
+                    >
+                      {quizClaiming ? "Получаем..." : `Забрать награду (${mission.reward.coins} монет)`}
+                    </Button>
+                  )}
+                </section>
+              )}
 
               <section className={`${styles.card} ${styles.actionsCard}`}>
                 <div className={styles.actions}>

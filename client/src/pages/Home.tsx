@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
 import styles from "./styles/Home.module.css";
 import { api, type User } from "../api";
@@ -11,10 +12,22 @@ type View = {
   current: number;
   selectedPetId: "dog" | "cat";
   owner: string;
+  mood: number;
+  satiety: number;
+  health: number;
 };
 
 export default function Home() {
-  const [view, setView] = useState<View>({ coins: 0, savings: 0, current: 0, selectedPetId: "dog", owner: "мой счёт" });
+  const [view, setView] = useState<View>({
+    coins: 0,
+    savings: 0,
+    current: 0,
+    selectedPetId: "dog",
+    owner: "мой счёт",
+    mood: 0,
+    satiety: 0,
+    health: 0,
+  });
   const [opened, setOpened] = useState<"snapshot" | "deposit" | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -41,12 +54,15 @@ export default function Home() {
       savings: sav.balance ?? 0,
       current: latest?.balance ?? 0,
       owner: me?.nickname ?? me?.email ?? "мой счёт",
+      mood: pet.mood ?? 0,
+      satiety: pet.satiety ?? 0,
+      health: pet.health ?? 0,
     });
   }
 
   useEffect(() => { load().catch(console.error); }, []);
 
-  async function saveSnapshot(e: React.FormEvent) {
+  async function saveSnapshot(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
     try {
@@ -67,17 +83,19 @@ export default function Home() {
     } finally { setBusy(false); }
   }
 
-  async function deposit(e: React.FormEvent) {
+  async function deposit(e: FormEvent) {
     e.preventDefault();
     const raw = amount.trim().replace(",", ".");
     const numeric = Number(raw);
     if (!numeric || numeric <= 0) return;
     setBusy(true);
     try {
-            await api.savingsDeposit(numeric);
+      await api.savingsDeposit(numeric);
       await load();
       setOpened(null);
       setAmount("");
+    } catch (e: any) {
+      alert(e?.message ?? "Не удалось перевести в накопительный счёт");
     } finally { setBusy(false); }
   }
 
@@ -158,12 +176,25 @@ export default function Home() {
 
             <div className={styles.petStats}>
               <div className={styles.stat}>
-                <span className={styles.statLabel}>Настроение</span>
-                <div className={styles.progress}><i style={{ width: "70%" }} /></div>
+                <div className={styles.statRow}>
+                  <span className={styles.statLabel}>Настроение</span>
+                  <span className={styles.statValue}>{view.mood}%</span>
+                </div>
+                <div className={styles.progress}><i style={{ width: `${view.mood}%` }} /></div>
               </div>
               <div className={styles.stat}>
-                <span className={styles.statLabel}>Сытость</span>
-                <div className={styles.progress}><i style={{ width: "55%" }} /></div>
+                <div className={styles.statRow}>
+                  <span className={styles.statLabel}>Сытость</span>
+                  <span className={styles.statValue}>{view.satiety}%</span>
+                </div>
+                <div className={styles.progress}><i style={{ width: `${view.satiety}%` }} /></div>
+              </div>
+              <div className={styles.stat}>
+                <div className={styles.statRow}>
+                  <span className={styles.statLabel}>Здоровье</span>
+                  <span className={styles.statValue}>{view.health}%</span>
+                </div>
+                <div className={styles.progress}><i style={{ width: `${view.health}%` }} /></div>
               </div>
             </div>
           </div>
@@ -172,7 +203,7 @@ export default function Home() {
             <div className={styles.petCircle}>
               <PetHead />
             </div>
-              <Link className={styles.linkBtn} to="/tests">Пройти тесты</Link>
+              <Link className={styles.linkBtn} to="/missions/ANTIFRAUD_TUTORIAL">Миссия с тестом</Link>
           </div>
         </section>
       </main>
