@@ -1,6 +1,6 @@
 // src/pages/Profile.tsx
 import { useEffect, useRef, useState } from "react"; // + useRef
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "./styles/Profile.module.css";
 import { api, setAuthToken, type User } from "../api";
 import ThemeToggle from "../components/ThemeToggle";
@@ -160,12 +160,6 @@ export default function Profile() {
         >Выйти из аккаунта</button>
       </main>
 
-      <nav className={styles.bottomNav}>
-        <Link to="/home" className={styles.navItem}>Главная</Link>
-        <Link to="/pet" className={styles.navItem}>Питомец</Link>
-        <Link to="/missions" className={styles.navItem}>Миссии</Link>
-        <Link to="/profile" className={`${styles.navItem} ${styles.active}`}>Профиль</Link>
-      </nav>
     </div>
   );
 }

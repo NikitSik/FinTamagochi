@@ -1,0 +1,37 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\nikit\\source\\repos\\Tamagochi\\Tamagochi\\wwwroot\\avatars\\3576db13-01c4-494e-b325-69e0b3c78e74.png",
+      "PackagePath": "staticwebassets\\avatars\\3576db13-01c4-494e-b325-69e0b3c78e74.png"
+    },
+    {
+      "Id": "C:\\Users\\nikit\\source\\repos\\Tamagochi\\Tamagochi\\wwwroot\\avatars\\3da8f882-3e04-4a33-aaab-ab07dfd50740.png",
+      "PackagePath": "staticwebassets\\avatars\\3da8f882-3e04-4a33-aaab-ab07dfd50740.png"
+    },
+    {
+      "Id": "C:\\Users\\nikit\\source\\repos\\Tamagochi\\Tamagochi\\wwwroot\\avatars\\d777bb18-d71b-477e-abfc-c3d652bd0b98.png",
+      "PackagePath": "staticwebassets\\avatars\\d777bb18-d71b-477e-abfc-c3d652bd0b98.png"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.Tamagochi.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.Tamagochi.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.build.Tamagochi.props",
+      "PackagePath": "build\\Tamagochi.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.buildMultiTargeting.Tamagochi.props",
+      "PackagePath": "buildMultiTargeting\\Tamagochi.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.buildTransitive.Tamagochi.props",
+      "PackagePath": "buildTransitive\\Tamagochi.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

@@ -9,7 +9,7 @@ namespace Tamagochi.Data;
 
 public class TamagochiDbContext : DbContext
 {
-    private static readonly ValueComparer<List<string>> StringListComparer = ValueComparer.Create<List<string>>(
+    private static readonly ValueComparer<List<string>> StringListComparer = new ValueComparer<List<string>>(
         (left, right) => AreStringListsEqual(left, right),
         list => GetStringListHashCode(list),
         list => CloneStringList(list));
