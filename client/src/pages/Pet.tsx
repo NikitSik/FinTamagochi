@@ -184,15 +184,7 @@ export default function Pet() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <div className={styles.headerRow}>
-          <h1 className={styles.title}>Питомец</h1>
-          <button
-            className={styles.headerShopBtn}
-            onClick={() => { setShopOpen(true); setShopFilter("all"); }}
-          >
-            Магазин
-          </button>
-        </div>
+        <h1 className={styles.title}>Питомец</h1>
         <div className={styles.walletCard}>
           <span className={styles.walletCaption}>Игровых монет</span>
           <strong className={styles.walletValue}>{coins}</strong>
@@ -234,7 +226,28 @@ export default function Pet() {
             <Stat label="Здоровье" value={state.health} />
           </div>
           <div className={styles.playBlock}>
-            <button className={styles.playBtn} onClick={() => act("play")}>Поиграть</button>
+            <div className={styles.actionGroup}>
+              <button
+                className={`${styles.actionButton} ${styles.actionButtonPrimary}`}
+                onClick={() => { setShopOpen(true); setShopFilter("all"); }}
+              >
+                Магазин
+              </button>
+              <button
+                className={styles.actionButton}
+                disabled={!canHeal}
+                onClick={handleHeal}
+              >
+                {pendingAction === "heal" ? "Лечим…" : `Вылечить (${HEAL_COST})`}
+              </button>
+              <button
+                className={styles.actionButton}
+                disabled={!canFeed}
+                onClick={handleFeed}
+              >
+                {pendingAction === "feed" ? "Кормим…" : `Кормить (${FEED_COST})`}
+              </button>
+            </div>
           </div>
         </section>
 
@@ -269,26 +282,6 @@ export default function Pet() {
       </main>
 
       <footer className={styles.actionBar}>
-        <button
-          className={`${styles.actionButton} ${styles.actionButtonPrimary} ${styles.actionButtonWide}`}
-          onClick={() => { setShopOpen(true); setShopFilter("all"); }}
-        >
-          Магазин
-        </button>
-        <button
-          className={styles.actionButton}
-          disabled={!canHeal}
-          onClick={handleHeal}
-        >
-          {pendingAction === "heal" ? "Лечим…" : `Вылечить (${HEAL_COST})`}
-        </button>
-        <button
-          className={styles.actionButton}
-          disabled={!canFeed}
-          onClick={handleFeed}
-        >
-          {pendingAction === "feed" ? "Кормим…" : `Кормить (${FEED_COST})`}
-        </button>
         <Link className={`${styles.actionButton} ${styles.actionButtonLink}`} to="/missions/ANTIFRAUD_TUTORIAL">
           Миссия
         </Link>

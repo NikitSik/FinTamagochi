@@ -146,6 +146,18 @@
   justify-content: center;
 }
 
+.actionGroup {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(10px, 3vw, 16px);
+  width: 100%;
+}
+
+.actionGroup > * {
+  flex: 1 1 clamp(140px, 28vw, 180px);
+}
+
 .playBtn {
   padding: clamp(10px, 3vw, 14px) clamp(18px, 5vw, 28px);
   border-radius: 999px;
@@ -211,7 +223,7 @@
   border-top: 1px solid var(--nav-border);
   backdrop-filter: blur(12px);
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
   gap: clamp(10px, 3vw, 16px);
   padding: clamp(14px, 4vw, 22px) var(--page-padding-x)
     calc(clamp(18px, 4.5vw, 26px) + env(safe-area-inset-bottom));
