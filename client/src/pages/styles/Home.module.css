@@ -436,10 +436,26 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.modalFieldInvalid input {
+  border-color: rgba(248, 113, 113, 0.85);
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.25);
+}
+
 .modalField input:focus {
   outline: none;
   border-color: rgba(126, 87, 255, 0.65);
   box-shadow: 0 0 0 3px rgba(126, 87, 255, 0.25);
+}
+
+.modalError {
+  font-size: clamp(11px, 2.8vw, 13px);
+  color: #fca5a5;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: clamp(10px, 2.6vw, 14px);
 }
 
 .modalPanel button {

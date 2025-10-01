@@ -25,6 +25,9 @@ export default function Home() {
   });
   const [actionStatus, setActionStatus] = useState<ActionStatus | null>(null);
   const [pendingAction, setPendingAction] = useState<"topup" | "savings" | null>(null);
+  const [modalAction, setModalAction] = useState<"topup" | "savings" | null>(null);
+  const [amountInput, setAmountInput] = useState("");
+  const [amountError, setAmountError] = useState<string | null>(null);
 
   const totalRUB = Math.round(view.current + view.savings);
 
@@ -81,10 +84,6 @@ export default function Home() {
     return Number.parseFloat(normalized);
   }
 
-  function showAmountPrompt(message: string) {
-    return parseAmount(window.prompt(message));
-  }
-
   async function withAction<T>(action: "topup" | "savings", fn: () => Promise<T>) {
     setPendingAction(action);
     setActionStatus(null);
@@ -104,37 +103,55 @@ export default function Home() {
     }
   }
 
-  async function handleTopUp() {
-    const amount = showAmountPrompt("Введите сумму пополнения (₽)");
-    if (!Number.isFinite(amount) || amount <= 0) {
-      if (!Number.isNaN(amount)) {
-        setActionStatus({ type: "error", text: "Введите корректную сумму" });
-      }
-      return;
-    }
-
-    try {
-      await withAction("topup", () => api.balanceDeposit(amount));
-      setActionStatus({ type: "success", text: "Баланс успешно пополнен" });
-    } catch {
-      // состояние уже обновлено в withAction
-    }
+  function openModal(action: "topup" | "savings") {
+    setModalAction(action);
+    setAmountInput("");
+    setAmountError(null);
   }
 
-  async function handleTransferToSavings() {
-    const amount = showAmountPrompt("Сколько перевести в накопительный счёт? (₽)");
+  function handleTopUp() {
+    openModal("topup");
+  }
+
+  function handleTransferToSavings() {
+    openModal("savings");
+  }
+
+  function closeModal() {
+    if (pendingAction !== null) return;
+    setModalAction(null);
+    setAmountInput("");
+    setAmountError(null);
+  }
+
+  async function submitModal() {
+    if (!modalAction) return;
+
+    const amount = parseAmount(amountInput);
+
     if (!Number.isFinite(amount) || amount <= 0) {
-      if (!Number.isNaN(amount)) {
-        setActionStatus({ type: "error", text: "Введите корректную сумму" });
-      }
+      setAmountError("Введите корректную сумму");
       return;
     }
 
+    if (modalAction === "savings" && amount > view.current) {
+      setAmountError("Недостаточно средств на текущем счёте");
+      return;
+    }
+
+    setAmountError(null);
+
     try {
-      await withAction("savings", () => api.savingsDeposit(amount));
-      setActionStatus({ type: "success", text: "Перевод выполнен" });
+      if (modalAction === "topup") {
+        await withAction("topup", () => api.balanceDeposit(amount));
+        setActionStatus({ type: "success", text: "Баланс успешно пополнен" });
+      } else {
+        await withAction("savings", () => api.savingsDeposit(amount));
+        setActionStatus({ type: "success", text: "Перевод выполнен" });
+      }
+      closeModal();
     } catch {
-      // сообщение уже показано
+      // Ошибка уже отображена в withAction
     }
   }
 
@@ -213,6 +230,80 @@ export default function Home() {
           )}
         </section>
       </main>
+
+      {modalAction && (
+        <div
+          className={styles.modalBackdrop}
+          role="dialog"
+          aria-modal="true"
+          aria-label={
+            modalAction === "topup"
+              ? "Пополнение баланса"
+              : "Перевод в накопительный счёт"
+          }
+          onClick={closeModal}
+        >
+          <div
+            className={styles.modalPanel}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2 className={styles.modalTitle}>
+              {modalAction === "topup"
+                ? "Пополнить баланс"
+                : "Перевести в накопительный"}
+            </h2>
+
+            <form
+              className={styles.modalBody}
+              onSubmit={(event) => {
+                event.preventDefault();
+                submitModal().catch(() => undefined);
+              }}
+            >
+              <label
+                className={`${styles.modalField} ${
+                  amountError ? styles.modalFieldInvalid : ""
+                }`}
+              >
+                Сумма в рублях
+                <input
+                  inputMode="decimal"
+                  autoFocus
+                  value={amountInput}
+                  onChange={(event) => {
+                    setAmountInput(event.target.value);
+                    if (amountError) {
+                      setAmountError(null);
+                    }
+                  }}
+                  placeholder="Например, 100.50"
+                />
+                {amountError && (
+                  <span className={styles.modalError}>{amountError}</span>
+                )}
+              </label>
+
+              <div className={styles.modalActions}>
+                <button
+                  type="button"
+                  className={styles.secondaryBtn}
+                  onClick={closeModal}
+                  disabled={pendingAction !== null}
+                >
+                  Отмена
+                </button>
+                <button
+                  type="submit"
+                  className={styles.primaryBtn}
+                  disabled={pendingAction !== null}
+                >
+                  Подтвердить
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
