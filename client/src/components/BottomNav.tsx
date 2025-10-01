@@ -1,10 +1,40 @@
 // src/components/BottomNav.tsx
+import { useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import styles from "./BottomNav.module.css";
 
 export default function BottomNav() {
+  const navRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const element = navRef.current;
+    if (!element) return;
+
+    const updateOffset = () => {
+      document.documentElement.style.setProperty(
+        "--bottom-nav-height",
+        `${element.offsetHeight}px`
+      );
+    };
+
+    updateOffset();
+
+    const resizeObserver = new ResizeObserver(updateOffset);
+    resizeObserver.observe(element);
+
+    return () => {
+      resizeObserver.disconnect();
+      document.documentElement.style.removeProperty("--bottom-nav-height");
+    };
+  }, []);
+
   return (
-    <nav className={styles.bottomNav} aria-label="Основная навигация">
+    <div className={styles.bottomNavWrapper} role="presentation">
+      <nav
+        ref={navRef}
+        className={styles.bottomNav}
+        aria-label="Основная навигация"
+      >
       <NavLink
         to="/home"
         end
@@ -52,6 +82,7 @@ export default function BottomNav() {
         </svg>
         <span>Профиль</span>
       </NavLink>
-    </nav>
+      </nav>
+    </div>
   );
 }

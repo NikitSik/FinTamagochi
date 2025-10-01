@@ -37,7 +37,7 @@ export default function App() {
   const hideNav = ["/login", "/register"];
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] pb-20">
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] pb-[calc(var(--bottom-nav-height,0px)+1.5rem)]">
       <AppRoutes />
       {!hideNav.includes(location.pathname) && <BottomNav />}
     </div>
