@@ -1,14 +1,8 @@
-<<<<<<< ours
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System.Linq;
-=======
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
->>>>>>> theirs
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Tamagochi.Models;
 
 namespace Tamagochi.Data;
@@ -20,7 +14,9 @@ public class TamagochiDbContext : DbContext
         list => GetStringListHashCode(list),
         list => CloneStringList(list));
 
-    public TamagochiDbContext(DbContextOptions<TamagochiDbContext> options) : base(options) { }
+    public TamagochiDbContext(DbContextOptions<TamagochiDbContext> options) : base(options)
+    {
+    }
 
     public DbSet<User> Users => Set<User>();
     public DbSet<Tamagochi.Models.Tamagochi> Tamagochis => Set<Tamagochi.Models.Tamagochi>();
@@ -57,28 +53,19 @@ public class TamagochiDbContext : DbContext
             .HasPrecision(5, 4);
 
         // Inventory.Items как JSON
-        var listComparer = new ValueComparer<List<string>>(
-            (left, right) =>
-                ReferenceEquals(left, right) ||
-                (left is not null && right is not null && left.SequenceEqual(right)),
-            list =>
-                list is null
-                    ? 0
-                    : list.Aggregate(0, (hash, item) => HashCode.Combine(hash, item?.GetHashCode() ?? 0)),
-            list => list is null ? new List<string>() : list.ToList()
-        );
-
         modelBuilder.Entity<Inventory>()
             .Property(e => e.Items)
             .HasConversion(
                 v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new()
-            )
-<<<<<<< ours
-            .Metadata.SetValueComparer(listComparer);
-=======
+                v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new())
             .Metadata.SetValueComparer(StringListComparer);
->>>>>>> theirs
+
+        modelBuilder.Entity<PetProfile>()
+            .Property(e => e.OwnedPetIds)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new())
+            .Metadata.SetValueComparer(StringListComparer);
 
         // сид питомцев (как было)
         modelBuilder.Entity<Tamagochi.Models.Tamagochi>().HasData(
@@ -105,22 +92,6 @@ public class TamagochiDbContext : DbContext
             new ShopItem { Id = "pet_cat", Title = "Открыть кота", Description = "Компаньон с миссии", Price = 500, Type = "pet", PayloadJson = "{\"petId\":\"cat\"}", Enabled = false },
             new ShopItem { Id = "pet_dragon", Title = "Открыть дракона", Description = "Эпический друг", Price = 1500, Type = "pet", PayloadJson = "{\"petId\":\"dragon\"}", Enabled = false }
         );
-
-        modelBuilder.Entity<PetProfile>()
-<<<<<<< ours
-          .Property(e => e.OwnedPetIds)
-          .HasConversion(
-            v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-            v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new()
-          )
-          .Metadata.SetValueComparer(listComparer);
-=======
-            .Property(e => e.OwnedPetIds)
-            .HasConversion(
-                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new()
-            )
-            .Metadata.SetValueComparer(StringListComparer);
     }
 
     private static bool AreStringListsEqual(List<string>? left, List<string>? right)
@@ -171,6 +142,5 @@ public class TamagochiDbContext : DbContext
     private static List<string> CloneStringList(List<string>? source)
     {
         return source == null ? new List<string>() : new List<string>(source);
->>>>>>> theirs
     }
 }
