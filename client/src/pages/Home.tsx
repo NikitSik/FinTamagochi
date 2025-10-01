@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import styles from "./styles/Home.module.css";
 import { api, type User } from "../api";
 
+type ActionStatus = {
+  type: "success" | "error";
+  text: string;
+};
+
 const rubFormatter = new Intl.NumberFormat("ru-RU");
 
 type View = {
@@ -18,6 +23,8 @@ export default function Home() {
     current: 0,
     owner: "мой счёт",
   });
+  const [actionStatus, setActionStatus] = useState<ActionStatus | null>(null);
+  const [pendingAction, setPendingAction] = useState<"topup" | "savings" | null>(null);
 
   const totalRUB = Math.round(view.current + view.savings);
 
@@ -68,6 +75,69 @@ export default function Home() {
     load().catch(console.error);
   }, []);
 
+  function parseAmount(input: string | null) {
+    if (input == null) return NaN;
+    const normalized = input.replace(/,/g, ".").trim();
+    return Number.parseFloat(normalized);
+  }
+
+  function showAmountPrompt(message: string) {
+    return parseAmount(window.prompt(message));
+  }
+
+  async function withAction<T>(action: "topup" | "savings", fn: () => Promise<T>) {
+    setPendingAction(action);
+    setActionStatus(null);
+    try {
+      const result = await fn();
+      await load();
+      return result;
+    } catch (error) {
+      if (error instanceof Error) {
+        setActionStatus({ type: "error", text: error.message });
+      } else {
+        setActionStatus({ type: "error", text: "Не удалось выполнить операцию" });
+      }
+      throw error;
+    } finally {
+      setPendingAction(null);
+    }
+  }
+
+  async function handleTopUp() {
+    const amount = showAmountPrompt("Введите сумму пополнения (₽)");
+    if (!Number.isFinite(amount) || amount <= 0) {
+      if (!Number.isNaN(amount)) {
+        setActionStatus({ type: "error", text: "Введите корректную сумму" });
+      }
+      return;
+    }
+
+    try {
+      await withAction("topup", () => api.balanceDeposit(amount));
+      setActionStatus({ type: "success", text: "Баланс успешно пополнен" });
+    } catch {
+      // состояние уже обновлено в withAction
+    }
+  }
+
+  async function handleTransferToSavings() {
+    const amount = showAmountPrompt("Сколько перевести в накопительный счёт? (₽)");
+    if (!Number.isFinite(amount) || amount <= 0) {
+      if (!Number.isNaN(amount)) {
+        setActionStatus({ type: "error", text: "Введите корректную сумму" });
+      }
+      return;
+    }
+
+    try {
+      await withAction("savings", () => api.savingsDeposit(amount));
+      setActionStatus({ type: "success", text: "Перевод выполнен" });
+    } catch {
+      // сообщение уже показано
+    }
+  }
+
   return (
     <div className={styles.page}>
       <header className={styles.header}>
@@ -108,6 +178,39 @@ export default function Home() {
               </div>
             ))}
           </div>
+
+          <div className={styles.quickActions}>
+            <button
+              type="button"
+              className={styles.primaryBtn}
+              onClick={handleTopUp}
+              disabled={pendingAction !== null}
+            >
+              Пополнить баланс
+            </button>
+            <button
+              type="button"
+              className={styles.secondaryBtn}
+              onClick={handleTransferToSavings}
+              disabled={pendingAction !== null}
+            >
+              Перевести в накопительный
+            </button>
+          </div>
+
+          {actionStatus && (
+            <p
+              className={`${styles.actionMessage} ${
+                actionStatus.type === "success"
+                  ? styles.actionMessageSuccess
+                  : styles.actionMessageError
+              }`}
+              role="status"
+              aria-live="polite"
+            >
+              {actionStatus.text}
+            </p>
+          )}
         </section>
       </main>
     </div>

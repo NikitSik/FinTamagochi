@@ -150,6 +150,20 @@
   color: rgba(240, 244, 255, 0.55);
 }
 
+.actionMessage {
+  margin: 4px 0 0;
+  font-size: clamp(12px, 3.2vw, 14px);
+  font-weight: 500;
+}
+
+.actionMessageSuccess {
+  color: #34d399;
+}
+
+.actionMessageError {
+  color: #f87171;
+}
+
 .quickActions {
   display: flex;
   flex-wrap: wrap;
@@ -165,6 +179,14 @@
   border: none;
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.primaryBtn:disabled,
+.secondaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .primaryBtn {
@@ -187,6 +209,11 @@
 .secondaryBtn:hover {
   background: rgba(23, 30, 48, 0.9);
   transform: translateY(-1px);
+}
+
+.secondaryBtn:disabled:hover,
+.primaryBtn:disabled:hover {
+  transform: none;
 }
 
 .petCard {

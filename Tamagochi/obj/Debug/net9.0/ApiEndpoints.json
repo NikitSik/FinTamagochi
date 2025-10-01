@@ -65,6 +65,38 @@
   },
   {
     "ContainingType": "Tamagochi.Controllers.FinanceController",
+    "Method": "TopUpBalance",
+    "RelativePath": "api/Finance/balance/deposit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "body",
+        "Type": "Tamagochi.Controllers.FinanceController\u002BAmountRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Tamagochi.Controllers.FinanceController",
+    "Method": "WithdrawBalance",
+    "RelativePath": "api/Finance/balance/withdraw",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "body",
+        "Type": "Tamagochi.Controllers.FinanceController\u002BAmountRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Tamagochi.Controllers.FinanceController",
     "Method": "GetSavings",
     "RelativePath": "api/Finance/savings",
     "HttpMethod": "GET",
@@ -83,7 +115,23 @@
     "Parameters": [
       {
         "Name": "body",
-        "Type": "Tamagochi.Controllers.FinanceController\u002BDepositRequest",
+        "Type": "Tamagochi.Controllers.FinanceController\u002BAmountRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Tamagochi.Controllers.FinanceController",
+    "Method": "Withdraw",
+    "RelativePath": "api/Finance/savings/withdraw",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "body",
+        "Type": "Tamagochi.Controllers.FinanceController\u002BAmountRequest",
         "IsRequired": true
       }
     ],
