@@ -37,12 +37,13 @@ public class FinanceController : ControllerBase
     [HttpGet("snapshot/latest")]
     public async Task<IActionResult> GetLatest(CancellationToken ct)
     {
-        var snapshot = await _db.FinanceSnapshots
-            .Where(x => x.UserId == UserId)
-            .OrderByDescending(x => x.Date)
-            .FirstOrDefaultAsync(ct);
+        var snapshot = await EnsureSnapshotAsync(ct);
 
-        return snapshot is null ? NotFound() : Ok(snapshot);
+        // создаём накопительный счёт на лету, чтобы домашняя страница
+        // сразу показывала корректные данные по новому пользователю
+        await EnsureSavingsAsync(ct);
+
+        return Ok(snapshot);
     }
 
     // внутри FinanceController
@@ -72,6 +73,30 @@ public class FinanceController : ControllerBase
             .FirstOrDefaultAsync(ct);
     }
 
+    private async Task<FinanceSnapshot> EnsureSnapshotAsync(CancellationToken ct)
+    {
+        var snapshot = await GetLatestSnapshotAsync(ct);
+        if (snapshot is not null)
+        {
+            return snapshot;
+        }
+
+        snapshot = new FinanceSnapshot
+        {
+            UserId = UserId,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            Income = 0m,
+            Expenses = 0m,
+            Balance = 0m,
+            SavingsRate = 0m,
+        };
+
+        _db.FinanceSnapshots.Add(snapshot);
+        await _db.SaveChangesAsync(ct);
+
+        return snapshot;
+    }
+
     private static IActionResult? ValidateAmount(AmountRequest body)
     {
         if (body.Amount <= 0)
@@ -90,11 +115,8 @@ public class FinanceController : ControllerBase
             return bad;
         }
 
-        var snapshot = await GetLatestSnapshotAsync(ct);
-        if (snapshot is null)
-        {
-            return BadRequest("Сначала зафиксируйте баланс текущего счёта");
-        }
+        var snapshot = await EnsureSnapshotAsync(ct);
+        await EnsureSavingsAsync(ct);
 
         snapshot.Balance += body.Amount;
 
@@ -110,11 +132,7 @@ public class FinanceController : ControllerBase
             return bad;
         }
 
-        var snapshot = await GetLatestSnapshotAsync(ct);
-        if (snapshot is null)
-        {
-            return BadRequest("Сначала зафиксируйте баланс текущего счёта");
-        }
+        var snapshot = await EnsureSnapshotAsync(ct);
 
         if (snapshot.Balance < body.Amount)
         {
@@ -136,12 +154,7 @@ public class FinanceController : ControllerBase
         }
 
         var account = await EnsureSavingsAsync(ct);
-        var latestSnapshot = await GetLatestSnapshotAsync(ct);
-
-        if (latestSnapshot is null)
-        {
-            return BadRequest("Сначала зафиксируйте баланс текущего счёта");
-        }
+        var latestSnapshot = await EnsureSnapshotAsync(ct);
 
         if (latestSnapshot.Balance < body.Amount)
         {
@@ -174,11 +187,7 @@ public class FinanceController : ControllerBase
             return BadRequest("Недостаточно средств на накопительном счёте");
         }
 
-        var latestSnapshot = await GetLatestSnapshotAsync(ct);
-        if (latestSnapshot is null)
-        {
-            return BadRequest("Сначала зафиксируйте баланс текущего счёта");
-        }
+        var latestSnapshot = await EnsureSnapshotAsync(ct);
 
         account.Balance -= body.Amount;
         account.UpdatedAt = DateTime.UtcNow;

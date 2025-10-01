@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Tamagochi.Controllers;
 using Tamagochi.Data;
 using Tamagochi.Infrastructure;
+using Tamagochi.Models;
 using Xunit;
 
 namespace Tamagochi.Tests.Controllers;
@@ -60,5 +61,64 @@ public class FinanceControllerTests
         var balanceProperty = ok.Value?.GetType().GetProperty("balance");
         Assert.NotNull(balanceProperty);
         Assert.Equal(account.Balance, (decimal)(balanceProperty!.GetValue(ok.Value) ?? 0m));
+    }
+
+    [Fact]
+    public async Task GetLatest_CreatesDefaultSnapshotForNewUser()
+    {
+        using var db = CreateContext(nameof(GetLatest_CreatesDefaultSnapshotForNewUser));
+        var userId = "user-42";
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, userId)
+        }, authenticationType: "TestAuth"));
+
+        var controller = CreateController(db, principal);
+
+        var result = await controller.GetLatest(CancellationToken.None);
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var snapshot = Assert.IsType<FinanceSnapshot>(ok.Value);
+
+        Assert.Equal(userId, snapshot.UserId);
+        Assert.Equal(0m, snapshot.Balance);
+        Assert.Equal(0m, snapshot.Income);
+        Assert.Equal(0m, snapshot.Expenses);
+        Assert.NotEqual(default, snapshot.Date);
+
+        var stored = await db.FinanceSnapshots.SingleAsync();
+        Assert.Equal(snapshot.Id, stored.Id);
+
+        var savings = await db.SavingsAccounts.SingleAsync();
+        Assert.Equal(userId, savings.UserId);
+        Assert.Equal(0m, savings.Balance);
+    }
+
+    [Fact]
+    public async Task TopUpBalance_CreatesSnapshotAndUpdatesBalance()
+    {
+        using var db = CreateContext(nameof(TopUpBalance_CreatesSnapshotAndUpdatesBalance));
+        var userId = "user-99";
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(new[]
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, userId)
+        }, authenticationType: "TestAuth"));
+
+        var controller = CreateController(db, principal);
+
+        var result = await controller.TopUpBalance(new FinanceController.AmountRequest(500m), CancellationToken.None);
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var balanceProperty = ok.Value?.GetType().GetProperty("balance");
+        Assert.NotNull(balanceProperty);
+        Assert.Equal(500m, (decimal)(balanceProperty!.GetValue(ok.Value) ?? 0m));
+
+        var snapshot = await db.FinanceSnapshots.SingleAsync();
+        Assert.Equal(userId, snapshot.UserId);
+        Assert.Equal(500m, snapshot.Balance);
+
+        var savings = await db.SavingsAccounts.SingleAsync();
+        Assert.Equal(userId, savings.UserId);
+        Assert.Equal(0m, savings.Balance);
     }
 }
