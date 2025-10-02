@@ -35,6 +35,28 @@ dotnet run --project Tamagochi/Tamagochi.csproj
 
 По умолчанию сервер слушает `http://localhost:5087` (HTTP) и `https://localhost:7087` (HTTPS). Swagger UI будет доступен по адресу `http://localhost:5087/swagger`.
 
+## Docker & Render deploy
+
+### Локальная сборка образа
+
+```bash
+docker build -t tamagochi-api -f Tamagochi/Dockerfile .
+```
+
+### Запуск контейнера локально
+
+```bash
+docker run --rm -it \
+  -p 8080:8080 \
+  -e PORT=8080 \
+  -e DB_KIND=SQLite \
+  tamagochi-api
+```
+
+- Для запуска с SQL Server вместо SQLite передайте строку подключения через переменную окружения `ConnectionStrings__DefaultConnection` и, при необходимости, значение `DB_KIND=SqlServer`.
+- Если вы используете Render, достаточно указать Dockerfile (`Tamagochi/Dockerfile`) и задать переменные окружения `PORT`, `DB_KIND` и `ConnectionStrings__DefaultConnection` (для режима SQL Server). Dockerfile уже выставляет `ASPNETCORE_URLS=http://0.0.0.0:${PORT}`, поэтому Render сможет правильно проксировать трафик.
+- При локальном запуске контейнера порт `8080` можно заменить на любой свободный; главное — передать одинаковое значение в `-p` и переменную `PORT`.
+
 ## Быстрый сценарий использования
 1. Зарегистрируйте нового пользователя: `POST /api/auth/register` c телом `{ "nickname": "demo", "password": "P@ssw0rd" }`.
 2. Получите токен через `POST /api/auth/login` и установите заголовок `Authorization: Bearer <token>` в последующих запросах.
