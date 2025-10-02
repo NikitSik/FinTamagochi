@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 20px;
   padding-bottom: 96px;
-  color: #000000;
+  color: var(--text-primary);
 }
 
 .loader {
@@ -21,17 +21,20 @@
 .header h1 {
   margin: 0;
   font-family: "Halvar Breitschrift", sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 28px;
   line-height: 34px;
-  color: #000000;
+  color: #f5f5f5;
+  text-shadow: none;
 }
 
 .lead {
   margin: 0;
-  color: rgba(0, 0, 0, 0.65);
+  color: #eaeaea;
   max-width: 48ch;
-  font-family: "Gazprombank Sans", sans-serif;
+  font-family: "Halvar Breitschrift", sans-serif;
+  font-weight: 400;
+  text-shadow: none;
 }
 
 .profileHeader {
@@ -270,10 +273,13 @@
   width: 100%;
   max-width: 360px;
   margin: 16px auto 48px;
-  --btn-ghost-color: #060698;
-  --btn-ghost-border: rgba(6, 6, 152, 0.35);
-  --btn-ghost-hover: rgba(6, 6, 152, 0.16);
-  --btn-ghost-background: rgba(6, 6, 152, 0.08);
+  --btn-ghost-color: #ffffff;
+  --btn-ghost-border: transparent;
+  --btn-ghost-hover: linear-gradient(135deg, rgba(189, 206, 250, 0.92) 0%, rgba(6, 6, 152, 0.92) 100%);
+  --btn-ghost-background: linear-gradient(135deg, var(--col-viola) 0%, var(--col-tmin) 100%);
+  color: #ffffff;
+  letter-spacing: 0.04em;
+  text-shadow: none;
   font-weight: 600;
 }
 
