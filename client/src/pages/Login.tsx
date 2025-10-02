@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { api, setAuthToken } from "../api";
 import { Link, useNavigate } from "react-router-dom";
-import styles from "./styles/Login.module.css"
-
+import styles from "./styles/Auth.module.css";
 
 export default function Login() {
   const nav = useNavigate();
@@ -33,42 +32,65 @@ export default function Login() {
   }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.card}>
-        <h1 className={styles.title}>ФинТамагочи</h1>
+    <div className={styles.authPage}>
+      <div className={styles.authCard}>
+        <h1 className={styles.authTitle}>Вход</h1>
 
-        <form onSubmit={onSubmit} className={styles.form}>
-          <label className={styles.label}>
-            Никнейм
+        <form onSubmit={onSubmit} className={styles.authForm} noValidate>
+          <div className={styles.field}>
+            <label className={styles.fieldLabel} htmlFor="login-nickname">
+              Логин (никнейм или почта)
+            </label>
             <input
+              id="login-nickname"
               className={styles.input}
               value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
+              onChange={(e) => {
+                setNickname(e.target.value);
+                setErr(null);
+              }}
               autoComplete="username"
+              placeholder="Например, user@bank.ru"
+              required
             />
-          </label>
+          </div>
 
-          <label className={styles.label}>
-            Пароль
+          <div className={styles.field}>
+            <label className={styles.fieldLabel} htmlFor="login-password">
+              Пароль
+            </label>
             <input
+              id="login-password"
               className={styles.input}
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="new-password"
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setErr(null);
+              }}
+              autoComplete="current-password"
+              placeholder="Введите пароль"
+              required
             />
-          </label>
+          </div>
 
-          {err && <div className={styles.error}>{err}</div>}
+          <div
+            className={styles.error}
+            role="status"
+            aria-live="polite"
+            aria-hidden={err ? undefined : true}
+          >
+            {err ?? ""}
+          </div>
 
-          <button type="submit" className={styles.button} disabled={!canSubmit}>
-            {loading ? "Создаём..." : "Войти"}
+          <button type="submit" className={styles.btnPrimary} disabled={!canSubmit}>
+            {loading ? "Входим…" : "Войти"}
           </button>
-
-          <Link to="/register" className={styles.link}>
-            Регистрация
-          </Link>
         </form>
+
+        <p className={styles.authAlt}>
+          Нет аккаунта? <Link to="/register" className={styles.authLink}>Регистрация</Link>
+        </p>
       </div>
     </div>
   );

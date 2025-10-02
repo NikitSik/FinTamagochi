@@ -66,7 +66,7 @@
 }
 
 .ghost {
-  background: transparent;
+  background: var(--btn-ghost-background, transparent);
   color: var(--btn-ghost-color, rgba(0, 0, 0, 0.8));
   border-width: 1px;
   border-color: var(--btn-ghost-border, rgba(0, 0, 0, 0.18));

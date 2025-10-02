@@ -31,14 +31,17 @@ function AppRoutes() {
 
 export default function App() {
   const location = useLocation();
-  const hideNav = ["/login", "/register"];
+  const authRoutes = ["/login", "/register"];
+  const shouldHideNav = authRoutes.some((path) =>
+    location.pathname.startsWith(path)
+  );
 
   return (
     <div className={styles.appShell}>
       <main className={styles.main}>
         <AppRoutes />
       </main>
-      {!hideNav.includes(location.pathname) && <BottomNav />}
+      {!shouldHideNav && <BottomNav />}
     </div>
   );
 }

@@ -1,0 +1,142 @@
+.authPage {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
+  background: radial-gradient(120% 120% at 50% -10%, #060698 0%, #000000 55%);
+}
+
+.authCard {
+  width: min(420px, 100%);
+  background: linear-gradient(180deg, #bdcefa 0%, #dee1ee 100%);
+  color: #000000;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  padding: 20px 16px 24px;
+  display: grid;
+  gap: 16px;
+}
+
+.authTitle {
+  font-family: "Halvar Breitschrift", sans-serif;
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 30px;
+  color: #000000;
+  text-align: center;
+  margin: 4px 0 0;
+}
+
+.authForm {
+  display: grid;
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.fieldLabel {
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.input {
+  height: 48px;
+  border-radius: 12px;
+  padding: 0 12px;
+  background: #dee1ee;
+  color: #000000;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.input::placeholder {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.input:focus-visible {
+  outline: 2px solid #58ffff;
+  outline-offset: 2px;
+}
+
+.input[aria-invalid="true"] {
+  border-color: #dd41db;
+}
+
+.error {
+  min-height: 16px;
+  font-size: 12px;
+  line-height: 16px;
+  color: #dd41db;
+}
+
+.btnPrimary {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  font-weight: 600;
+  background: linear-gradient(180deg, #1919ef 0%, #060698 100%);
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 16px;
+  line-height: 24px;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.btnPrimary:focus-visible {
+  outline: 2px solid #58ffff;
+  outline-offset: 2px;
+}
+
+.btnPrimary:not(:disabled):hover {
+  filter: brightness(1.05);
+}
+
+.btnPrimary:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.authAlt {
+  margin-top: 4px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.8);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.authLink {
+  color: #1919ef;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.authLink:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 480px) {
+  .authCard {
+    padding: 24px 24px 28px;
+    gap: 18px;
+  }
+
+  .btnPrimary {
+    font-size: 17px;
+  }
+}
+

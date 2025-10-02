@@ -269,6 +269,12 @@
   align-self: center;
   width: 100%;
   max-width: 360px;
+  margin: 16px auto 48px;
+  --btn-ghost-color: #060698;
+  --btn-ghost-border: rgba(6, 6, 152, 0.35);
+  --btn-ghost-hover: rgba(6, 6, 152, 0.16);
+  --btn-ghost-background: rgba(6, 6, 152, 0.08);
+  font-weight: 600;
 }
 
 @media (min-width: 768px) {

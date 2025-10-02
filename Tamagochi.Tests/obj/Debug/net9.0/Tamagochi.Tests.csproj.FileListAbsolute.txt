@@ -164,3 +164,4 @@ C:\Users\nikit\source\repos\Tamagochi\Tamagochi.Tests\obj\Debug\net9.0\refint\Ta
 C:\Users\nikit\source\repos\Tamagochi\Tamagochi.Tests\obj\Debug\net9.0\Tamagochi.Tests.pdb
 C:\Users\nikit\source\repos\Tamagochi\Tamagochi.Tests\obj\Debug\net9.0\Tamagochi.Tests.genruntimeconfig.cache
 C:\Users\nikit\source\repos\Tamagochi\Tamagochi.Tests\obj\Debug\net9.0\ref\Tamagochi.Tests.dll
+C:\Users\nikit\source\repos\Tamagochi\Tamagochi.Tests\bin\Debug\net9.0\SixLabors.ImageSharp.dll

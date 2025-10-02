@@ -1,32 +1,25 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Tamagochi.Data;
+using Microsoft.IdentityModel.Logging;
 using Tamagochi.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ===================== HOST / URLS =====================
-// Слушаем по HTTP на всем интерфейсе (5228) + HTTPS (7228).
-// Внимание: телефон не доверит дев-сертификату на https://<IP>:7228,
-// поэтому для мобильного теста используй http://<IP>:5228.
-builder.WebHost.UseUrls("http://0.0.0.0:5228;https://0.0.0.0:7228");
-
-// ===================== SERVICES =====================
+// --------------------- Services ---------------------
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddScoped<PetStateService>();
 
-// Диагностика JWT (dev)
 IdentityModelEventSource.ShowPII = true;
 builder.Logging.AddFilter("Microsoft.AspNetCore.Authentication", LogLevel.Debug);
 builder.Logging.AddFilter("Microsoft.IdentityModel", LogLevel.Debug);
 
-// ---------- Swagger + Bearer ----------
+// Swagger + Bearer
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "Tamagochi API", Version = "v1" });
@@ -37,45 +30,41 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Введите токен в формате: Bearer {token}"
+        Description = "Введите токен: Bearer {token}"
     });
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
-            new OpenApiSecurityScheme {
-                Reference = new OpenApiReference {
-                    Type = ReferenceType.SecurityScheme, Id = "Bearer"
-                }
-            },
+            new OpenApiSecurityScheme { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } },
             Array.Empty<string>()
         }
     });
 });
 
-// ---------- CORS (фронт: localhost:5173 и твой LAN-IP:5173) ----------
-var lanIp = "192.168.0.11"; // <- твой ПК из ipconfig
+// CORS: ДОБАВЬ IP МАШИНЫ С ФРОНТОМ
+// пример: фронт крутится на 192.168.0.12:5173 (Vite) или :3000 (CRA)
 builder.Services.AddCors(o => o.AddPolicy("Frontend", p =>
-    p
-        .WithOrigins(
-            "http://localhost:5173",
-            $"http://{lanIp}:5173"
-        )
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-// JWT идёт через Authorization header — куки не нужны.
-// Если вдруг используешь куки/SignalR с куками, добавь .AllowCredentials()
-// и перечисляй конкретные Origins, как выше.
+    p.WithOrigins(
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://192.168.0.12:5173",
+        "http://192.168.0.12:3000",
+        "https://localhost:7228"
+    )
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials()
 ));
 
-// ---------- DbContext (SQL Server) ----------
+// DbContext → SQL Server
 var connStr = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Missing ConnectionStrings:DefaultConnection");
 builder.Services.AddDbContext<TamagochiDbContext>(o => o.UseSqlServer(connStr));
 
-// ---------- JWT ----------
+// JWT auth (как было)
 var jwt = builder.Configuration.GetSection("Jwt");
-var jwtKey = jwt["Key"] ?? throw new InvalidOperationException("Jwt:Key missing");
-if (Encoding.UTF8.GetByteCount(jwtKey) < 32)
+var keyStr = jwt["Key"] ?? throw new InvalidOperationException("Jwt:Key missing");
+if (Encoding.UTF8.GetByteCount(keyStr) < 32)
     throw new InvalidOperationException("Jwt:Key must be ≥ 32 bytes for HS256.");
 
 builder.Services
@@ -91,8 +80,10 @@ builder.Services
 
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            IssuerSigningKey =
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
 
+            // чтобы строгая проверка срока не падала из-за часов
             ClockSkew = TimeSpan.FromMinutes(1)
         };
 
@@ -100,8 +91,9 @@ builder.Services
         {
             OnMessageReceived = ctx =>
             {
+                // Посмотрим, что реально пришло в заголовке
                 var auth = ctx.Request.Headers.Authorization.ToString();
-                Console.WriteLine("AUTH HEADER = " + auth); // ожидаем "Bearer eyJ..."
+                Console.WriteLine("AUTH HEADER = " + auth); // должен быть "Bearer eyJ..."
                 return Task.CompletedTask;
             },
             OnAuthenticationFailed = ctx =>
@@ -115,12 +107,14 @@ builder.Services
                 return Task.CompletedTask;
             }
         };
+
     });
 
-// ===================== APP PIPELINE =====================
+
+
+// --------------------- App pipeline ---------------------
 var app = builder.Build();
 
-// Swagger
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -128,17 +122,9 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
 });
 
-// В DEV не редиректим на HTTPS, чтобы телефон мог ходить по HTTP
+// В DEV НЕ ПРИНУЖДАЕМ К HTTPS — иначе фронт по HTTP не попадёт
 if (!app.Environment.IsDevelopment())
-{
     app.UseHttpsRedirection();
-}
-
-// Если есть обратные прокси/DevTunnel — корректно определяем схемы
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor
-});
 
 app.UseCors("Frontend");
 app.UseStaticFiles();
@@ -147,23 +133,18 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Служебный "жив" эндпоинт без авторизации
-app.MapGet("/health", () => Results.Ok(new { ok = true, time = DateTimeOffset.UtcNow }))
-   .AllowAnonymous();
-
 // Диагностика маршрутов (по желанию)
 app.MapGet("/__routes", (EndpointDataSource eds) =>
-    Results.Ok(eds.Endpoints.Select(e => e.DisplayName)))
-   .AllowAnonymous();
+    Results.Ok(eds.Endpoints.Select(e => e.DisplayName)));
 
-// Авто-миграции на старте
+// Авто-миграции на старте (как было)
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<TamagochiDbContext>();
     db.Database.Migrate();
 }
 
-// Проверка токена (оставил с авторизацией; для быстрой проверки можешь временно .AllowAnonymous())
+// Program.cs, до app.Run()
 app.MapGet("/whoami", (HttpContext ctx) =>
 {
     var user = ctx.User;
@@ -178,6 +159,7 @@ app.MapGet("/whoami", (HttpContext ctx) =>
         id,
         claims = user?.Claims.Select(c => new { c.Type, c.Value })
     });
-}).RequireAuthorization();
+}).RequireAuthorization();  // важно: требует Bearer
+
 
 app.Run();
