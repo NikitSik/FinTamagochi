@@ -449,6 +449,18 @@
         }
       }
     },
+    "/health": {
+      "get": {
+        "tags": [
+          "Tamagochi"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/__routes": {
       "get": {
         "tags": [
@@ -925,7 +937,7 @@
     "securitySchemes": {
       "Bearer": {
         "type": "http",
-        "description": "Введите токен: Bearer {token}",
+        "description": "Введите токен в формате: Bearer {token}",
         "scheme": "bearer",
         "bearerFormat": "JWT"
       }

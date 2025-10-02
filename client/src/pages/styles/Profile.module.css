@@ -1,14 +1,15 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: var(--gap);
-  color: var(--text-primary);
+  gap: 20px;
+  padding-bottom: 96px;
+  color: #000000;
 }
 
 .loader {
   margin: 0 auto;
   padding: 48px 24px;
-  color: var(--text-secondary);
+  color: rgba(0, 0, 0, 0.65);
 }
 
 .header {
@@ -18,66 +19,76 @@
 }
 
 .header h1 {
-  font-size: 1.75rem;
-  line-height: 2.25rem;
+  margin: 0;
+  font-family: "Halvar Breitschrift", sans-serif;
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 34px;
+  color: #000000;
 }
 
 .lead {
-  color: var(--text-secondary);
-  max-width: 44ch;
+  margin: 0;
+  color: rgba(0, 0, 0, 0.65);
+  max-width: 48ch;
+  font-family: "Gazprombank Sans", sans-serif;
 }
 
-.userCard {
+.profileHeader {
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 20px;
-  align-items: center;
-}
-
-@media (max-width: 640px) {
-  .userCard {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-
-  .userCard > button {
-    justify-self: center;
-  }
-}
-
-.avatarWrap {
-  position: relative;
-  width: 104px;
-  height: 104px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, var(--col-rasp) 0%, var(--col-violet) 100%);
+  grid-template-rows: auto auto auto;
+  row-gap: 12px;
+  justify-items: center;
+  text-align: center;
+  padding: 16px;
+  background: linear-gradient(180deg, #bdcefa 0%, #dee1ee 100%);
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  color: #000000;
+  width: 100%;
 }
 
 .avatarRing {
-  position: absolute;
-  inset: 4px;
+  position: relative;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  border: 2px solid var(--col-violet);
-  pointer-events: none;
+  padding: 3px;
+  display: grid;
+  place-items: center;
+  border: 2px solid #1919ef;
+  background: radial-gradient(
+    ellipse at 30% 30%,
+    rgba(88, 255, 255, 0.28),
+    rgba(25, 25, 239, 0.18)
+  );
+  cursor: pointer;
 }
 
-.avatarWrap img,
-.avatarPlaceholder {
-  position: relative;
-  z-index: 1;
-  width: 88px;
-  height: 88px;
+.avatarRing img {
+  width: 94px;
+  height: 94px;
   border-radius: 50%;
   object-fit: cover;
-  background: var(--col-lilia);
+  background: #dee1ee;
+  display: block;
+}
+
+.avatarFallback {
+  position: absolute;
+  inset: 3px;
+  width: 94px;
+  height: 94px;
+  border-radius: 50%;
   display: grid;
   place-items: center;
   font-family: "Halvar Breitschrift", sans-serif;
-  font-weight: 600;
-  font-size: 1.5rem;
-  color: var(--col-tmin);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1;
+  color: #000000;
+  background: #dee1ee;
+  transition: opacity 0.2s ease;
 }
 
 .avatarLoading {
@@ -91,56 +102,68 @@
   cursor: pointer;
 }
 
-.userInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  color: var(--col-black);
+.userMeta {
+  display: grid;
+  row-gap: 6px;
+  justify-items: center;
+  font-family: "Gazprombank Sans", sans-serif;
 }
 
 .userName {
-  font-size: 1.375rem;
-  line-height: 1.875rem;
-  color: var(--col-black);
+  font-family: "Halvar Breitschrift", sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 28px;
+  color: #000000;
 }
 
-.userMeta {
-  font-size: 0.8125rem;
-  line-height: 1.25rem;
-  color: rgba(0, 0, 0, 0.6);
-}
-
-.badges {
+.userRow {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 
-.badge,
-.badgeSoft {
-  padding: 6px 12px;
+.uid {
+  color: rgba(0, 0, 0, 0.55);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.pill {
+  background: rgba(25, 25, 239, 0.12);
+  color: #1919ef;
   border-radius: 999px;
-  font-size: 0.75rem;
-  line-height: 1rem;
+  padding: 4px 8px;
+  font-size: 12px;
+  line-height: 16px;
   font-weight: 600;
 }
 
-.badge {
-  background: var(--col-violet);
-  color: var(--text-primary);
+.mint {
+  background: rgba(88, 255, 255, 0.18);
+  color: #1919ef;
 }
 
-.badgeSoft {
-  background: rgba(88, 255, 255, 0.18);
-  color: var(--col-tmin);
+.editButton {
+  min-width: 160px;
 }
 
 .sectionCard {
+  display: flex;
+  flex-direction: column;
   gap: 16px;
+  padding: 20px;
 }
 
-.sectionCard > h2 {
-  color: var(--col-black);
+.sectionCard h2 {
+  margin: 0;
+  font-family: "Halvar Breitschrift", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 26px;
+  color: #000000;
 }
 
 .fields {
@@ -153,21 +176,34 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
+  flex-wrap: wrap;
+}
+
+.rowBetween > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .rowTitle {
+  font-family: "Gazprombank Sans", sans-serif;
   font-weight: 600;
-  color: var(--col-black);
+  color: #000000;
+  margin: 0 0 4px;
 }
 
 .rowHint {
-  font-size: 0.8125rem;
-  line-height: 1.25rem;
+  font-family: "Gazprombank Sans", sans-serif;
+  font-size: 13px;
+  line-height: 20px;
   color: rgba(0, 0, 0, 0.65);
 }
 
 .smallBtn {
   width: auto;
+  min-width: 120px;
+  height: 44px;
+  padding: 0 16px;
 }
 
 .settingsList {
@@ -181,13 +217,20 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  color: var(--col-black);
+  color: #000000;
+  font-family: "Gazprombank Sans", sans-serif;
+  flex-wrap: wrap;
 }
 
 .settingItem span {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.settingItem > span:first-child {
+  flex: 1;
+  min-width: 200px;
 }
 
 .toggle {
@@ -209,20 +252,35 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--col-violet);
+  background: #1919ef;
   transition: transform 0.2s ease;
 }
 
 .toggle:checked {
-  background: linear-gradient(135deg, var(--col-mint) 0%, var(--col-melissa) 100%);
+  background: linear-gradient(135deg, #58ffff 0%, #3cffb9 100%);
 }
 
 .toggle:checked::after {
   transform: translateX(20px);
-  background: var(--col-tmin);
+  background: #060698;
 }
 
 .logout {
   align-self: center;
   width: 100%;
+  max-width: 360px;
+}
+
+@media (min-width: 768px) {
+  .page {
+    gap: 24px;
+  }
+
+  .profileHeader {
+    padding: 24px;
+  }
+
+  .sectionCard {
+    padding: 24px;
+  }
 }

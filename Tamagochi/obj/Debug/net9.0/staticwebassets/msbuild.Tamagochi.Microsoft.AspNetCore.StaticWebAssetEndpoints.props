@@ -36,6 +36,18 @@
       <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-xnLuJJZe8VoPe12u6R\u002BuqS4T4TypWAwTdVRRYAESSEo="}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"57988"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022xnLuJJZe8VoPe12u6R\u002BuqS4T4TypWAwTdVRRYAESSEo=\u0022"},{"Name":"Last-Modified","Value":"Wed, 01 Oct 2025 21:47:12 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/Tamagochi/avatars/978036db-3ebb-4714-84b9-1bee66b5ea0c.png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\avatars\978036db-3ebb-4714-84b9-1bee66b5ea0c.png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-dmKCJcXr0fy57HKjFDRHv/QMMzoQmDIBF9hnaieyi5Q="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"94048"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022dmKCJcXr0fy57HKjFDRHv/QMMzoQmDIBF9hnaieyi5Q=\u0022"},{"Name":"Last-Modified","Value":"Thu, 02 Oct 2025 17:07:26 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/Tamagochi/avatars/978036db-3ebb-4714-84b9-1bee66b5ea0c.yakbe1jf8y.png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\avatars\978036db-3ebb-4714-84b9-1bee66b5ea0c.png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"yakbe1jf8y"},{"Name":"integrity","Value":"sha256-dmKCJcXr0fy57HKjFDRHv/QMMzoQmDIBF9hnaieyi5Q="},{"Name":"label","Value":"_content/Tamagochi/avatars/978036db-3ebb-4714-84b9-1bee66b5ea0c.png"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"94048"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022dmKCJcXr0fy57HKjFDRHv/QMMzoQmDIBF9hnaieyi5Q=\u0022"},{"Name":"Last-Modified","Value":"Thu, 02 Oct 2025 17:07:26 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/Tamagochi/avatars/d777bb18-d71b-477e-abfc-c3d652bd0b98.6t55sh7hdf.png">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\avatars\d777bb18-d71b-477e-abfc-c3d652bd0b98.png'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>

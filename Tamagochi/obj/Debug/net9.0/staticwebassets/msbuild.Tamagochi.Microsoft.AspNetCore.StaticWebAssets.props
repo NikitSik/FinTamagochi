@@ -54,6 +54,24 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\avatars\6b643c5e-7694-4b12-a664-832d2a81a5de.png'))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\avatars\978036db-3ebb-4714-84b9-1bee66b5ea0c.png'))">
+      <SourceType>Package</SourceType>
+      <SourceId>Tamagochi</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/Tamagochi</BasePath>
+      <RelativePath>avatars/978036db-3ebb-4714-84b9-1bee66b5ea0c.png</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>yakbe1jf8y</Fingerprint>
+      <Integrity>dmKCJcXr0fy57HKjFDRHv/QMMzoQmDIBF9hnaieyi5Q=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\avatars\978036db-3ebb-4714-84b9-1bee66b5ea0c.png'))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\avatars\d777bb18-d71b-477e-abfc-c3d652bd0b98.png'))">
       <SourceType>Package</SourceType>
       <SourceId>Tamagochi</SourceId>

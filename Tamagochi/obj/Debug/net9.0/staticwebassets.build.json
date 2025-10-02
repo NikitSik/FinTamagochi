@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "+7g78lIPN86i690YE/qX4hS7Jk3t1NRCRAfxiM5PDlU=",
+  "Hash": "hRVB1Kjmww6O0pfN6bJ2vCWNuv3ubvli60JhviOdrkY=",
   "Source": "Tamagochi",
   "BasePath": "_content/Tamagochi",
   "Mode": "Default",
@@ -78,6 +78,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\avatars\\6b643c5e-7694-4b12-a664-832d2a81a5de.png"
+    },
+    {
+      "Identity": "C:\\Users\\nikit\\source\\repos\\Tamagochi\\Tamagochi\\wwwroot\\avatars\\978036db-3ebb-4714-84b9-1bee66b5ea0c.png",
+      "SourceId": "Tamagochi",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\nikit\\source\\repos\\Tamagochi\\Tamagochi\\wwwroot\\",
+      "BasePath": "_content/Tamagochi",
+      "RelativePath": "avatars/978036db-3ebb-4714-84b9-1bee66b5ea0c#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "yakbe1jf8y",
+      "Integrity": "dmKCJcXr0fy57HKjFDRHv/QMMzoQmDIBF9hnaieyi5Q=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\avatars\\978036db-3ebb-4714-84b9-1bee66b5ea0c.png"
     },
     {
       "Identity": "C:\\Users\\nikit\\source\\repos\\Tamagochi\\Tamagochi\\wwwroot\\avatars\\d777bb18-d71b-477e-abfc-c3d652bd0b98.png",
@@ -345,6 +366,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-xnLuJJZe8VoPe12u6R+uqS4T4TypWAwTdVRRYAESSEo="
+        }
+      ]
+    },
+    {
+      "Route": "avatars/978036db-3ebb-4714-84b9-1bee66b5ea0c.png",
+      "AssetFile": "C:\\Users\\nikit\\source\\repos\\Tamagochi\\Tamagochi\\wwwroot\\avatars\\978036db-3ebb-4714-84b9-1bee66b5ea0c.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "94048"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"dmKCJcXr0fy57HKjFDRHv/QMMzoQmDIBF9hnaieyi5Q=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 02 Oct 2025 17:07:26 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-dmKCJcXr0fy57HKjFDRHv/QMMzoQmDIBF9hnaieyi5Q="
+        }
+      ]
+    },
+    {
+      "Route": "avatars/978036db-3ebb-4714-84b9-1bee66b5ea0c.yakbe1jf8y.png",
+      "AssetFile": "C:\\Users\\nikit\\source\\repos\\Tamagochi\\Tamagochi\\wwwroot\\avatars\\978036db-3ebb-4714-84b9-1bee66b5ea0c.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "94048"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"dmKCJcXr0fy57HKjFDRHv/QMMzoQmDIBF9hnaieyi5Q=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 02 Oct 2025 17:07:26 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "yakbe1jf8y"
+        },
+        {
+          "Name": "label",
+          "Value": "avatars/978036db-3ebb-4714-84b9-1bee66b5ea0c.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-dmKCJcXr0fy57HKjFDRHv/QMMzoQmDIBF9hnaieyi5Q="
         }
       ]
     },

@@ -14,6 +14,12 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState<string | undefined>();
+  const [avatarFailed, setAvatarFailed] = useState(false);
+
+  useEffect(() => {
+    setAvatarFailed(false);
+  }, [preview, user?.avatarUrl]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -75,19 +81,38 @@ export default function Profile() {
       return;
     }
 
+    const localUrl = URL.createObjectURL(file);
+    setAvatarFailed(false);
+    setPreview(localUrl);
+
     try {
       setUploading(true);
-      const localUrl = URL.createObjectURL(file);
-      setUser((u) => (u ? { ...u, avatarUrl: localUrl } : u));
       const url = await api.uploadAvatar(file);
       setUser((u) => (u ? { ...u, avatarUrl: url } : u));
+      setPreview(undefined);
+      setAvatarFailed(false);
     } catch (e: any) {
       alert(e?.message ?? "Не удалось загрузить аватар");
+      setPreview(undefined);
+      setAvatarFailed(false);
     } finally {
+      URL.revokeObjectURL(localUrl);
       setUploading(false);
       if (fileRef.current) fileRef.current.value = "";
     }
   };
+
+  const avatarUrl = preview ?? avatar ?? undefined;
+  const initials =
+    name
+      .split(" ")
+      .filter(Boolean)
+      .map((part) => part.slice(0, 1))
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() ||
+    name.slice(0, 1).toUpperCase() ||
+    "?";
 
   return (
     <div className={styles.page}>
@@ -96,14 +121,18 @@ export default function Profile() {
         <p className={styles.lead}>Управляйте аккаунтом и настройками приложения.</p>
       </header>
 
-      <Card padding="lg" className={styles.userCard}>
-        <div className={`${styles.avatarWrap} ${uploading ? styles.avatarLoading : ""}`}>
-          {avatar ? (
-            <img src={avatar} alt="Аватар" className={styles.avatar} />
-          ) : (
-            <div className={styles.avatarPlaceholder}>{name.slice(0, 1).toUpperCase()}</div>
+      <section className={styles.profileHeader}>
+        <div className={`${styles.avatarRing} ${uploading ? styles.avatarLoading : ""}`}>
+          {avatarUrl && !avatarFailed && (
+            <img
+              src={avatarUrl}
+              alt="Аватар"
+              onError={() => {
+                setAvatarFailed(true);
+              }}
+            />
           )}
-          <span className={styles.avatarRing} />
+          {(!avatarUrl || avatarFailed) && <div className={styles.avatarFallback}>{initials}</div>}
           <input
             ref={fileRef}
             type="file"
@@ -112,12 +141,12 @@ export default function Profile() {
             className={styles.fileInput}
           />
         </div>
-        <div className={styles.userInfo}>
-          <h2 className={styles.userName}>{name}</h2>
-          <p className={styles.userMeta}>UID {uid}</p>
-          <div className={styles.badges}>
-            <span className={styles.badge}>Уровень {level}</span>
-            <span className={styles.badgeSoft}>Фин. здоровье {finHealth}%</span>
+        <div className={styles.userMeta}>
+          <div className={styles.userName}>{name}</div>
+          <div className={styles.userRow}>
+            <span className={styles.uid}>{uid}</span>
+            <span className={styles.pill}>Уровень {level}</span>
+            <span className={`${styles.pill} ${styles.mint}`}>Фин. здоровье {finHealth}%</span>
           </div>
         </div>
         <Button
@@ -125,10 +154,11 @@ export default function Profile() {
           fullWidth={false}
           onClick={onPickAvatar}
           disabled={uploading}
+          className={styles.editButton}
         >
           {uploading ? "Загрузка…" : "Изменить"}
         </Button>
-      </Card>
+      </section>
 
       <Card className={styles.sectionCard}>
         <h2>Аккаунт</h2>
@@ -184,7 +214,7 @@ export default function Profile() {
             <p className={styles.rowTitle}>Изменить пароль</p>
             <p className={styles.rowHint}>Рекомендуем обновлять пароль каждые 3 месяца.</p>
           </div>
-          <Button variant="ghost" fullWidth={false} className={styles.smallBtn}>
+          <Button variant="secondary" fullWidth={false} className={styles.smallBtn}>
             Сменить
           </Button>
         </div>
@@ -205,7 +235,7 @@ export default function Profile() {
               <span className={styles.rowTitle}>Язык</span>
               <span className={styles.rowHint}>Интерфейс приложения</span>
             </span>
-            <Button variant="ghost" fullWidth={false} className={styles.smallBtn}>
+            <Button variant="secondary" fullWidth={false} className={styles.smallBtn}>
               Русский
             </Button>
           </div>
