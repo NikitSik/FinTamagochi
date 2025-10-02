@@ -221,6 +221,26 @@ export default function Profile() {
       </Card>
 
       <Card className={styles.sectionCard}>
+        <h2>Банковские продукты</h2>
+        <div className={styles.bankProducts}>
+          <p className={styles.bankText}>
+            Добавьте карту Газпромбанка, чтобы управлять ей прямо в приложении и получать
+            персональные предложения.
+          </p>
+          <Button
+            variant="primary"
+            fullWidth={false}
+            className={`${styles.smallBtn} ${styles.bankButton}`}
+            onClick={() => {
+              window.open("https://www.gazprombank.ru/personal/cards/", "_blank", "noopener");
+            }}
+          >
+            Добавить карту Газпромбанка
+          </Button>
+        </div>
+      </Card>
+
+      <Card className={styles.sectionCard}>
         <h2>Настройки</h2>
         <div className={styles.settingsList}>
           <label className={styles.settingItem}>
