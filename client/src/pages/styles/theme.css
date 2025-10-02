@@ -1,71 +1,71 @@
 :root {
   /* базовые */
-  --bg: #0e1220;
+  --bg: var(--color-tmin);
   --text: #ffffff;
-  --muted: rgba(255,255,255,.6);
-  --card: rgba(0,0,0,.25);
-  --card-border: rgba(255,255,255,.06);
-  --accent: #7c67f2;
+  --muted: rgba(222, 225, 238, 0.78);
+  --card: linear-gradient(145deg, rgba(189, 206, 250, 0.16), rgba(222, 225, 238, 0.08));
+  --card-border: rgba(189, 206, 250, 0.35);
+  --accent: var(--color-mint);
 
-  --shop-surface: #11162a;
-  --shop-item-bg: #151d36;
-  --shop-border: rgba(255,255,255,.12);
-  --shop-chip-bg: rgba(255,255,255,.06);
-  --shop-chip-text: rgba(255,255,255,.85);
+  --shop-surface: linear-gradient(160deg, rgba(189, 206, 250, 0.18), rgba(96, 136, 228, 0.12));
+  --shop-item-bg: rgba(14, 19, 56, 0.85);
+  --shop-border: rgba(189, 206, 250, 0.45);
+  --shop-chip-bg: rgba(88, 255, 255, 0.12);
+  --shop-chip-text: #e9fbff;
 
   /* нижняя навигация */
-  --nav-bg: rgba(10,12,24,.9);
-  --nav-border: rgba(255,255,255,.08);
+  --nav-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.92), rgba(6, 6, 152, 0.88));
+  --nav-border: rgba(88, 255, 255, 0.22);
 
   /* вспомогательные */
-  --chip: rgba(255,255,255,.10);
+  --chip: rgba(93, 109, 173, 0.3);
   --chip-text: #ffffff;
 }
 
-/* LIGHT */
+/* Светлая версия адаптирована под фирменную палитру */
 html.theme-light {
-  --bg: #f6f7fb;
-  --text: #101225;
-  --muted: rgba(0,0,0,.6);
-  --card: #ffffff;
-  --card-border: rgba(0,0,0,.06);
-  --accent: #3b82f6;
+  --bg: var(--color-lily);
+  --text: #020219;
+  --muted: rgba(6, 6, 152, 0.7);
+  --card: linear-gradient(140deg, rgba(189, 206, 250, 0.85), rgba(222, 225, 238, 0.75));
+  --card-border: rgba(25, 25, 239, 0.25);
+  --accent: var(--color-fialka);
 
-  --shop-surface: #ffffff;
-  --shop-item-bg: #f1f4ff;
-  --shop-border: rgba(15, 23, 42, 0.12);
-  --shop-chip-bg: rgba(59, 130, 246, 0.12);
-  --shop-chip-text: #1e3a8a;
+  --shop-surface: linear-gradient(160deg, rgba(189, 206, 250, 0.88), rgba(222, 225, 238, 0.8));
+  --shop-item-bg: rgba(222, 225, 238, 0.95);
+  --shop-border: rgba(25, 25, 239, 0.2);
+  --shop-chip-bg: rgba(25, 25, 239, 0.12);
+  --shop-chip-text: #000a58;
 
-  --nav-bg: rgba(255,255,255,.9);
-  --nav-border: rgba(0,0,0,.08);
+  --nav-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(25, 25, 239, 0.85));
+  --nav-border: rgba(25, 25, 239, 0.25);
 
-  --chip: rgba(0,0,0,.06);
-  --chip-text: #101225;
+  --chip: rgba(25, 25, 239, 0.12);
+  --chip-text: #020219;
 }
 
 
 
-/* GPB (сине-белый) */
+/* Фирменная синяя тема */
 html.theme-gpb {
-  --bg: #061a42;              /* глубокий синий */
+  --bg: var(--color-tmin);
   --text: #ffffff;
-  --muted: rgba(255,255,255,.75);
-  --card: rgba(255,255,255,.06);
-  --card-border: rgba(255,255,255,.14);
-  --accent: #0066cc;          /* корпоративный голубой */
+  --muted: rgba(222, 225, 238, 0.78);
+  --card: linear-gradient(145deg, rgba(189, 206, 250, 0.2), rgba(222, 225, 238, 0.12));
+  --card-border: rgba(189, 206, 250, 0.45);
+  --accent: var(--color-mint);
 
-  --shop-surface: #0b234d;
-  --shop-item-bg: rgba(10, 38, 80, 0.92);
-  --shop-border: rgba(255,255,255,.16);
-  --shop-chip-bg: rgba(255,255,255,.10);
-  --shop-chip-text: #eaf4ff;
+  --shop-surface: linear-gradient(160deg, rgba(96, 136, 228, 0.24), rgba(189, 206, 250, 0.18));
+  --shop-item-bg: rgba(10, 10, 90, 0.85);
+  --shop-border: rgba(189, 206, 250, 0.5);
+  --shop-chip-bg: rgba(88, 255, 255, 0.14);
+  --shop-chip-text: #e9fbff;
 
-  --nav-bg: rgba(4,12,32,.9);
-  --nav-border: rgba(255,255,255,.12);
+  --nav-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.94), rgba(6, 6, 152, 0.9));
+  --nav-border: rgba(88, 255, 255, 0.26);
 
-  --chip: rgba(255,255,255,.10);
-  --chip-text: #eaf4ff;
+  --chip: rgba(96, 136, 228, 0.22);
+  --chip-text: #ffffff;
 }
 
 /* утилити-токены для переиспользования в Tailwind классах через [var(--...)] */

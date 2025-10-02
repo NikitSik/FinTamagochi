@@ -1,7 +1,10 @@
 
 .page {
   min-height: 100dvh;
-  background: var(--bg);
+  background:
+    radial-gradient(circle at 8% -12%, rgba(25, 25, 239, 0.4), transparent 55%),
+    radial-gradient(circle at 92% 0%, rgba(96, 136, 228, 0.32), transparent 60%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.98) 0%, rgba(6, 6, 152, 0.92) 55%, #000000 100%);
   color: var(--text);
   display: flex;
   flex-direction: column;
@@ -18,9 +21,11 @@
 .title {
   margin: 0;
   text-align: center;
-  color: var(--muted);
+  color: #ffffff;
   font-weight: 700;
   font-size: var(--title-size);
+  font-family: "Halvar Breitschrift", "Gazprombank Sans", sans-serif;
+  text-transform: uppercase;
 }
 
 .coins {
@@ -37,9 +42,9 @@
   width: clamp(16px, 4.5vw, 20px);
   height: clamp(16px, 4.5vw, 20px);
   border-radius: 50%;
-  background: #f6c74a;
+  background: linear-gradient(135deg, var(--color-fialka), var(--color-mint));
   display: inline-block;
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2) inset;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35) inset;
 }
 
 .main {
@@ -65,7 +70,9 @@
   margin: 0;
   font-size: clamp(16px, 4.6vw, 20px);
   font-weight: 700;
-  color: var(--muted);
+  color: #ffffff;
+  font-family: "Halvar Breitschrift", "Gazprombank Sans", sans-serif;
+  text-transform: uppercase;
 }
 
 .scene {
@@ -78,15 +85,15 @@
 }
 
 .bgDefault {
-  background: linear-gradient(160deg, #222 0%, #1a1a1a 100%);
+  background: linear-gradient(150deg, rgba(0, 0, 0, 0.82), rgba(6, 6, 152, 0.72));
 }
 
 .bgSky {
-  background: linear-gradient(160deg, #4f8bf8 0%, #c3ddff 100%);
+  background: linear-gradient(150deg, rgba(25, 25, 239, 0.65), rgba(96, 136, 228, 0.6));
 }
 
 .bgRoom {
-  background: linear-gradient(160deg, #745ae7 0%, #2d1a58 100%);
+  background: linear-gradient(150deg, rgba(189, 206, 250, 0.45), rgba(6, 6, 152, 0.75));
 }
 
 .pet {
@@ -130,7 +137,7 @@
 
 .progress {
   height: clamp(8px, 2vw, 10px);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(189, 206, 250, 0.24);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -138,7 +145,7 @@
 .progress i {
   display: block;
   height: 100%;
-  background: var(--accent);
+  background: linear-gradient(90deg, var(--color-mint), var(--color-fialka));
 }
 
 .playBlock {
@@ -161,16 +168,17 @@
 .playBtn {
   padding: clamp(10px, 3vw, 14px) clamp(18px, 5vw, 28px);
   border-radius: 999px;
-  border: 0;
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text);
+  border: 1px solid rgba(189, 206, 250, 0.35);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.75), rgba(6, 6, 152, 0.7));
+  color: #f6f9ff;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.2s ease;
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
 }
 
 .playBtn:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.78), rgba(25, 25, 239, 0.75));
+  border-color: rgba(189, 206, 250, 0.5);
 }
 
 .playBtn:active {
@@ -186,7 +194,8 @@
 .inventoryItem {
   padding: clamp(6px, 2vw, 10px) clamp(10px, 3vw, 16px);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, rgba(189, 206, 250, 0.24), rgba(222, 225, 238, 0.16));
+  border: 1px solid rgba(189, 206, 250, 0.35);
   font-size: clamp(13px, 3.6vw, 16px);
 }
 
@@ -203,15 +212,15 @@
 }
 
 .message {
-  background: rgba(56, 189, 248, 0.18);
-  border: 1px solid rgba(56, 189, 248, 0.45);
-  color: #bae6fd;
+  background: rgba(88, 255, 255, 0.14);
+  border: 1px solid rgba(88, 255, 255, 0.35);
+  color: #b9ffff;
 }
 
 .warning {
-  background: rgba(248, 113, 113, 0.12);
-  border: 1px solid rgba(248, 113, 113, 0.35);
-  color: #fecaca;
+  background: rgba(221, 65, 219, 0.16);
+  border: 1px solid rgba(221, 65, 219, 0.35);
+  color: #ffd0fb;
 }
 
 .actionBar {
@@ -219,8 +228,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--nav-bg);
-  border-top: 1px solid var(--nav-border);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.92), rgba(6, 6, 152, 0.85));
+  border-top: 1px solid rgba(88, 255, 255, 0.25);
+  box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(12px);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
@@ -232,22 +242,23 @@
 .actionButton {
   height: clamp(46px, 12vw, 56px);
   border-radius: clamp(12px, 3.5vw, 18px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text);
+  border: 1px solid rgba(189, 206, 250, 0.38);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.78), rgba(6, 6, 152, 0.7));
+  color: #f8fbff;
   font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: clamp(8px, 2.5vw, 14px);
-  transition: transform 0.15s ease, background 0.2s ease;
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
 }
 
 .actionButtonPrimary {
-  background: var(--accent);
-  border-color: transparent;
-  color: #fff;
+  background: linear-gradient(135deg, var(--color-raspberry), var(--color-sakura));
+  border-color: rgba(221, 65, 219, 0.4);
+  color: #21001f;
+  box-shadow: 0 16px 36px rgba(221, 65, 219, 0.35);
 }
 
 .actionButton:disabled {
@@ -337,18 +348,19 @@
 .shopFilter {
   height: clamp(36px, 10vw, 44px);
   border-radius: 999px;
-  border: 1px solid var(--shop-border);
-  background: var(--shop-chip-bg);
-  color: var(--shop-chip-text);
+  border: 1px solid rgba(189, 206, 250, 0.45);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.75), rgba(6, 6, 152, 0.68));
+  color: #e7edff;
   font-size: clamp(13px, 3.6vw, 15px);
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .shopFilterActive {
-  background: var(--accent);
-  color: #fff;
-  border-color: transparent;
+  background: linear-gradient(135deg, var(--color-fialka), var(--color-mint));
+  color: #020225;
+  border-color: rgba(88, 255, 255, 0.4);
+  box-shadow: 0 12px 28px rgba(88, 255, 255, 0.25);
 }
 
 .err {
@@ -415,9 +427,9 @@
   height: clamp(24px, 6vw, 28px);
   border-radius: 999px;
   font-size: clamp(12px, 3.4vw, 14px);
-  background: var(--shop-chip-bg);
-  color: var(--shop-chip-text);
-  border: 1px solid var(--shop-border);
+  background: linear-gradient(135deg, rgba(189, 206, 250, 0.28), rgba(222, 225, 238, 0.18));
+  color: #f4f6ff;
+  border: 1px solid rgba(189, 206, 250, 0.4);
 }
 
 .shopPrice {
@@ -433,19 +445,20 @@
 
 .shopEffect {
   font-size: clamp(13px, 3.6vw, 16px);
-  color: #bef264;
+  color: var(--color-mint);
   margin-top: clamp(4px, 1.5vw, 8px);
 }
 
 .shopOwned {
   font-size: clamp(11px, 3.2vw, 13px);
-  color: #a3e635;
-  border: 1px solid rgba(163, 230, 53, 0.4);
+  color: var(--color-mint);
+  border: 1px solid rgba(88, 255, 255, 0.4);
   border-radius: 999px;
   padding: 0 clamp(6px, 2vw, 10px);
   height: clamp(22px, 5.5vw, 26px);
   display: inline-flex;
   align-items: center;
+  background: rgba(88, 255, 255, 0.12);
 }
 
 .shopRowFooter {
@@ -456,13 +469,14 @@
   width: 100%;
   height: clamp(44px, 12vw, 52px);
   border-radius: clamp(12px, 3.5vw, 18px);
-  background: var(--accent);
-  color: #fff;
+  background: linear-gradient(135deg, var(--color-fialka), var(--color-mint));
+  color: #020225;
   border: 0;
   padding: 0 clamp(16px, 4.5vw, 24px);
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.2s ease;
+  transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 14px 32px rgba(88, 255, 255, 0.3);
 }
 
 .buyBtn:disabled {
@@ -478,16 +492,17 @@
   width: 100%;
   height: clamp(42px, 11vw, 50px);
   border-radius: clamp(12px, 3.5vw, 18px);
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text);
-  border: 1px solid var(--card-border);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.78), rgba(6, 6, 152, 0.72));
+  color: #f5f8ff;
+  border: 1px solid rgba(189, 206, 250, 0.4);
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.2s ease;
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
 }
 
 .closeBtn:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.82), rgba(25, 25, 239, 0.78));
+  border-color: rgba(189, 206, 250, 0.5);
 }
 
 .closeBtn:active {

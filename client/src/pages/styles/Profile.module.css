@@ -1,6 +1,9 @@
 .page {
   min-height: 100dvh;
-  background: var(--bg);
+  background:
+    radial-gradient(circle at 6% -10%, rgba(25, 25, 239, 0.4), transparent 58%),
+    radial-gradient(circle at 92% 0%, rgba(96, 136, 228, 0.28), transparent 60%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.98) 0%, rgba(6, 6, 152, 0.94) 55%, #000000 100%);
   color: var(--text);
   display: grid;
   grid-template-rows: auto 1fr;
@@ -13,9 +16,11 @@
 .title {
   margin: 0;
   text-align: center;
-  color: rgba(255, 255, 255, 0.7);
+  color: #ffffff;
   font-weight: 700;
   font-size: var(--title-size);
+  font-family: "Halvar Breitschrift", "Gazprombank Sans", sans-serif;
+  text-transform: uppercase;
 }
 
 .main {
@@ -33,10 +38,11 @@
   grid-template-columns: auto 1fr auto;
   gap: clamp(12px, 3vw, 20px);
   align-items: center;
-  background: var(--glass-bg);
-  border: 1px solid var(--card-border-color);
+  background: linear-gradient(145deg, rgba(222, 225, 238, 0.22), rgba(189, 206, 250, 0.12));
+  border: 1px solid rgba(189, 206, 250, 0.35);
   border-radius: var(--card-radius);
   padding: clamp(14px, 4vw, 24px);
+  box-shadow: 0 26px 48px rgba(0, 0, 0, 0.45);
 }
 
 .avatarWrap {
@@ -55,13 +61,14 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: radial-gradient(100% 100% at 50% 0%, #2a2d3f 0%, #1a1c2b 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, var(--color-raspberry), var(--color-fialka));
+  border: 2px solid rgba(221, 65, 219, 0.45);
   font-weight: 700;
   font-size: clamp(24px, 6vw, 30px);
   object-fit: cover;
   object-position: center;
   color: #fff;
+  box-shadow: 0 12px 28px rgba(221, 65, 219, 0.32);
 }
 
 .userInfo {
@@ -72,10 +79,12 @@
 .userName {
   font-weight: 600;
   font-size: clamp(16px, 4.5vw, 20px);
+  font-family: "Halvar Breitschrift", "Gazprombank Sans", sans-serif;
+  text-transform: uppercase;
 }
 
 .userMeta {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(222, 225, 238, 0.72);
   font-size: clamp(13px, 3.4vw, 15px);
 }
 
@@ -94,14 +103,15 @@
 }
 
 .badge {
-  background: #6d4cff;
-  color: #fff;
+  background: linear-gradient(135deg, var(--color-raspberry), var(--color-sakura));
+  color: #200022;
+  box-shadow: 0 10px 24px rgba(221, 65, 219, 0.25);
 }
 
 .badgeSoft {
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(88, 255, 255, 0.12);
+  color: var(--color-mint);
+  border: 1px solid rgba(88, 255, 255, 0.35);
 }
 
 .editBtn {
@@ -109,14 +119,15 @@
   padding: 0 clamp(12px, 3.5vw, 18px);
   border-radius: clamp(10px, 3vw, 14px);
   border: 0;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  background: linear-gradient(135deg, var(--color-fialka), var(--color-mint));
+  color: #020225;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.2s ease;
+  transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .editBtn:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: linear-gradient(135deg, var(--color-fialka), rgba(88, 255, 255, 0.85));
+  box-shadow: 0 12px 28px rgba(88, 255, 255, 0.25);
 }
 
 .editBtn:active {
@@ -124,16 +135,19 @@
 }
 
 .card {
-  background: var(--glass-bg);
-  border: 1px solid var(--card-border-color);
+  background: linear-gradient(145deg, rgba(222, 225, 238, 0.18), rgba(189, 206, 250, 0.12));
+  border: 1px solid rgba(189, 206, 250, 0.32);
   border-radius: var(--card-radius);
   padding: clamp(14px, 4vw, 24px);
+  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.4);
 }
 
 .cardTitle {
   margin: 0 0 clamp(8px, 2vw, 14px);
   font-size: clamp(15px, 4vw, 18px);
-  color: rgba(255, 255, 255, 0.8);
+  color: #ffffff;
+  font-family: "Halvar Breitschrift", "Gazprombank Sans", sans-serif;
+  text-transform: uppercase;
 }
 
 .list {
@@ -152,17 +166,17 @@
   gap: clamp(8px, 2.5vw, 14px);
   padding: clamp(10px, 2.8vw, 16px) clamp(12px, 3.2vw, 18px);
   border-radius: clamp(12px, 3.5vw, 18px);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, rgba(141, 152, 164, 0.28), rgba(0, 0, 0, 0.72));
+  border: 1px solid rgba(189, 206, 250, 0.28);
 }
 
 .muted {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(222, 225, 238, 0.72);
 }
 
 .linkBtn {
   background: transparent;
-  color: #cbb6ff;
+  color: var(--color-mint);
   border: 0;
   cursor: pointer;
   font-size: clamp(13px, 3.5vw, 15px);
@@ -171,8 +185,8 @@
 .tag {
   padding: clamp(2px, 1vw, 6px) clamp(8px, 2.5vw, 14px);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(88, 255, 255, 0.12);
+  border: 1px solid rgba(88, 255, 255, 0.3);
   font-size: clamp(12px, 3.2vw, 14px);
 }
 
@@ -190,7 +204,7 @@
 .switch i {
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.75), rgba(6, 6, 152, 0.68));
   border-radius: 999px;
 }
 
@@ -204,10 +218,11 @@
   background: #fff;
   border-radius: 50%;
   transition: transform 0.2s ease;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35);
 }
 
 .switch input:checked + i {
-  background: #7f5af0;
+  background: linear-gradient(135deg, var(--color-mint), var(--color-fialka));
 }
 
 .switch input:checked + i::after {
@@ -217,16 +232,17 @@
 .logout {
   height: clamp(44px, 12vw, 52px);
   border-radius: clamp(12px, 3.5vw, 18px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text);
+  border: 1px solid rgba(189, 206, 250, 0.35);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.78), rgba(6, 6, 152, 0.7));
+  color: #f6f9ff;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.2s ease;
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
 }
 
 .logout:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.82), rgba(25, 25, 239, 0.75));
+  border-color: rgba(189, 206, 250, 0.5);
 }
 
 .logout:active {
