@@ -1,10 +1,14 @@
-import { useEffect, useMemo, useState, type ComponentType } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { ComponentType } from "react";
 import { Link } from "react-router-dom";
 import styles from "./styles/Pet.module.css";
-import { api, type PetState, type ShopItem } from "../api";
+import { Card } from "../components/ui/Card";
+import { Button } from "../components/ui/Button";
+import { ProgressBar } from "../components/ui/ProgressBar";
+import PetCarousel, { type PetSlide } from "../components/PetCarousel";
 import Cat from "../components/pets/cat";
 import Dog from "../components/pets/dog";
-import PetCarousel, { type PetSlide } from "../components/PetCarousel";
+import { api, type PetState, type ShopItem } from "../api";
 import {
   SHOP_FILTERS,
   effectText,
@@ -12,7 +16,6 @@ import {
   prettyType,
   type ShopFilter,
 } from "../utils/shop";
-
 
 const ALL_PETS: Record<string, ComponentType<any>> = {
   dog: Dog,
@@ -60,9 +63,12 @@ export default function Pet() {
 
   const bgClass = useMemo(() => {
     switch (state?.background) {
-      case "sky": return styles.bgSky;
-      case "room": return styles.bgRoom;
-      default: return styles.bgDefault;
+      case "sky":
+        return styles.bgSky;
+      case "room":
+        return styles.bgRoom;
+      default:
+        return styles.bgDefault;
     }
   }, [state?.background]);
 
@@ -79,7 +85,6 @@ export default function Pet() {
       } satisfies PetSlide;
     });
   }, [state?.ownedPetIds]);
-
 
   const initialIndex = useMemo(() => {
     if (!state?.selectedPetId) return 0;
@@ -101,7 +106,8 @@ export default function Pet() {
     if (!shopOpen || shopItems.length) return;
     setShopLoading(true);
     setShopErr(null);
-    api.shopItems()
+    api
+      .shopItems()
       .then((items) => setShopItems(items))
       .catch((e: any) => setShopErr(e?.message ?? "Не удалось загрузить магазин"))
       .finally(() => setShopLoading(false));
@@ -136,7 +142,7 @@ export default function Pet() {
       await act("heal", { itemId: item.itemId });
       setMessage(`Питомец чувствует себя лучше (${item.title})`);
     } catch {
-      // сообщение показано в act
+      // handled in act
     } finally {
       setPendingAction(null);
     }
@@ -154,7 +160,7 @@ export default function Pet() {
       await act("feed", { itemId: item.itemId });
       setMessage(`Питомец накормлен (${item.title})`);
     } catch {
-      // сообщение показано в act
+      // handled in act
     } finally {
       setPendingAction(null);
     }
@@ -176,14 +182,15 @@ export default function Pet() {
     [consumables]
   );
   const totalFood = useMemo(() => foodStock.reduce((sum, item) => sum + item.count, 0), [foodStock]);
-  const totalMedicine = useMemo(() => medicineStock.reduce((sum, item) => sum + item.count, 0), [medicineStock]);
+  const totalMedicine = useMemo(
+    () => medicineStock.reduce((sum, item) => sum + item.count, 0),
+    [medicineStock]
+  );
 
   if (loading) {
     return (
       <div className={styles.page}>
-        <main className={styles.main}>
-          <div className={styles.card}>Загрузка…</div>
-        </main>
+        <div className={styles.loader}>Загрузка…</div>
       </div>
     );
   }
@@ -191,9 +198,7 @@ export default function Pet() {
   if (err || !state) {
     return (
       <div className={styles.page}>
-        <main className={styles.main}>
-          <div className={styles.card}>{err ?? "Ошибка"}</div>
-        </main>
+        <div className={styles.loader}>{err ?? "Ошибка"}</div>
       </div>
     );
   }
@@ -206,15 +211,27 @@ export default function Pet() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Питомец</h1>
-        <div className={styles.walletCard}>
-          <span className={styles.walletCaption}>Игровых монет</span>
-          <strong className={styles.walletValue}>{coins}</strong>
+        <h1>ПИТОМЕЦ</h1>
+        <div className={styles.balanceCard}>
+          <span className={styles.balanceLabel}>Игровые монеты</span>
+          <strong className={styles.balanceValue}>{coins}</strong>
         </div>
       </header>
 
-      <main className={styles.main}>
-        <section className={`${styles.scene} ${bgClass}`}>
+      {message && <div className={`${styles.notice} ${styles.noticeInfo}`}>{message}</div>}
+      {state.satiety < 25 && (
+        <div className={`${styles.notice} ${styles.noticeWarn}`}>
+          Питомец проголодался — накормите его!
+        </div>
+      )}
+      {state.health < 40 && (
+        <div className={`${styles.notice} ${styles.noticeWarn}`}>
+          Здоровье на исходе — ему нужна забота.
+        </div>
+      )}
+
+      <Card className={styles.petCard}>
+        <div className={`${styles.scene} ${bgClass}`}>
           <PetCarousel
             key={carouselKey}
             slides={slides}
@@ -232,89 +249,99 @@ export default function Pet() {
               }
             }}
           />
-        </section>
-
-        <div className={styles.alerts}>
-          {message && <div className={`${styles.note} ${styles.noteInfo}`}>{message}</div>}
-          {state.satiety < 25 && <div className={`${styles.note} ${styles.noteWarn}`}>Питомец проголодался — накормите его!</div>}
-          {state.health < 40 && <div className={`${styles.note} ${styles.noteWarn}`}>Здоровье на исходе — ему нужна забота.</div>}
         </div>
+        <div className={styles.petInfo}>
+          <span className={styles.petBadge}>Открыто {state.ownedPetIds.length}</span>
+          <h2 className={styles.petName}>{prettyPetName(state.selectedPetId)}</h2>
+          <p className={styles.petHint}>Выполняйте миссии, чтобы открывать новых друзей.</p>
+        </div>
+      </Card>
 
-        <section className={styles.card}>
-          <h2 className={styles.sectionTitle}>Состояние</h2>
-          <div className={styles.statsGrid}>
-            <Stat label="Настроение" value={state.mood} />
-            <Stat label="Сытость" value={state.satiety} />
-            <Stat label="Здоровье" value={state.health} />
+      <Card className={styles.stateCard}>
+        <div className={styles.stateHeader}>
+          <h2>Состояние</h2>
+          <span className={styles.stateSubtitle}>Слева статус, справа проценты</span>
+        </div>
+        <div className={styles.statsGrid}>
+          <ProgressBar label="Настроение" value={state.mood} variant="mood" />
+          <ProgressBar label="Сытость" value={state.satiety} variant="satiety" />
+          <ProgressBar label="Здоровье" value={state.health} variant="health" />
+        </div>
+        <div className={styles.actionRow}>
+          <Button
+            variant="primary"
+            onClick={handleFeed}
+            disabled={!canFeed}
+          >
+            {pendingAction === "feed"
+              ? "Кормим…"
+              : totalFood > 0
+              ? `Кормить (×${totalFood})`
+              : "Кормить"}
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setShopOpen(true);
+              setShopFilter("all");
+            }}
+          >
+            Магазин
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={handleHeal}
+            disabled={!canHeal}
+          >
+            {pendingAction === "heal"
+              ? "Лечим…"
+              : totalMedicine > 0
+              ? `Вылечить (×${totalMedicine})`
+              : "Вылечить"}
+          </Button>
+        </div>
+      </Card>
+
+      <Card className={styles.summaryCard}>
+        <div className={styles.summaryRow}>
+          <div>
+            <span className={styles.summaryLabel}>Выбранный питомец</span>
+            <div className={styles.summaryValue}>{prettyPetName(state.selectedPetId)}</div>
           </div>
-          <div className={styles.playBlock}>
-            <div className={styles.actionGroup}>
-              <button
-                className={`${styles.actionButton} ${styles.actionButtonPrimary}`}
-                onClick={() => { setShopOpen(true); setShopFilter("all"); }}
-              >
-                Магазин
-              </button>
-              <button
-                className={styles.actionButton}
-                disabled={!canHeal}
-                onClick={handleHeal}
-              >
-                {pendingAction === "heal"
-                  ? "Лечим…"
-                  : totalMedicine > 0
-                    ? `Вылечить (×${totalMedicine})`
-                    : "Вылечить"}
-              </button>
-              <button
-                className={styles.actionButton}
-                disabled={!canFeed}
-                onClick={handleFeed}
-              >
-                {pendingAction === "feed"
-                  ? "Кормим…"
-                  : totalFood > 0
-                    ? `Кормить (×${totalFood})`
-                    : "Кормить"}
-              </button>
+          <div>
+            <span className={styles.summaryLabel}>Питомцев собрано</span>
+            <div className={styles.summaryValue}>
+              {state.ownedPetIds.length} / {slides.length}
             </div>
           </div>
-        </section>
+        </div>
+        <p className={styles.summaryHint}>
+          Выполняйте миссии и заглядывайте в магазин, чтобы открыть новых друзей.
+        </p>
+        <Link className={styles.summaryLink} to="/missions/ANTIFRAUD_TUTORIAL">
+          Перейти к миссии с тестом
+        </Link>
+      </Card>
 
-        <section className={`${styles.card} ${styles.summaryCard}`}>
-          <div className={styles.summaryRow}>
-            <div>
-              <span className={styles.summaryLabel}>Выбранный питомец</span>
-              <div className={styles.summaryValue}>{prettyPetName(state.selectedPetId)}</div>
-            </div>
-            <div>
-              <span className={styles.summaryLabel}>Питомцев собрано</span>
-              <div className={styles.summaryValue}>{state.ownedPetIds.length} / {slides.length}</div>
-            </div>
+      <Card className={styles.inventoryCard}>
+        <h2>Инвентарь</h2>
+        {hasInventory ? (
+          <div className={styles.inventoryList}>
+            {consumables.map((item) => (
+              <span key={`consumable-${item.itemId}`} className={styles.inventoryItem}>
+                {item.title} ×{item.count}
+              </span>
+            ))}
+            {state.items.map((item) => (
+              <span key={`item-${item}`} className={styles.inventoryItem}>
+                {item}
+              </span>
+            ))}
           </div>
-          <p className={styles.summaryHint}>Выполняйте миссии и заглядывайте в магазин, чтобы открыть новых друзей.</p>
-          <Link className={styles.testsLink} to="/missions/ANTIFRAUD_TUTORIAL">Перейти к миссии с тестом</Link>
-        </section>
-
-
-        <section className={styles.card}>
-          <h2 className={styles.sectionTitle}>Инвентарь</h2>
-          {hasInventory ? (
-            <div className={styles.inventoryList}>
-              {consumables.map((item) => (
-                <span key={`consumable-${item.itemId}`} className={styles.inventoryItem}>
-                  {item.title} ×{item.count}
-                </span>
-              ))}
-              {state.items.map((item) => (
-                <span key={`item-${item}`} className={styles.inventoryItem}>{item}</span>
-              ))}
-            </div>
-          ) : (
-            <div className={styles.inventoryEmpty}>Пока пусто — загляните в магазин.</div>
-          )}
-        </section>
-      </main>
+        ) : (
+          <div className={styles.inventoryEmpty}>Пока пусто — загляните в магазин.</div>
+        )}
+      </Card>
 
       {shopOpen && (
         <div className={styles.modalBackdrop} onClick={() => setShopOpen(false)}>
@@ -322,18 +349,22 @@ export default function Pet() {
             <header className={styles.modalHeader}>
               <div>
                 <h2 className={styles.modalTitle}>Магазин</h2>
-                <p className={styles.modalSubtitle}>Выберите всё необходимое для заботы о питомце</p>
+                <p className={styles.modalSubtitle}>
+                  Выберите всё необходимое для заботы о питомце
+                </p>
               </div>
               <div className={styles.balanceWidget}>
-                <span className={styles.balanceCaption}>Баланс</span>
-                <strong className={styles.balanceValue}>{coins} мон.</strong>
+                <span className={styles.balanceWidgetLabel}>Баланс</span>
+                <strong className={styles.balanceWidgetValue}>{coins} мон.</strong>
               </div>
             </header>
             <div className={styles.shopFilters}>
               {SHOP_FILTERS.map((tab) => (
                 <button
                   key={tab.id}
-                  className={`${styles.shopFilter} ${shopFilter === tab.id ? styles.shopFilterActive : ""}`}
+                  className={`${styles.shopFilter} ${
+                    shopFilter === tab.id ? styles.shopFilterActive : ""
+                  }`}
                   onClick={() => setShopFilter(tab.id)}
                 >
                   {tab.label}
@@ -342,44 +373,61 @@ export default function Pet() {
             </div>
             {shopErr && <div className={styles.err}>{shopErr}</div>}
             <ul className={styles.shopList}>
-              {shopLoading && <li className={`${styles.shopRow} ${styles.shopRowState}`}>Загрузка…</li>}
-              {!shopLoading && !filteredItems.length && (
-                <li className={`${styles.shopRow} ${styles.shopRowState}`}>Подходящих товаров нет</li>
+              {shopLoading && (
+                <li className={`${styles.shopRow} ${styles.shopRowState}`}>Загрузка…</li>
               )}
-              {!shopLoading && filteredItems.map((it) => {
-                const owned = it.type === "item" && ownedItemIds.has(it.id);
-                const canBuy = coins >= it.price && buyingId !== it.id && !owned;
-                return (
-                  <li key={it.id} className={styles.shopRow}>
-                    <div className={styles.shopRowContent}>
-                      <div className={styles.shopRowHeader}>
-                        <div>
-                          <div className={styles.shopTitle}>{it.title}</div>
-                          <div className={styles.shopMetaRow}>
-                            <span className={styles.shopMeta}>{prettyType(it.type)}</span>
-                            {owned && <span className={styles.shopOwned}>Уже в инвентаре</span>}
+              {!shopLoading && !filteredItems.length && (
+                <li className={`${styles.shopRow} ${styles.shopRowState}`}>
+                  Подходящих товаров нет
+                </li>
+              )}
+              {!shopLoading &&
+                filteredItems.map((it) => {
+                  const owned = it.type === "item" && ownedItemIds.has(it.id);
+                  const canBuy = coins >= it.price && buyingId !== it.id && !owned;
+                  return (
+                    <li key={it.id} className={styles.shopRow}>
+                      <div className={styles.shopRowContent}>
+                        <div className={styles.shopRowHeader}>
+                          <div>
+                            <div className={styles.shopTitle}>{it.title}</div>
+                            <div className={styles.shopMetaRow}>
+                              <span className={styles.shopMeta}>{prettyType(it.type)}</span>
+                              {owned && <span className={styles.shopOwned}>Уже в инвентаре</span>}
+                            </div>
                           </div>
+                          <div className={styles.shopPrice}>{it.price} мон.</div>
                         </div>
-                        <div className={styles.shopPrice}>{it.price} мон.</div>
+                        {it.description && (
+                          <div className={styles.shopDescription}>{it.description}</div>
+                        )}
+                        {effectText(it.effect) && (
+                          <div className={styles.shopEffect}>{effectText(it.effect)}</div>
+                        )}
                       </div>
-                      {it.description && <div className={styles.shopDescription}>{it.description}</div>}
-                      {effectText(it.effect) && <div className={styles.shopEffect}>{effectText(it.effect)}</div>}
-                    </div>
-                    <div className={styles.shopRowFooter}>
-                      <button
-                        className={styles.buyBtn}
-                        disabled={!canBuy || buyingId === it.id}
-                        onClick={() => purchase(it)}
-                      >
-                        {owned ? "Недоступно" : buyingId === it.id ? "Покупаем…" : "Купить"}
-                      </button>
-                    </div>
-                  </li>
-                );
-              })}
+                      <div className={styles.shopRowFooter}>
+                        <Button
+                          variant="secondary"
+                          className={styles.buyBtn}
+                          fullWidth={false}
+                          disabled={!canBuy || buyingId === it.id}
+                          onClick={() => purchase(it)}
+                        >
+                          {owned
+                            ? "Недоступно"
+                            : buyingId === it.id
+                            ? "Покупаем…"
+                            : "Купить"}
+                        </Button>
+                      </div>
+                    </li>
+                  );
+                })}
             </ul>
             <div className={styles.modalFooter}>
-              <button className={styles.closeBtn} onClick={() => setShopOpen(false)}>Закрыть</button>
+              <Button variant="ghost" fullWidth={false} onClick={() => setShopOpen(false)}>
+                Закрыть
+              </Button>
             </div>
           </div>
         </div>
@@ -388,24 +436,13 @@ export default function Pet() {
   );
 }
 
-
-
-function Stat({ label, value }: { label: string; value: number }) {
-  return (
-    <div className={styles.stat}>
-      <div className={styles.statRow}>
-        <span className={styles.statLabel}>{label}</span>
-        <span className={styles.statValue}>{value}%</span>
-      </div>
-      <div className={styles.progress}><i style={{ width: `${value}%` }} /></div>
-    </div>
-  );
-  }
-
 function prettyPetName(id?: string | null) {
   switch (id) {
-    case "cat": return "Кот";
-    case "dog": return "Пёс";
-    default: return "Питомец";
+    case "cat":
+      return "Кот";
+    case "dog":
+      return "Пёс";
+    default:
+      return "Питомец";
   }
 }

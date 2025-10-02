@@ -1,0 +1,46 @@
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.track {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(141, 152, 164, 0.35);
+  overflow: hidden;
+}
+
+.fill {
+  position: absolute;
+  inset: 0;
+  width: 0;
+  border-radius: inherit;
+  transition: width 0.3s ease;
+}
+
+.default {
+  background: linear-gradient(180deg, var(--col-melissa) 0%, var(--col-mint) 100%);
+}
+
+.mood {
+  background: linear-gradient(135deg, var(--col-mint) 0%, var(--col-violet) 100%);
+}
+
+.satiety {
+  background: var(--col-violet);
+}
+
+.health {
+  background: var(--col-mint);
+}

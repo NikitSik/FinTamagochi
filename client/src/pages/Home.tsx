@@ -1,5 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import styles from "./styles/Home.module.css";
+import { Card } from "../components/ui/Card";
+import { Button } from "../components/ui/Button";
+import { InputField } from "../components/ui/InputField";
 import { api, type User } from "../api";
 
 type ActionStatus = {
@@ -7,14 +10,14 @@ type ActionStatus = {
   text: string;
 };
 
-const rubFormatter = new Intl.NumberFormat("ru-RU");
-
 type View = {
   coins: number;
   savings: number;
   current: number;
   owner: string;
 };
+
+const rubFormatter = new Intl.NumberFormat("ru-RU");
 
 export default function Home() {
   const [view, setView] = useState<View>({
@@ -151,108 +154,97 @@ export default function Home() {
       }
       closeModal();
     } catch {
-      // Ошибка уже отображена в withAction
+      // already handled
     }
   }
 
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <div className={styles.hero}>
-          <div>
-            <p className={styles.subtitle}>Добро пожаловать, {view.owner}</p>
-            <h1 className={styles.title}>ФинТамагочи</h1>
-          </div>
-          <div className={styles.totalPill} aria-live="polite">
-            <span className={styles.totalLabel}>Общий баланс</span>
-            <strong className={styles.totalValue}>₽ {formatRUB(totalRUB)}</strong>
+        <div>
+          <p className={styles.subtitle}>Добро пожаловать, {view.owner}</p>
+          <div className={styles.titleRow}>
+            <h1>ФинТамагочи</h1>
+            <div className={styles.totalPill} aria-live="polite">
+              <span className={styles.totalLabel}>Общий баланс</span>
+              <strong className={styles.totalValue}>₽ {formatRUB(totalRUB)}</strong>
+            </div>
           </div>
         </div>
+        <p className={styles.lead}>Следите за финансами и питомцем в одном приложении.</p>
       </header>
 
-      <main className={styles.main}>
-        <section className={`${styles.surface} ${styles.summaryCard}`}>
-          <div className={styles.summaryHeader}>
-            <div>
-              <h2>Мой счёт</h2>
-              <p className={styles.summaryHint}>
-                Актуальный баланс и доступные ресурсы.
-              </p>
-            </div>
-            <span className={styles.badge}>₽</span>
+      <Card padding="lg" className={styles.summaryCard}>
+        <header className={styles.summaryHeader}>
+          <div>
+            <h2>Мой счёт</h2>
+            <p className={styles.summaryHint}>Актуальный баланс и доступные ресурсы.</p>
           </div>
+        </header>
 
-          <p className={styles.summaryTotal}>₽ {formatRUB(totalRUB)}</p>
+        <div className={styles.summaryTotalBlock}>
+          <span className={styles.summaryTotalLabel}>Баланс</span>
+          <span className={styles.summaryTotalValue}>₽ {formatRUB(totalRUB)}</span>
+        </div>
 
-          <div className={styles.summaryBreakdown}>
-            {accounts.map((account) => (
-              <div className={styles.breakdownItem} key={account.key}>
-                <span className={styles.breakdownLabel}>{account.title}</span>
-                <span className={styles.breakdownValue}>
-                  {account.currency ? `₽ ${formatRUB(account.amount)}` : account.amount}
-                </span>
-                <span className={styles.breakdownNote}>{account.note}</span>
+        <div className={styles.accountList}>
+          {accounts.map((account) => (
+            <div className={styles.accountRow} key={account.key}>
+              <div className={styles.accountMeta}>
+                <span className={styles.accountTitle}>{account.title}</span>
+                <span className={styles.accountNote}>{account.note}</span>
               </div>
-            ))}
-          </div>
+              <span className={styles.accountValue}>
+                {account.currency ? `₽ ${formatRUB(account.amount)}` : account.amount}
+              </span>
+            </div>
+          ))}
+        </div>
 
-          <div className={styles.quickActions}>
-            <button
-              type="button"
-              className={styles.primaryBtn}
-              onClick={handleTopUp}
-              disabled={pendingAction !== null}
-            >
-              Пополнить баланс
-            </button>
-            <button
-              type="button"
-              className={styles.secondaryBtn}
-              onClick={handleTransferToSavings}
-              disabled={pendingAction !== null}
-            >
-              Перевести в накопительный
-            </button>
-          </div>
+        <div className={styles.actions}>
+          <Button onClick={handleTopUp} disabled={pendingAction !== null}>
+            Пополнить баланс
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={handleTransferToSavings}
+            disabled={pendingAction !== null}
+          >
+            Перевести в накопительный
+          </Button>
+        </div>
 
-          {actionStatus && (
-            <p
-              className={`${styles.actionMessage} ${
-                actionStatus.type === "success"
-                  ? styles.actionMessageSuccess
-                  : styles.actionMessageError
-              }`}
-              role="status"
-              aria-live="polite"
-            >
-              {actionStatus.text}
-            </p>
-          )}
-        </section>
-      </main>
+        {actionStatus && (
+          <p
+            className={
+              actionStatus.type === "success"
+                ? styles.actionMessageSuccess
+                : styles.actionMessageError
+            }
+            role="status"
+            aria-live="polite"
+          >
+            {actionStatus.text}
+          </p>
+        )}
+      </Card>
 
       {modalAction && (
-        <div
-          className={styles.modalBackdrop}
-          role="dialog"
-          aria-modal="true"
-          aria-label={
-            modalAction === "topup"
-              ? "Пополнение баланса"
-              : "Перевод в накопительный счёт"
-          }
-          onClick={closeModal}
-        >
+        <div className={styles.modalBackdrop} role="presentation" onClick={closeModal}>
           <div
             className={styles.modalPanel}
+            role="dialog"
+            aria-modal="true"
+            aria-label={
+              modalAction === "topup"
+                ? "Пополнение баланса"
+                : "Перевод в накопительный счёт"
+            }
             onClick={(event) => event.stopPropagation()}
           >
-            <h2 className={styles.modalTitle}>
-              {modalAction === "topup"
-                ? "Пополнить баланс"
-                : "Перевести в накопительный"}
-            </h2>
-
+            <h3 className={styles.modalTitle}>
+              {modalAction === "topup" ? "Пополнить баланс" : "Перевести в накопительный"}
+            </h3>
             <form
               className={styles.modalBody}
               onSubmit={(event) => {
@@ -260,45 +252,30 @@ export default function Home() {
                 submitModal().catch(() => undefined);
               }}
             >
-              <label
-                className={`${styles.modalField} ${
-                  amountError ? styles.modalFieldInvalid : ""
-                }`}
-              >
-                Сумма в рублях
-                <input
-                  inputMode="decimal"
-                  autoFocus
-                  value={amountInput}
-                  onChange={(event) => {
-                    setAmountInput(event.target.value);
-                    if (amountError) {
-                      setAmountError(null);
-                    }
-                  }}
-                  placeholder="Например, 100.50"
-                />
-                {amountError && (
-                  <span className={styles.modalError}>{amountError}</span>
-                )}
-              </label>
-
+              <InputField
+                label="Сумма в рублях"
+                inputMode="decimal"
+                autoFocus
+                placeholder="Например, 100.50"
+                value={amountInput}
+                onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                  setAmountInput(event.target.value);
+                  if (amountError) setAmountError(null);
+                }}
+                error={amountError}
+              />
               <div className={styles.modalActions}>
-                <button
+                <Button
+                  variant="secondary"
                   type="button"
-                  className={styles.secondaryBtn}
                   onClick={closeModal}
                   disabled={pendingAction !== null}
                 >
                   Отмена
-                </button>
-                <button
-                  type="submit"
-                  className={styles.primaryBtn}
-                  disabled={pendingAction !== null}
-                >
+                </Button>
+                <Button type="submit" disabled={pendingAction !== null}>
                   Подтвердить
-                </button>
+                </Button>
               </div>
             </form>
           </div>

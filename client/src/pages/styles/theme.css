@@ -1,73 +1,12 @@
-:root {
-  /* базовые */
-  --bg: var(--color-tmin);
-  --text: #ffffff;
-  --muted: rgba(222, 225, 238, 0.78);
-  --card: linear-gradient(145deg, rgba(189, 206, 250, 0.16), rgba(222, 225, 238, 0.08));
-  --card-border: rgba(189, 206, 250, 0.35);
-  --accent: var(--color-mint);
-
-  --shop-surface: linear-gradient(160deg, rgba(189, 206, 250, 0.18), rgba(96, 136, 228, 0.12));
-  --shop-item-bg: rgba(14, 19, 56, 0.85);
-  --shop-border: rgba(189, 206, 250, 0.45);
-  --shop-chip-bg: rgba(88, 255, 255, 0.12);
-  --shop-chip-text: #e9fbff;
-
-  /* нижняя навигация */
-  --nav-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.92), rgba(6, 6, 152, 0.88));
-  --nav-border: rgba(88, 255, 255, 0.22);
-
-  /* вспомогательные */
-  --chip: rgba(93, 109, 173, 0.3);
-  --chip-text: #ffffff;
-}
-
-/* Светлая версия адаптирована под фирменную палитру */
+:root,
+html.theme-dark,
+html.theme-gpb,
 html.theme-light {
-  --bg: var(--color-lily);
-  --text: #020219;
-  --muted: rgba(6, 6, 152, 0.7);
-  --card: linear-gradient(140deg, rgba(189, 206, 250, 0.85), rgba(222, 225, 238, 0.75));
-  --card-border: rgba(25, 25, 239, 0.25);
-  --accent: var(--color-fialka);
-
-  --shop-surface: linear-gradient(160deg, rgba(189, 206, 250, 0.88), rgba(222, 225, 238, 0.8));
-  --shop-item-bg: rgba(222, 225, 238, 0.95);
-  --shop-border: rgba(25, 25, 239, 0.2);
-  --shop-chip-bg: rgba(25, 25, 239, 0.12);
-  --shop-chip-text: #000a58;
-
-  --nav-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(25, 25, 239, 0.85));
-  --nav-border: rgba(25, 25, 239, 0.25);
-
-  --chip: rgba(25, 25, 239, 0.12);
-  --chip-text: #020219;
+  --surface-card: linear-gradient(180deg, var(--col-viola) 0%, var(--col-lilia) 100%);
+  --surface-card-text: var(--text-secondary);
+  --surface-divider: rgba(0, 0, 0, 0.08);
+  --surface-overlay: rgba(6, 6, 152, 0.92);
+  --surface-overlay-border: rgba(255, 255, 255, 0.06);
+  --surface-pill: rgba(88, 255, 255, 0.12);
+  --surface-pill-text: var(--text-primary);
 }
-
-
-
-/* Фирменная синяя тема */
-html.theme-gpb {
-  --bg: var(--color-tmin);
-  --text: #ffffff;
-  --muted: rgba(222, 225, 238, 0.78);
-  --card: linear-gradient(145deg, rgba(189, 206, 250, 0.2), rgba(222, 225, 238, 0.12));
-  --card-border: rgba(189, 206, 250, 0.45);
-  --accent: var(--color-mint);
-
-  --shop-surface: linear-gradient(160deg, rgba(96, 136, 228, 0.24), rgba(189, 206, 250, 0.18));
-  --shop-item-bg: rgba(10, 10, 90, 0.85);
-  --shop-border: rgba(189, 206, 250, 0.5);
-  --shop-chip-bg: rgba(88, 255, 255, 0.14);
-  --shop-chip-text: #e9fbff;
-
-  --nav-bg: linear-gradient(135deg, rgba(0, 0, 0, 0.94), rgba(6, 6, 152, 0.9));
-  --nav-border: rgba(88, 255, 255, 0.26);
-
-  --chip: rgba(96, 136, 228, 0.22);
-  --chip-text: #ffffff;
-}
-
-/* утилити-токены для переиспользования в Tailwind классах через [var(--...)] */
-.bg-app     { background: var(--bg); }
-.text-app   { color: var(--text); }

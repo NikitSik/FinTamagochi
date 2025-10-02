@@ -1,0 +1,164 @@
+@font-face {
+  font-family: "Halvar Breitschrift";
+  src: url("/fonts/HalvarBreit-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Halvar Breitschrift";
+  src: url("/fonts/HalvarBreit-Bold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Halvar Breitschrift";
+  src: url("/fonts/HalvarBreit-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gazprombank Sans";
+  src: url("/fonts/GazprombankSans-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gazprombank Sans";
+  src: url("/fonts/GazprombankSans-Bold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+  font-family: "Gazprombank Sans", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+
+  /* основные цвета */
+  --col-black: #000000;
+  --col-violet: #1919ef;
+  --col-mint: #58ffff;
+  --col-rasp: #dd41db;
+  --col-melissa: #3cffb9;
+  --col-sakura: #ff82be;
+  --col-tmin: #060698;
+  --col-iris: #6088e4;
+  --col-viola: #bdcefa;
+  --col-belena: #8d98a4;
+  --col-lilia: #dee1ee;
+
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.75);
+  --text-tertiary: rgba(255, 255, 255, 0.55);
+
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 10px;
+  --gap: 16px;
+  --shadow-card: 0 6px 24px rgba(0, 0, 0, 0.35);
+
+  --layout-max-width: 720px;
+  --bottom-nav-height: 72px;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+html {
+  background: radial-gradient(120% 120% at 50% 0%, var(--col-tmin) 0%, var(--col-black) 100%);
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: transparent;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Halvar Breitschrift", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  margin: 0;
+}
+
+h1 { font-size: 1.75rem; line-height: 2.25rem; }
+h2 { font-size: 1.375rem; line-height: 1.875rem; }
+h3 { font-size: 1.125rem; line-height: 1.625rem; }
+h4 { font-size: 1rem; line-height: 1.5rem; }
+
+body,
+p,
+li,
+input,
+button,
+label {
+  font-family: "Gazprombank Sans", system-ui, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--text-primary);
+}
+
+p,
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: var(--col-mint);
+}
+
+a:hover {
+  color: var(--col-melissa);
+}
+
+button {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  line-height: 1.25rem;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(88, 255, 255, 0.35);
+}
+
+:focus-visible {
+  outline: 2px solid var(--col-mint);
+  outline-offset: 2px;
+}
+
+.caption {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--text-tertiary);
+}

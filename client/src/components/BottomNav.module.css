@@ -1,78 +1,64 @@
-.bottomNavWrapper {
-  position: fixed;
-  left: 0;
-  right: 0;
+.wrapper {
+  position: sticky;
   bottom: 0;
-  padding: clamp(10px, 4vw, 24px)
-    clamp(16px, 6vw, 36px)
-    calc(clamp(10px, 4vw, 24px) + env(safe-area-inset-bottom));
+  inset-inline: 0;
+  z-index: 100;
   display: flex;
   justify-content: center;
-  pointer-events: none;
-  z-index: 40;
+  padding: 0 16px env(safe-area-inset-bottom);
+  backdrop-filter: blur(12px);
 }
 
-.bottomNav {
-  width: min(
-    calc(100% - clamp(12px, 5vw, 40px)),
-    calc(var(--page-max-width) + clamp(24px, 6vw, 48px))
-  );
+.bar {
+  width: min(100%, var(--layout-max-width));
+  background: var(--surface-overlay);
+  border-radius: 16px 16px 0 0;
+  box-shadow: inset 0 1px 0 var(--surface-overlay-border);
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(6px, 2vw, 14px);
-  padding: clamp(8px, 2.6vw, 12px)
-    clamp(10px, 3vw, 18px)
-    clamp(12px, 3.2vw, 18px);
-  border-radius: clamp(18px, 5vw, 26px);
-  background: var(--nav-bg);
-  border: 1px solid var(--nav-border);
-  box-shadow: 0 24px 52px rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  pointer-events: auto;
+  gap: 8px;
+  padding: 12px;
+  min-height: var(--bottom-nav-height);
 }
 
-.navItem {
-  display: grid;
-  justify-items: center;
-  gap: clamp(4px, 1.6vw, 6px);
-  padding: clamp(8px, 2.5vw, 12px) clamp(6px, 2vw, 10px);
-  border-radius: clamp(12px, 3.6vw, 16px);
+.link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 12px;
+  color: var(--text-tertiary);
   text-decoration: none;
-  color: rgba(222, 225, 238, 0.75);
-  font-size: clamp(11px, 3.2vw, 13px);
+  font-size: 0.75rem;
+  line-height: 1rem;
   font-weight: 600;
-  transition: color 0.2s ease, background 0.2s ease, transform 0.18s ease, box-shadow 0.2s ease;
+  padding: 10px 6px;
+  transition: color 0.2s ease, background 0.2s ease;
 }
 
-.navItem:focus-visible {
-  outline: 2px solid rgba(88, 255, 255, 0.6);
+.link:hover {
+  color: var(--text-secondary);
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--col-mint);
   outline-offset: 2px;
 }
 
-.navItem:hover {
-  color: #ffffff;
-  background: rgba(25, 25, 239, 0.24);
-}
-
-.navIcon {
-  width: var(--nav-icon-size);
-  height: var(--nav-icon-size);
-  fill: currentColor;
+.icon {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.7;
 }
 
 .active {
-  color: var(--color-mint);
-  background: linear-gradient(135deg, rgba(25, 25, 239, 0.6), rgba(0, 0, 0, 0.7));
-  box-shadow: 0 14px 28px rgba(88, 255, 255, 0.25);
+  color: var(--col-mint);
+  background: rgba(88, 255, 255, 0.15);
 }
 
-.active:hover {
-  background: linear-gradient(135deg, rgba(25, 25, 239, 0.65), rgba(0, 0, 0, 0.72));
-}
-
-@media (min-width: 720px) {
-  .bottomNav {
-    width: min(100%, calc(var(--page-max-width) + clamp(16px, 3vw, 36px)));
-  }
+.active .icon {
+  stroke-width: 2;
 }

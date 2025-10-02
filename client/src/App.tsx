@@ -1,4 +1,3 @@
-// src/App.tsx
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -9,8 +8,8 @@ import MissionDetails from "./pages/MissionDetails";
 import Pet from "./pages/Pet";
 import Shop from "./pages/Shop";
 import Tests from "./pages/Tests";
-
 import BottomNav from "./components/BottomNav";
+import styles from "./App.module.css";
 
 function AppRoutes() {
   return (
@@ -32,13 +31,13 @@ function AppRoutes() {
 
 export default function App() {
   const location = useLocation();
-
-  // список роутов, где НЕ показываем нижнее меню
   const hideNav = ["/login", "/register"];
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] pb-[calc(var(--bottom-nav-height,0px)+1.5rem)]">
-      <AppRoutes />
+    <div className={styles.appShell}>
+      <main className={styles.main}>
+        <AppRoutes />
+      </main>
       {!hideNav.includes(location.pathname) && <BottomNav />}
     </div>
   );
