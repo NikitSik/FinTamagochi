@@ -1,69 +1,86 @@
 .page {
-  padding: 24px 0 36px;
+  padding: 28px 0 40px;
   display: grid;
-  gap: 18px;
+  gap: 20px;
+  background: radial-gradient(120% 120% at 50% 0%, var(--col-tmin) 0%, var(--col-black) 100%);
+  min-height: 100dvh;
 }
 
 .header {
   display: grid;
   gap: 12px;
+  color: #ffffff;
 }
 
 .title {
   margin: 0;
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--muted);
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  font-family: "Halvar Breitschrift", sans-serif;
+  color: #ffffff;
 }
 
 .lead {
   margin: 0;
-  font-size: 15px;
-  color: rgba(255,255,255,.75);
+  max-width: 48ch;
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .err {
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: rgba(248,113,113,.12);
-  border: 1px solid rgba(248,113,113,.35);
-  color: #fecaca;
-  font-size: 13px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(221, 65, 219, 0.16);
+  border: 1px solid rgba(221, 65, 219, 0.32);
+  color: #ffd4fb;
+  font-size: 0.875rem;
 }
 
 .progressCard {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 18px;
+  padding: 18px 20px;
   border-radius: 18px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.08);
+  background: linear-gradient(180deg, #bdcefa 0%, #dee1ee 100%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 28px rgba(6, 6, 152, 0.18);
+  color: #000;
+  gap: 20px;
 }
 
 .progressLabel {
-  font-size: 13px;
-  color: rgba(255,255,255,.6);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.55);
 }
 
 .progressValue {
-  font-size: 20px;
-  font-weight: 700;
-  color: #fff;
+  font-family: "Halvar Breitschrift", sans-serif;
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  color: #000000;
 }
 
 .progressStatus {
-  font-size: 13px;
-  color: rgba(255,255,255,.75);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: rgba(0, 0, 0, 0.7);
+  text-align: right;
 }
 
 .quiz {
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 .question {
-  gap: 14px;
+  gap: 16px;
+  background: linear-gradient(180deg, #bdcefa 0%, #dee1ee 100%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 22px rgba(6, 6, 152, 0.12);
 }
 
 .questionHead {
@@ -76,50 +93,89 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 999px;
-  background: rgba(127,90,240,.16);
-  color: #ede9fe;
-  font-weight: 700;
+  background: rgba(25, 25, 239, 0.12);
+  border: 1px solid rgba(25, 25, 239, 0.2);
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #1919ef;
 }
 
 .questionText {
   margin: 0;
-  font-size: 17px;
-  font-weight: 600;
-  color: #fff;
+  font-size: 1.0625rem;
+  line-height: 1.5rem;
+  color: #000000;
 }
 
 .options {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .option {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
+  min-height: 44px;
   padding: 12px 14px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.04);
-  color: rgba(255,255,255,.85);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #dee1ee;
+  color: #000000;
   cursor: pointer;
-  transition: border .2s ease, background .2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
-.option input { accent-color: var(--accent); }
+.option input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
 
-.optionActive { border-color: rgba(127,90,240,.45); }
-.optionCorrect { background: rgba(74,222,128,.15); border-color: rgba(74,222,128,.45); color: #bbf7d0; }
-.optionWrong { background: rgba(248,113,113,.12); border-color: rgba(248,113,113,.35); color: #fecaca; }
+.option span {
+  flex: 1;
+  font-size: 0.9375rem;
+  line-height: 1.375rem;
+}
+
+.option:hover {
+  background: #bdcefa;
+}
+
+.option:focus-within {
+  outline: 2px solid #58ffff;
+  outline-offset: 2px;
+}
+
+.optionActive,
+.optionSelected {
+  background: rgba(25, 25, 239, 0.12);
+  border-color: #1919ef;
+  color: #1919ef;
+}
+
+.optionCorrect {
+  border-color: #3cffb9;
+  color: #060698;
+}
+
+.optionWrong {
+  border-color: #dd41db;
+  background: rgba(221, 65, 219, 0.12);
+  color: #dd41db;
+}
 
 .explanation {
   margin: 0;
-  font-size: 13px;
-  color: rgba(255,255,255,.7);
-  padding-left: 40px;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  color: rgba(0, 0, 0, 0.65);
+  padding-left: 44px;
 }
 
 .actions {
@@ -127,16 +183,14 @@
   gap: 12px;
 }
 
-.submitBtn { width: 100%; }
+.submitBtn {
+  width: 100%;
+}
 
 .resetBtn {
-  height: 44px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.16);
-  background: transparent;
-  color: rgba(255,255,255,.75);
-  font-weight: 600;
-  cursor: pointer;
+  --btn-ghost-color: rgba(255, 255, 255, 0.85);
+  --btn-ghost-border: rgba(255, 255, 255, 0.25);
+  --btn-ghost-hover: rgba(255, 255, 255, 0.1);
 }
 
 .claimBtn {
@@ -144,27 +198,31 @@
 }
 
 .result {
-  padding: 12px 14px;
+  padding: 14px 16px;
   border-radius: 14px;
-  font-size: 13px;
+  font-size: 0.875rem;
+  background: #dee1ee;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.72);
 }
 
 .resultSuccess {
-  background: rgba(74,222,128,.12);
-  border: 1px solid rgba(74,222,128,.35);
-  color: #bbf7d0;
+  border-color: #3cffb9;
+  color: #060698;
 }
 
 .resultWarn {
-  background: rgba(248,113,113,.12);
-  border: 1px solid rgba(248,113,113,.35);
-  color: #fecaca;
+  border-color: #dd41db;
+  color: #dd41db;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 560px) {
   .progressCard {
     flex-direction: column;
-    gap: 8px;
     align-items: flex-start;
+  }
+
+  .progressStatus {
+    text-align: left;
   }
 }

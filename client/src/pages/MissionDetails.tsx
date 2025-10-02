@@ -4,7 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import styles from "./styles/MissionDetails.module.css";
 import { api, type Mission } from "../api";
 import { Button, Screen } from "../components/UI";
-import { formatMissionReward, getMissionMeta } from "./MissionData";
+import { CoinIcon } from "../components/ui/CoinIcon";
+import { getMissionMeta, getMissionRewardParts } from "./MissionData";
 import { ANTIFRAUD_QUESTIONS } from "../utils/antifraudQuestions";
 
 export default function MissionDetails() {
@@ -56,6 +57,7 @@ export default function MissionDetails() {
     return Math.min(100, Math.round((mission.progress.counter / Math.max(1, mission.progress.target)) * 100));
   }, [mission]);
 
+  const rewardParts = useMemo(() => (mission ? getMissionRewardParts(mission) : null), [mission]);
   const canClaim = mission && mission.progress.status === "Done" && !(mission.progress.rewardClaimed ?? false);
   const canStep = mission && (mission.repeatable || mission.progress.status !== "Done");
   const isAntifraudMission = mission?.code === "ANTIFRAUD_TUTORIAL";
@@ -176,17 +178,16 @@ export default function MissionDetails() {
 
           {!loading && mission && (
             <>
-              <section
-                className={styles.hero}
-                style={meta?.heroGradient ? { background: meta.heroGradient } : undefined}
-              >
+              <section className={styles.hero} style={meta?.heroGradient ? { background: meta.heroGradient } : undefined}>
                 <div className={styles.heroContent}>
                   {meta?.tagline && <span className={styles.heroTag}>{meta.tagline}</span>}
                   <h2 className={styles.heroTitle}>{mission.title}</h2>
                   {meta?.summary && <p className={styles.heroSummary}>{meta.summary}</p>}
 
                   {isAntifraudMission && (
-                    <button type="button" className={styles.heroLink} onClick={scrollToQuiz}>Пройти тест</button>
+                    <Button type="button" className={styles.heroLinkBtn} fullWidth={false} onClick={scrollToQuiz}>
+                      Пройти тест
+                    </Button>
                   )}
 
                   <div className={styles.heroStats}>
@@ -202,7 +203,20 @@ export default function MissionDetails() {
 
                     <div className={styles.rewardBlock}>
                       <span className={styles.progressLabel}>Награда</span>
-                      <strong className={styles.rewardValue}>{formatMissionReward(mission)}</strong>
+                      <div className={styles.rewardBadge}>
+                        {rewardParts?.coins ? (
+                          <>
+                            <CoinIcon size={20} />
+                            <span>{rewardParts.coins}</span>
+                          </>
+                        ) : (
+                          <span>—</span>
+                        )}
+                      </div>
+                      <div className={styles.rewardExtras}>
+                        {rewardParts?.xp ? <span>+{rewardParts.xp} XP</span> : null}
+                        {rewardParts?.pet ? <span>+{rewardParts.pet}</span> : null}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -240,7 +254,9 @@ export default function MissionDetails() {
                   <h3 className={styles.sectionTitle}>Что даст миссия</h3>
                   <ul className={styles.benefitList}>
                     {meta.benefits.map((item) => (
-                      <li key={item} className={styles.benefitItem}>{item}</li>
+                      <li key={item} className={styles.benefitItem}>
+                        {item}
+                      </li>
                     ))}
                   </ul>
                 </section>
@@ -291,7 +307,7 @@ export default function MissionDetails() {
                               return (
                                 <label
                                   key={option.value}
-                                  className={`${styles.quizOption} ${selected ? styles.quizOptionActive : ""} ${rightChoice ? styles.quizOptionCorrect : ""} ${wrongChoice ? styles.quizOptionWrong : ""}`}
+                                  className={`${styles.quizOption} ${selected ? styles.quizOptionSelected : ""} ${rightChoice ? styles.quizOptionCorrect : ""} ${wrongChoice ? styles.quizOptionWrong : ""}`}
                                 >
                                   <input
                                     type="radio"
@@ -316,6 +332,7 @@ export default function MissionDetails() {
                       <Button
                         type="submit"
                         className={styles.quizSubmitBtn}
+                        fullWidth={false}
                         disabled={quizSubmitting || quizClaiming || acting === "step" || acting === "claim"}
                       >
                         {quizSubmitting
@@ -324,21 +341,21 @@ export default function MissionDetails() {
                           ? "Засчитать прогресс"
                           : "Проверить ответы"}
                       </Button>
-                      <button
+                      <Button
                         type="button"
+                        variant="ghost"
                         className={styles.quizResetBtn}
+                        fullWidth={false}
                         onClick={resetQuiz}
                         disabled={quizSubmitting || quizClaiming}
                       >
                         Сбросить ответы
-                      </button>
+                      </Button>
                     </div>
                   </form>
 
                   {quizChecked && (
-                    <div
-                      className={`${styles.quizResult} ${quizCompleted ? styles.quizResultSuccess : styles.quizResultWarn}`}
-                    >
+                    <div className={`${styles.quizResult} ${quizCompleted ? styles.quizResultSuccess : styles.quizResultWarn}`}>
                       {quizCompleted
                         ? "Все ответы верные — можно зачесть прогресс миссии."
                         : `Правильных ответов: ${correctCount} из ${ANTIFRAUD_QUESTIONS.length}. Исправьте ошибки и попробуйте ещё раз.`}
@@ -348,11 +365,12 @@ export default function MissionDetails() {
                   {canClaim && (
                     <Button
                       className={`${styles.quizSubmitBtn} ${styles.quizClaimBtn}`}
+                      fullWidth={false}
                       onClick={handleQuizClaim}
                       disabled={quizClaiming}
                       type="button"
                     >
-                      {quizClaiming ? "Получаем..." : `Забрать награду (${mission.reward.coins} монет)`}
+                      {quizClaiming ? "Получаем..." : "Забрать награду"}
                     </Button>
                   )}
                 </section>
@@ -364,6 +382,7 @@ export default function MissionDetails() {
                     {acting === "step" ? "Отмечаем..." : "Отметить шаг"}
                   </Button>
                   <Button
+                    variant="secondary"
                     className={`${styles.actionBtn} ${styles.claimBtn}`}
                     onClick={claim}
                     disabled={!canClaim || acting === "claim"}

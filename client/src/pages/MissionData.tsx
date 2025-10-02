@@ -142,16 +142,15 @@ export function getMissionMeta(mission: Mission | undefined) {
   return MISSION_META[mission.code] ?? null;
 }
 
-export function formatMissionReward(m: Mission): string {
-  const parts: string[] = [];
-  if (m.reward?.coins) parts.push(`${m.reward.coins} монет`);
-  if (m.reward?.xp) parts.push(`${m.reward.xp} XP`);
-  if (m.reward?.petId) {
-    const petNames: Record<string, string> = {
-      cat: "Котик",
-      dog: "Щенок",
-    };
-    parts.push(`питомец: ${petNames[m.reward.petId] ?? m.reward.petId}`);
-  }
-  return parts.join(" · ") || "—";
+export function getMissionRewardParts(m: Mission) {
+  const petNames: Record<string, string> = {
+    cat: "Кот",
+    dog: "Пёс",
+  };
+
+  return {
+    coins: m.reward?.coins ?? null,
+    xp: m.reward?.xp ?? null,
+    pet: m.reward?.petId ? petNames[m.reward.petId] ?? m.reward.petId : null,
+  } as const;
 }

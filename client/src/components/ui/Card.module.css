@@ -1,6 +1,6 @@
 .card {
   position: relative;
-  background: linear-gradient(180deg, var(--col-viola) 0%, var(--col-lilia) 100%);
+  background: linear-gradient(180deg, #bdcefa 0%, #dee1ee 100%);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   color: var(--col-black);
@@ -27,5 +27,5 @@
 .card span,
 .card li,
 .card label {
-  color: rgba(0, 0, 0, 0.75);
+  color: rgba(0, 0, 0, 0.68);
 }

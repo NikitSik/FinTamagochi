@@ -290,7 +290,7 @@ export default function Pet() {
             Магазин
           </Button>
           <Button
-            variant="ghost"
+            variant="secondary"
             onClick={handleHeal}
             disabled={!canHeal}
           >

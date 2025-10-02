@@ -77,7 +77,7 @@
 .missionTitle {
   font-size: 1.125rem;
   line-height: 1.625rem;
-  color: var(--col-black);
+  color: #060698;
 }
 
 .missionTagline {
@@ -98,7 +98,7 @@
 }
 
 .missionDesc {
-  color: rgba(0, 0, 0, 0.75);
+  color: rgba(0, 0, 0, 0.65);
 }
 
 .progressRow {
@@ -121,10 +121,49 @@
   color: rgba(0, 0, 0, 0.55);
 }
 
-.rewardValue {
+.rewardContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rewardBadge,
+.rewardBadgeMuted {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(25, 25, 239, 0.12);
+  border: 1px solid rgba(25, 25, 239, 0.18);
   font-family: "Halvar Breitschrift", sans-serif;
   font-weight: 600;
-  color: var(--col-tmin);
+  color: #1919ef;
+}
+
+.rewardBadgeMuted {
+  color: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.rewardExtras {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.rewardChip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(222, 225, 238, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.72);
 }
 
 .repeatable {
@@ -162,8 +201,27 @@
 }
 
 .testLink {
-  color: var(--col-mint);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #1919ef 0%, #060698 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  font-weight: 600;
   text-decoration: none;
+  box-shadow: 0 10px 28px rgba(25, 25, 239, 0.28);
+}
+
+.testLink:hover {
+  filter: brightness(1.04);
+}
+
+.testLink:focus-visible {
+  outline: 2px solid #58ffff;
+  outline-offset: 2px;
 }
 
 .rewardBanner {

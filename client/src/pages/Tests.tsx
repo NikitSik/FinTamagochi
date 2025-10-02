@@ -153,9 +153,15 @@ export default function Tests() {
             >
               {submitting ? "Отмечаем..." : completed ? "Засчитать прогресс" : "Проверить ответы"}
             </Button>
-            <button type="button" className={styles.resetBtn} onClick={resetTest} disabled={submitting || claiming}>
+            <Button
+              type="button"
+              variant="ghost"
+              className={styles.resetBtn}
+              onClick={resetTest}
+              disabled={submitting || claiming}
+            >
               Сбросить ответы
-            </button>
+            </Button>
           </div>
         </form>
 
@@ -168,12 +174,8 @@ export default function Tests() {
         )}
 
         {mission && mission.progress.status === "Done" && !(mission.progress.rewardClaimed ?? false) && (
-          <Button
-            className={styles.claimBtn}
-            onClick={handleClaim}
-            disabled={claiming}
-          >
-            {claiming ? "Получаем..." : `Забрать награду (${mission.reward.coins} монет)`}
+          <Button className={styles.claimBtn} onClick={handleClaim} disabled={claiming}>
+            {claiming ? "Получаем..." : "Забрать награду"}
           </Button>
         )}
       </div>

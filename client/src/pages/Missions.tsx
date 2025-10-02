@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import styles from "./styles/Missions.module.css";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
+import { CoinIcon } from "../components/ui/CoinIcon";
 import { ProgressBar } from "../components/ui/ProgressBar";
 import { api, type Mission } from "../api";
-import { formatMissionReward, getMissionMeta } from "./MissionData";
+import { getMissionMeta, getMissionRewardParts } from "./MissionData";
 
 export default function Missions() {
   const [items, setItems] = useState<Mission[]>([]);
@@ -96,6 +97,7 @@ export default function Missions() {
           items.map((m) => {
             const meta = getMissionMeta(m);
             const progress = percent(m);
+            const reward = getMissionRewardParts(m);
             return (
               <Card key={m.id} className={styles.missionCard}>
                 <div className={styles.missionHeader}>
@@ -115,7 +117,20 @@ export default function Missions() {
 
                 <div className={styles.rewardRow}>
                   <span className={styles.rewardLabel}>Награда</span>
-                  <span className={styles.rewardValue}>{formatMissionReward(m)}</span>
+                  <div className={styles.rewardContent}>
+                    {reward.coins ? (
+                      <span className={styles.rewardBadge}>
+                        <CoinIcon size={16} />
+                        <span>{reward.coins}</span>
+                      </span>
+                    ) : (
+                      <span className={styles.rewardBadgeMuted}>—</span>
+                    )}
+                    <div className={styles.rewardExtras}>
+                      {reward.xp ? <span className={styles.rewardChip}>+{reward.xp} XP</span> : null}
+                      {reward.pet ? <span className={styles.rewardChip}>+{reward.pet}</span> : null}
+                    </div>
+                  </div>
                 </div>
 
                 {m.repeatable && (
