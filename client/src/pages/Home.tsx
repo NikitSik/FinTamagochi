@@ -2,6 +2,7 @@ import { useEffect, useState, type ChangeEvent } from "react";
 import styles from "./styles/Home.module.css";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
+import { CoinIcon } from "../components/ui/CoinIcon";
 import { InputField } from "../components/ui/InputField";
 import { api, type User } from "../api";
 
@@ -33,30 +34,6 @@ export default function Home() {
   const [amountError, setAmountError] = useState<string | null>(null);
 
   const totalRUB = Math.round(view.current + view.savings);
-
-  const accounts = [
-    {
-      key: "current",
-      title: "Текущий счёт",
-      amount: view.current,
-      currency: "₽",
-      note: "Свободные средства",
-    },
-    {
-      key: "savings",
-      title: "Накопительный",
-      amount: view.savings,
-      currency: "₽",
-      note: "Отложено на цели",
-    },
-    {
-      key: "coins",
-      title: "Игровые монеты",
-      amount: view.coins,
-      currency: null,
-      note: "Потратьте в магазине",
-    },
-  ] as const;
 
   function formatRUB(value: number) {
     return rubFormatter.format(Math.round(value));
@@ -182,24 +159,41 @@ export default function Home() {
           </div>
         </header>
 
-        <div className={styles.summaryTotalBlock}>
-          <span className={styles.summaryTotalLabel}>Баланс</span>
-          <span className={styles.summaryTotalValue}>₽ {formatRUB(totalRUB)}</span>
-        </div>
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <span className={styles.sectionLabel}>Баланс</span>
+            <span className={styles.sectionValue}>₽ {formatRUB(totalRUB)}</span>
+          </div>
+          <p className={styles.sectionHint}>Совокупные средства на счетах</p>
+        </section>
 
-        <div className={styles.accountList}>
-          {accounts.map((account) => (
-            <div className={styles.accountRow} key={account.key}>
-              <div className={styles.accountMeta}>
-                <span className={styles.accountTitle}>{account.title}</span>
-                <span className={styles.accountNote}>{account.note}</span>
-              </div>
-              <span className={styles.accountValue}>
-                {account.currency ? `₽ ${formatRUB(account.amount)}` : account.amount}
-              </span>
+        <div className={styles.sectionDivider} role="presentation" />
+
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <span className={styles.sectionLabel}>Текущий счёт</span>
+            <span className={styles.sectionValue}>₽ {formatRUB(view.current)}</span>
+          </div>
+          <p className={styles.sectionHint}>Свободные средства</p>
+        </section>
+
+        <div className={styles.sectionDivider} role="presentation" />
+
+        <section className={`${styles.section} ${styles.sectionColumns}`}>
+          <div className={styles.sectionColumn}>
+            <span className={styles.sectionLabel}>Накопительный</span>
+            <span className={styles.sectionValue}>₽ {formatRUB(view.savings)}</span>
+            <p className={styles.sectionHint}>Отложено на цели</p>
+          </div>
+          <div className={styles.sectionColumn}>
+            <span className={styles.sectionLabel}>Игровые</span>
+            <div className={styles.coinValue}>
+              <CoinIcon size={16} />
+              <span>{view.coins}</span>
             </div>
-          ))}
-        </div>
+            <p className={styles.sectionHint}>Доступно в магазине</p>
+          </div>
+        </section>
 
         <div className={styles.actions}>
           <Button onClick={handleTopUp} disabled={pendingAction !== null}>
@@ -266,8 +260,9 @@ export default function Home() {
               />
               <div className={styles.modalActions}>
                 <Button
-                  variant="secondary"
+                  variant="ghost"
                   type="button"
+                  className={styles.modalCancel}
                   onClick={closeModal}
                   disabled={pendingAction !== null}
                 >

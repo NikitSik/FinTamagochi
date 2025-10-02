@@ -3,6 +3,7 @@ import styles from "./styles/Shop.module.css";
 import { api, type PetState, type ShopItem } from "../api";
 import { effectText, filterItems, prettyType, SHOP_FILTERS, type ShopFilter } from "../utils/shop";
 import { Screen, Button, Card } from "../components/UI";
+import { CoinIcon } from "../components/ui/CoinIcon";
 
 export default function Shop() {
   const [petState, setPetState] = useState<PetState | null>(null);
@@ -64,7 +65,13 @@ export default function Shop() {
         <header className={styles.header}>
           <h1 className={styles.title}>Магазин</h1>
           <p className={styles.subtitle}>Корм, игрушки, питомцы и фоны — всё, что нужно вашему другу.</p>
-          <div className={styles.wallet}>Баланс: <strong>{coins}</strong> монет</div>
+          <div className={styles.wallet}>
+            <span className={styles.walletLabel}>Баланс</span>
+            <div className={styles.walletValue} aria-live="polite">
+              <CoinIcon size={16} />
+              <span>{coins}</span>
+            </div>
+          </div>
         </header>
 
         <main className={styles.main}>
@@ -104,7 +111,10 @@ export default function Shop() {
                       <div className={styles.cardTitle}>{item.title}</div>
                       <div className={styles.cardMeta}>{prettyType(item.type)}</div>
                     </div>
-                    <span className={styles.price}>{item.price} мон.</span>
+                    <span className={styles.price}>
+                      <CoinIcon size={14} />
+                      <span>{item.price}</span>
+                    </span>
                   </div>
 
                   {item.description && (

@@ -90,8 +90,8 @@
   align-self: flex-start;
   padding: 6px 12px;
   border-radius: 999px;
-  background: var(--col-violet);
-  color: var(--text-primary);
+  background: rgba(25, 25, 239, 0.12);
+  color: #1919ef;
   font-size: 0.75rem;
   line-height: 1rem;
   font-weight: 600;

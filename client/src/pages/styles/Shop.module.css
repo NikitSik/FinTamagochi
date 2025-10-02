@@ -1,100 +1,138 @@
 .page {
-  padding-top: 20px;
-  padding-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  color: var(--text-primary);
 }
 
 .header {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
-  text-align: left;
 }
 
 .title {
-  font-size: 28px;
-  font-weight: 700;
   margin: 0;
-  color: var(--muted);
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  color: #ffffff;
 }
 
 .subtitle {
   margin: 0;
-  font-size: 14px;
-  color: rgba(255,255,255,.7);
+  font-size: 0.9375rem;
+  line-height: 1.375rem;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 48ch;
 }
 
 .wallet {
-  font-size: 14px;
-  color: rgba(255,255,255,.75);
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(88, 255, 255, 0.14);
+  border: 1.5px solid rgba(88, 255, 255, 0.28);
 }
 
-.wallet strong { font-size: 18px; color: #fff; }
+.walletLabel {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.walletValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Halvar Breitschrift", sans-serif;
+  font-weight: 600;
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  color: #58ffff;
+}
 
 .main {
-  margin-top: 24px;
-  display: grid;
-  gap: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .tabs {
-  display: grid;
-  grid-auto-flow: column;
-  gap: 10px;
+  display: flex;
+  gap: 12px;
   overflow-x: auto;
   padding-bottom: 4px;
 }
 
 .tab {
-  min-width: 110px;
-  padding: 10px 16px;
+  flex: 0 0 auto;
+  min-width: 128px;
+  padding: 10px 18px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.14);
-  background: rgba(255,255,255,.06);
-  color: rgba(255,255,255,.8);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.78);
   font-weight: 600;
   cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .tabActive {
-  background: var(--accent);
-  color: #fff;
-  border-color: transparent;
+  background: linear-gradient(180deg, #1919ef 0%, #060698 100%);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+}
+
+.err,
+.note,
+.loader,
+.empty {
+  padding: 14px 16px;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 
 .err {
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: rgba(248,113,113,.12);
-  border: 1px solid rgba(248,113,113,.35);
-  color: #fecaca;
-  font-size: 13px;
+  background: rgba(221, 65, 219, 0.16);
+  border: 1px solid rgba(221, 65, 219, 0.35);
+  color: #ffb7f6;
 }
 
 .note {
-  padding: 12px 14px;
-  border-radius: 14px;
-  font-size: 13px;
-  border: 1px solid transparent;
+  background: rgba(60, 255, 185, 0.16);
+  border: 1px solid rgba(60, 255, 185, 0.35);
+  color: #c2ffea;
 }
 
 .noteInfo {
-  background: rgba(56,189,248,.18);
-  border-color: rgba(56,189,248,.45);
-  color: #bae6fd;
+  background: rgba(60, 255, 185, 0.16);
+  border-color: rgba(60, 255, 185, 0.35);
+  color: #c2ffea;
 }
 
 .loader,
 .empty {
-  padding: 18px;
-  border-radius: 16px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.08);
   text-align: center;
-  color: rgba(255,255,255,.7);
+  background: rgba(96, 136, 228, 0.12);
+  border: 1px solid rgba(96, 136, 228, 0.28);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .grid {
   display: grid;
   gap: 16px;
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .card {
@@ -108,49 +146,54 @@
 }
 
 .cardTitle {
-  font-size: 18px;
-  font-weight: 700;
+  font-family: "Halvar Breitschrift", sans-serif;
+  font-weight: 600;
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  color: var(--col-tmin);
 }
 
 .cardMeta {
-  font-size: 13px;
-  color: rgba(255,255,255,.6);
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  color: rgba(0, 0, 0, 0.6);
 }
 
 .price {
-  font-weight: 700;
-  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Halvar Breitschrift", sans-serif;
+  font-weight: 600;
+  color: var(--col-tmin);
 }
 
 .description {
   margin: 0;
-  font-size: 14px;
-  color: rgba(255,255,255,.75);
+  font-size: 0.875rem;
+  line-height: 1.4rem;
+  color: rgba(0, 0, 0, 0.7);
 }
 
 .effect {
-  font-size: 13px;
-  color: #bef264;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  color: var(--col-violet);
+  font-weight: 600;
 }
+
 .owned {
-  font-size: 12px;
-  color: #a3e635;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  color: var(--col-rasp);
 }
 
 .buyBtn {
   margin-top: 4px;
 }
 
-@media (min-width: 640px) {
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+@media (max-width: 480px) {
+  .tab {
+    min-width: 0;
   }
-}
-
-@media (max-width: 420px) {
-  .tabs {
-    grid-auto-flow: row;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .tab { min-width: 0; }
 }

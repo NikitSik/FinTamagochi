@@ -5,6 +5,7 @@ import styles from "./styles/Pet.module.css";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { ProgressBar } from "../components/ui/ProgressBar";
+import { CoinIcon } from "../components/ui/CoinIcon";
 import PetCarousel, { type PetSlide } from "../components/PetCarousel";
 import Cat from "../components/pets/cat";
 import Dog from "../components/pets/dog";
@@ -211,10 +212,10 @@ export default function Pet() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <h1>ПИТОМЕЦ</h1>
-        <div className={styles.balanceCard}>
-          <span className={styles.balanceLabel}>Игровые монеты</span>
-          <strong className={styles.balanceValue}>{coins}</strong>
+        <h1>Питомец</h1>
+        <div className={styles.coinsBadge} aria-live="polite">
+          <CoinIcon size={16} />
+          <span>{coins}</span>
         </div>
       </header>
 
@@ -355,7 +356,10 @@ export default function Pet() {
               </div>
               <div className={styles.balanceWidget}>
                 <span className={styles.balanceWidgetLabel}>Баланс</span>
-                <strong className={styles.balanceWidgetValue}>{coins} мон.</strong>
+                <div className={styles.balanceWidgetValue}>
+                  <CoinIcon size={14} />
+                  <span>{coins}</span>
+                </div>
               </div>
             </header>
             <div className={styles.shopFilters}>
@@ -396,7 +400,10 @@ export default function Pet() {
                               {owned && <span className={styles.shopOwned}>Уже в инвентаре</span>}
                             </div>
                           </div>
-                          <div className={styles.shopPrice}>{it.price} мон.</div>
+                          <div className={styles.shopPrice}>
+                            <CoinIcon size={14} />
+                            <span>{it.price}</span>
+                          </div>
                         </div>
                         {it.description && (
                           <div className={styles.shopDescription}>{it.description}</div>
@@ -425,7 +432,12 @@ export default function Pet() {
                 })}
             </ul>
             <div className={styles.modalFooter}>
-              <Button variant="ghost" fullWidth={false} onClick={() => setShopOpen(false)}>
+              <Button
+                variant="ghost"
+                fullWidth={false}
+                className={styles.modalClose}
+                onClick={() => setShopOpen(false)}
+              >
                 Закрыть
               </Button>
             </div>

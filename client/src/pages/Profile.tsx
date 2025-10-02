@@ -5,7 +5,6 @@ import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { InputField } from "../components/ui/InputField";
 import { api, setAuthToken, type User } from "../api";
-import ThemeToggle from "../components/ThemeToggle";
 
 export default function Profile() {
   const nav = useNavigate();
@@ -201,13 +200,6 @@ export default function Profile() {
             </span>
             <input type="checkbox" defaultChecked className={styles.toggle} />
           </label>
-          <div className={styles.settingItem}>
-            <span>
-              <span className={styles.rowTitle}>Смена темы</span>
-              <span className={styles.rowHint}>Выберите удобный режим</span>
-            </span>
-            <ThemeToggle className={styles.switch} />
-          </div>
           <div className={styles.settingItem}>
             <span>
               <span className={styles.rowTitle}>Язык</span>

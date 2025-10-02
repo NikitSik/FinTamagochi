@@ -25,30 +25,19 @@
   color: var(--text-primary);
 }
 
-.balanceCard {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
-  background: rgba(88, 255, 255, 0.12);
-  border: 1px solid rgba(88, 255, 255, 0.28);
-}
-
-.balanceLabel {
-  font-size: 0.75rem;
-  line-height: 1rem;
-  color: var(--text-tertiary);
-  text-transform: uppercase;
-}
-
-.balanceValue {
+.coinsBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(88, 255, 255, 0.14);
+  border: 1.5px solid rgba(88, 255, 255, 0.28);
   font-family: "Halvar Breitschrift", sans-serif;
   font-weight: 600;
-  font-size: 1.375rem;
-  line-height: 1.875rem;
-  color: var(--col-mint);
+  font-size: 1rem;
+  line-height: 1.25rem;
+  color: #58ffff;
 }
 
 .notice {
@@ -235,7 +224,7 @@
 .modalBackdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.45);
   display: grid;
   place-items: center;
   padding: 24px;
@@ -244,9 +233,10 @@
 
 .modal {
   width: min(100%, 520px);
-  background: linear-gradient(180deg, var(--col-viola) 0%, var(--col-lilia) 100%);
+  background: var(--col-lilia);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   color: var(--col-black);
   display: flex;
   flex-direction: column;
@@ -292,6 +282,9 @@
 }
 
 .balanceWidgetValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-family: "Halvar Breitschrift", sans-serif;
   font-weight: 600;
   font-size: 1.125rem;
@@ -398,6 +391,10 @@
 }
 
 .shopPrice {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Halvar Breitschrift", sans-serif;
   font-weight: 600;
   color: var(--col-tmin);
 }
@@ -427,4 +424,10 @@
   padding: 0 24px 24px;
   display: flex;
   justify-content: flex-end;
+}
+
+.modalClose {
+  --btn-ghost-color: rgba(0, 0, 0, 0.78);
+  --btn-ghost-border: rgba(0, 0, 0, 0.16);
+  --btn-ghost-hover: rgba(0, 0, 0, 0.05);
 }

@@ -2,7 +2,7 @@ import { forwardRef, type ButtonHTMLAttributes } from "react";
 import { cn } from "../../utils/cn";
 import styles from "./Button.module.css";
 
-type ButtonVariant = "primary" | "accent" | "secondary" | "ghost";
+type ButtonVariant = "primary" | "secondary" | "ghost";
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;

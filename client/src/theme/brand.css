@@ -58,7 +58,7 @@
   --col-lilia: #dee1ee;
 
   --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.75);
+  --text-secondary: rgba(255, 255, 255, 0.7);
   --text-tertiary: rgba(255, 255, 255, 0.55);
 
   --radius-lg: 16px;
@@ -68,7 +68,7 @@
   --shadow-card: 0 6px 24px rgba(0, 0, 0, 0.35);
 
   --layout-max-width: 720px;
-  --bottom-nav-height: 72px;
+  --bottom-nav-height: 88px;
 }
 
 html,

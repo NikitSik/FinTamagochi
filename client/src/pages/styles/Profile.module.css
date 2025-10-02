@@ -222,36 +222,6 @@
   background: var(--col-tmin);
 }
 
-.switch {
-  position: relative;
-  width: 44px;
-  height: 24px;
-  border-radius: 999px;
-  background: rgba(189, 206, 250, 0.6);
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 3px;
-  cursor: pointer;
-}
-
-.switch input {
-  display: none;
-}
-
-.switch i {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--col-violet);
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.switch input:checked + i {
-  transform: translateX(20px);
-  background: var(--col-tmin);
-}
-
 .logout {
   align-self: center;
   width: 100%;

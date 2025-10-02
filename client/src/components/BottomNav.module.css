@@ -5,15 +5,15 @@
   z-index: 100;
   display: flex;
   justify-content: center;
-  padding: 0 16px env(safe-area-inset-bottom);
-  backdrop-filter: blur(12px);
+  padding: 0 16px calc(12px + env(safe-area-inset-bottom));
+  backdrop-filter: blur(18px);
 }
 
 .bar {
   width: min(100%, var(--layout-max-width));
-  background: var(--surface-overlay);
-  border-radius: 16px 16px 0 0;
-  box-shadow: inset 0 1px 0 var(--surface-overlay-border);
+  background: rgba(6, 6, 152, 0.92);
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.35);
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
@@ -28,7 +28,7 @@
   justify-content: center;
   gap: 6px;
   border-radius: 12px;
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.7);
   text-decoration: none;
   font-size: 0.75rem;
   line-height: 1rem;
@@ -38,7 +38,7 @@
 }
 
 .link:hover {
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .link:focus-visible {
@@ -55,8 +55,8 @@
 }
 
 .active {
-  color: var(--col-mint);
-  background: rgba(88, 255, 255, 0.15);
+  color: #58ffff;
+  background: rgba(88, 255, 255, 0.14);
 }
 
 .active .icon {

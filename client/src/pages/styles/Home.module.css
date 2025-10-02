@@ -14,7 +14,7 @@
 .subtitle {
   font-size: 0.875rem;
   line-height: 1.25rem;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.7);
   text-transform: uppercase;
   letter-spacing: 0.12em;
 }
@@ -33,16 +33,16 @@
   align-items: flex-end;
   gap: 4px;
   padding: 12px 16px;
-  border-radius: var(--radius-md);
-  background: rgba(88, 255, 255, 0.12);
-  border: 1px solid rgba(88, 255, 255, 0.3);
+  border-radius: 14px;
+  background: rgba(88, 255, 255, 0.14);
+  border: 1.5px solid rgba(88, 255, 255, 0.28);
   min-width: 160px;
 }
 
 .totalLabel {
   font-size: 0.75rem;
   line-height: 1rem;
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.7);
   text-transform: uppercase;
 }
 
@@ -56,11 +56,11 @@
 
 .lead {
   max-width: 32ch;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .summaryCard {
-  gap: 20px;
+  gap: 24px;
 }
 
 .summaryHeader h2 {
@@ -68,20 +68,23 @@
 }
 
 .summaryHint {
-  color: rgba(0, 0, 0, 0.7);
+  color: rgba(0, 0, 0, 0.65);
 }
 
-.summaryTotalBlock {
+.section {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  background: rgba(222, 225, 238, 0.6);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  color: var(--col-black);
+  flex-direction: column;
+  gap: 8px;
 }
 
-.summaryTotalLabel {
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.sectionLabel {
   font-size: 0.75rem;
   line-height: 1rem;
   letter-spacing: 0.08em;
@@ -89,53 +92,50 @@
   color: rgba(0, 0, 0, 0.55);
 }
 
-.summaryTotalValue {
+.sectionValue {
   font-family: "Halvar Breitschrift", sans-serif;
-  font-weight: 700;
-  font-size: 1.75rem;
-  line-height: 2.25rem;
-  color: var(--col-black);
+  font-weight: 600;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  color: var(--col-tmin);
 }
 
-.accountList {
-  display: flex;
-  flex-direction: column;
+.sectionHint {
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  color: rgba(0, 0, 0, 0.65);
 }
 
-.accountRow {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+.sectionDivider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.sectionColumns {
+  display: grid;
   gap: 16px;
-  padding: 16px 0;
 }
 
-.accountRow + .accountRow {
-  border-top: 1px solid var(--surface-divider);
+@media (min-width: 560px) {
+  .sectionColumns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-.accountMeta {
+.sectionColumn {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
-.accountTitle {
-  font-weight: 600;
-  color: var(--col-black);
-}
-
-.accountNote {
-  font-size: 0.75rem;
-  line-height: 1rem;
-  color: rgba(0, 0, 0, 0.6);
-}
-
-.accountValue {
+.coinValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-family: "Halvar Breitschrift", sans-serif;
   font-weight: 600;
-  font-size: 1.125rem;
-  line-height: 1.625rem;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
   color: var(--col-tmin);
 }
 
@@ -167,7 +167,7 @@
 .modalBackdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.45);
   display: grid;
   place-items: center;
   padding: 24px;
@@ -176,9 +176,10 @@
 
 .modalPanel {
   width: min(100%, 420px);
-  background: linear-gradient(180deg, rgba(189, 206, 250, 0.95) 0%, rgba(222, 225, 238, 0.98) 100%);
+  background: var(--col-lilia);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   padding: 24px;
   color: var(--col-black);
   display: flex;
@@ -203,4 +204,10 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+}
+
+.modalCancel {
+  --btn-ghost-color: rgba(0, 0, 0, 0.78);
+  --btn-ghost-border: rgba(0, 0, 0, 0.16);
+  --btn-ghost-hover: rgba(0, 0, 0, 0.05);
 }
