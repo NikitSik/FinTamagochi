@@ -334,6 +334,64 @@
   font-size: 0.875rem;
 }
 
+.productBlock {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.productLead {
+  margin: 0;
+  font-weight: 600;
+  color: #060698;
+  font-size: 0.9375rem;
+}
+
+.productList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.productLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: rgba(222, 225, 238, 0.78);
+  border: 1px solid rgba(6, 6, 152, 0.16);
+  color: #060698;
+  text-decoration: none;
+  font-weight: 600;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+}
+
+.productLink:hover,
+.productLink:focus-visible {
+  background: rgba(222, 225, 238, 0.95);
+  box-shadow: 0 8px 22px rgba(6, 6, 152, 0.12);
+  transform: translateY(-1px);
+}
+
+.productLink:focus-visible {
+  outline: 3px solid rgba(25, 25, 239, 0.45);
+  outline-offset: 2px;
+}
+
+.productIcon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.productTitle {
+  white-space: normal;
+  text-align: left;
+}
+
 .quizCard {
   gap: 18px;
 }

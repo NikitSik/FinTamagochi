@@ -12,6 +12,11 @@ export type MissionResource = {
   url: string;
 };
 
+export type MissionProduct = {
+  title: string;
+  url: string;
+};
+
 export type MissionMeta = {
   tagline: string;
   summary: string;
@@ -20,6 +25,7 @@ export type MissionMeta = {
   tasks: MissionTask[];
   benefits: string[];
   resources?: MissionResource[];
+  products?: MissionProduct[];
 };
 
 const DepositIcon = () => (
@@ -77,6 +83,10 @@ export const MISSION_META: Record<string, MissionMeta> = {
       { title: "Как выбирать вклад", url: "https://www.banki.ru/wikibank/deposit/" },
       { title: "Калькулятор сложных процентов", url: "https://finplanner.ru/calculators/compound" },
     ],
+    products: [
+      { title: "Подробнее о вкладах", url: "https://www.gazprombank.ru/personal/increase/deposits/" },
+      { title: "Вклад «Новые деньги»", url: "https://www.gazprombank.ru/personal/increase/deposits/detail/7582023/" },
+    ],
   },
   SAVINGS_CUSHION: {
     tagline: "Строим финансовую подушку",
@@ -95,6 +105,10 @@ export const MISSION_META: Record<string, MissionMeta> = {
     ],
     resources: [
       { title: "Зачем нужна подушка безопасности", url: "https://journal.tinkoff.ru/guide/financial-safety-cushion/" },
+    ],
+    products: [
+      { title: "Накопительный счёт", url: "https://www.gazprombank.ru/accounts/save-easy/" },
+      { title: "Ежедневная выгода", url: "https://www.gazprombank.ru/accounts/daily-benefit/" },
     ],
   },
   ANTIFRAUD_TUTORIAL: {
@@ -115,6 +129,12 @@ export const MISSION_META: Record<string, MissionMeta> = {
     resources: [
       { title: "Памятка Банка России", url: "https://www.cbr.ru/finmarket/" },
     ],
+    products: [
+      {
+        title: "Подробнее о безопасности",
+        url: "https://www.gazprombank.ru/personal/page/insurance-service-products/",
+      },
+    ],
   },
   WEEKLY_BUDGET: {
     tagline: "Неделя осознанных трат",
@@ -133,6 +153,13 @@ export const MISSION_META: Record<string, MissionMeta> = {
     ],
     resources: [
       { title: "Шаблон бюджета 50/30/20", url: "https://journal.tinkoff.ru/spending-plan/" },
+    ],
+    products: [
+      {
+        title: "Дебетовая карта с кэшбэком для самозанятых",
+        url: "https://www.gazprombank.ru/personal/cards/7611615/",
+      },
+      { title: "Умная дебетовая карта", url: "https://www.gazprombank.ru/personal/cards/7579039/" },
     ],
   },
 };

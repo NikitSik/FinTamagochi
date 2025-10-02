@@ -144,6 +144,7 @@ export default function MissionDetails() {
   }
 
   const tasks = meta?.tasks ?? [];
+  const products = meta?.products ?? [];
   const stepCount = mission ? Math.min(mission.progress.counter, mission.progress.target) : 0;
   const statusText = mission
     ? mission.repeatable
@@ -247,6 +248,28 @@ export default function MissionDetails() {
                     );
                   })}
                 </ul>
+
+                {products.length ? (
+                  <div className={styles.productBlock}>
+                    <p className={styles.productLead}>Перейдите к продуктам Газпромбанка:</p>
+                    <div className={styles.productList}>
+                      {products.map((product) => (
+                        <a
+                          key={product.url}
+                          className={styles.productLink}
+                          href={product.url}
+                          target="_self"
+                          rel="noreferrer"
+                        >
+                          <span aria-hidden="true" className={styles.productIcon}>
+                            🔗
+                          </span>
+                          <span className={styles.productTitle}>{product.title}</span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
               </section>
 
               {meta?.benefits?.length ? (
