@@ -40,7 +40,7 @@ public class ShopController : ControllerBase
                x.Price,
                x.Type,
                x.Enabled,
-               x.Type == "food" && x.PayloadJson is not null ? MapEffect(x.PayloadJson) : null
+               (x.Type == "food" || x.Type == "medicine") && x.PayloadJson is not null ? MapEffect(x.PayloadJson) : null
            ))
            .ToList();
 
@@ -98,7 +98,7 @@ public class ShopController : ControllerBase
         string? inventoryItemId = null;
         string? backgroundId = null;
         string? petId = null;
-        JsonElement? foodPayload = null;
+        bool addConsumable = false;
 
         try
         {
@@ -166,26 +166,55 @@ public class ShopController : ControllerBase
                             return BadRequest("Bad food payload");
                         }
 
-                        var hasEffect = false;
-                        if (root.TryGetProperty("satiety", out var satietyEl) && satietyEl.ValueKind == JsonValueKind.Number && satietyEl.GetInt32() != 0)
-                        {
-                            hasEffect = true;
-                        }
-                        if (root.TryGetProperty("mood", out var moodEl) && moodEl.ValueKind == JsonValueKind.Number && moodEl.GetInt32() != 0)
-                        {
-                            hasEffect = true;
-                        }
-                        if (root.TryGetProperty("health", out var healthEl) && healthEl.ValueKind == JsonValueKind.Number && healthEl.GetInt32() != 0)
-                        {
-                            hasEffect = true;
-                        }
+                        var satiety = root.TryGetProperty("satiety", out var satietyEl) && satietyEl.ValueKind == JsonValueKind.Number
+                            ? satietyEl.GetInt32()
+                            : 0;
+                        var mood = root.TryGetProperty("mood", out var moodEl) && moodEl.ValueKind == JsonValueKind.Number
+                            ? moodEl.GetInt32()
+                            : 0;
+                        var health = root.TryGetProperty("health", out var healthEl) && healthEl.ValueKind == JsonValueKind.Number
+                            ? healthEl.GetInt32()
+                            : 0;
 
-                        if (!hasEffect)
+                        if (satiety == 0 && mood == 0 && health == 0)
+                        {
+                            return BadRequest("Bad food payload");
+                        }
+                        if (satiety == 0)
                         {
                             return BadRequest("Bad food payload");
                         }
 
-                        foodPayload = root.Clone();
+                        addConsumable = true;
+                        break;
+                    }
+                case "medicine":
+                    {
+                        if (root.ValueKind != JsonValueKind.Object)
+                        {
+                            return BadRequest("Bad medicine payload");
+                        }
+
+                        var satiety = root.TryGetProperty("satiety", out var satietyEl) && satietyEl.ValueKind == JsonValueKind.Number
+                            ? satietyEl.GetInt32()
+                            : 0;
+                        var mood = root.TryGetProperty("mood", out var moodEl) && moodEl.ValueKind == JsonValueKind.Number
+                            ? moodEl.GetInt32()
+                            : 0;
+                        var health = root.TryGetProperty("health", out var healthEl) && healthEl.ValueKind == JsonValueKind.Number
+                            ? healthEl.GetInt32()
+                            : 0;
+
+                        if (satiety == 0 && mood == 0 && health == 0)
+                        {
+                            return BadRequest("Bad medicine payload");
+                        }
+                        if (health == 0)
+                        {
+                            return BadRequest("Bad medicine payload");
+                        }
+
+                        addConsumable = true;
                         break;
                     }
                 default:
@@ -223,13 +252,33 @@ public class ShopController : ControllerBase
                 userState.Inventory.Items.Add(inventoryItemId!);
                 break;
             case "food":
-                if (foodPayload is JsonElement payloadElement)
+                if (!addConsumable)
                 {
-                    var applied = _petState.ApplyFoodPayload(userState.Status, payloadElement);
-                    if (!applied)
-                    {
-                        return BadRequest("Bad food payload");
-                    }
+                    return BadRequest("Bad food payload");
+                }
+
+                if (!userState.Inventory.Consumables.TryGetValue(item.Id, out var foodCount))
+                {
+                    userState.Inventory.Consumables[item.Id] = 1;
+                }
+                else
+                {
+                    userState.Inventory.Consumables[item.Id] = foodCount + 1;
+                }
+                break;
+            case "medicine":
+                if (!addConsumable)
+                {
+                    return BadRequest("Bad medicine payload");
+                }
+
+                if (!userState.Inventory.Consumables.TryGetValue(item.Id, out var medCount))
+                {
+                    userState.Inventory.Consumables[item.Id] = 1;
+                }
+                else
+                {
+                    userState.Inventory.Consumables[item.Id] = medCount + 1;
                 }
                 break;
         }

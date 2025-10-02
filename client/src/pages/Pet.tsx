@@ -24,10 +24,6 @@ const LOCK_HINTS: Record<string, string> = {
   parrot: "Выполни миссию \"Инвесткопилка\"",
 };
 
-const HEAL_COST = 25;
-const FEED_COST = 5;
-const QUICK_FEED_PAYLOAD = { satiety: 22, mood: 3 };
-
 export default function Pet() {
   const [state, setState] = useState<PetState | null>(null);
   const [loading, setLoading] = useState(true);
@@ -116,7 +112,8 @@ export default function Pet() {
     try {
       const newState = await api.shopPurchase(item.id);
       setState(newState);
-      if (item.type === "food") setMessage("Питомец довольно урчит");
+      if (item.type === "food") setMessage("Корм добавлен в инвентарь");
+      else if (item.type === "medicine") setMessage("Аптечка добавлена в инвентарь");
       else if (item.type === "bg") setMessage("Фон обновлён!");
       else if (item.type === "item") setMessage("Игрушка добавлена в инвентарь");
       else if (item.type === "pet") setMessage("Новый питомец ждёт знакомства");
@@ -129,9 +126,15 @@ export default function Pet() {
 
   async function handleHeal() {
     setPendingAction("heal");
+    const item = medicineStock[0];
+    if (!item) {
+      alert("Нет подходящих предметов для лечения");
+      setPendingAction(null);
+      return;
+    }
     try {
-      await act("heal");
-      setMessage("Питомец чувствует себя лучше");
+      await act("heal", { itemId: item.itemId });
+      setMessage(`Питомец чувствует себя лучше (${item.title})`);
     } catch {
       // сообщение показано в act
     } finally {
@@ -141,9 +144,15 @@ export default function Pet() {
 
   async function handleFeed() {
     setPendingAction("feed");
+    const item = foodStock[0];
+    if (!item) {
+      alert("Нет корма — загляните в магазин");
+      setPendingAction(null);
+      return;
+    }
     try {
-      await act("feed", QUICK_FEED_PAYLOAD);
-      setMessage("Питомец накормлен");
+      await act("feed", { itemId: item.itemId });
+      setMessage(`Питомец накормлен (${item.title})`);
     } catch {
       // сообщение показано в act
     } finally {
@@ -156,6 +165,18 @@ export default function Pet() {
     [shopItems, shopFilter]
   );
   const ownedItemIds = useMemo(() => new Set(state?.items ?? []), [state?.items]);
+
+  const consumables = state?.consumables ?? [];
+  const foodStock = useMemo(
+    () => consumables.filter((item) => item.type === "food" && item.count > 0),
+    [consumables]
+  );
+  const medicineStock = useMemo(
+    () => consumables.filter((item) => item.type === "medicine" && item.count > 0),
+    [consumables]
+  );
+  const totalFood = useMemo(() => foodStock.reduce((sum, item) => sum + item.count, 0), [foodStock]);
+  const totalMedicine = useMemo(() => medicineStock.reduce((sum, item) => sum + item.count, 0), [medicineStock]);
 
   if (loading) {
     return (
@@ -178,8 +199,9 @@ export default function Pet() {
   }
 
   const coins = state.coins;
-  const canHeal = coins >= HEAL_COST && pendingAction !== "heal";
-  const canFeed = coins >= FEED_COST && pendingAction !== "feed";
+  const canHeal = totalMedicine > 0 && pendingAction !== "heal";
+  const canFeed = totalFood > 0 && pendingAction !== "feed";
+  const hasInventory = consumables.length > 0 || state.items.length > 0;
 
   return (
     <div className={styles.page}>
@@ -238,14 +260,22 @@ export default function Pet() {
                 disabled={!canHeal}
                 onClick={handleHeal}
               >
-                {pendingAction === "heal" ? "Лечим…" : `Вылечить (${HEAL_COST})`}
+                {pendingAction === "heal"
+                  ? "Лечим…"
+                  : totalMedicine > 0
+                    ? `Вылечить (×${totalMedicine})`
+                    : "Вылечить"}
               </button>
               <button
                 className={styles.actionButton}
                 disabled={!canFeed}
                 onClick={handleFeed}
               >
-                {pendingAction === "feed" ? "Кормим…" : `Кормить (${FEED_COST})`}
+                {pendingAction === "feed"
+                  ? "Кормим…"
+                  : totalFood > 0
+                    ? `Кормить (×${totalFood})`
+                    : "Кормить"}
               </button>
             </div>
           </div>
@@ -269,10 +299,15 @@ export default function Pet() {
 
         <section className={styles.card}>
           <h2 className={styles.sectionTitle}>Инвентарь</h2>
-          {state.items.length ? (
+          {hasInventory ? (
             <div className={styles.inventoryList}>
+              {consumables.map((item) => (
+                <span key={`consumable-${item.itemId}`} className={styles.inventoryItem}>
+                  {item.title} ×{item.count}
+                </span>
+              ))}
               {state.items.map((item) => (
-                <span key={item} className={styles.inventoryItem}>{item}</span>
+                <span key={`item-${item}`} className={styles.inventoryItem}>{item}</span>
               ))}
             </div>
           ) : (

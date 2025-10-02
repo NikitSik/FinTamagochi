@@ -1,4 +1,7 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Tamagochi.Data;
 using Tamagochi.DTOs;
@@ -35,14 +38,21 @@ public class PetStateService
 
         if (inventory is null)
         {
-            inventory = new Inventory { UserId = userId, Background = "default", Items = new() };
+            inventory = new Inventory { UserId = userId, Background = "default", Items = new(), Consumables = new(StringComparer.Ordinal) };
             _db.Inventories.Add(inventory);
             created = true;
         }
-
-        else if (inventory.Items is null)
+        else
         {
-            inventory.Items = new();
+            if (inventory.Items is null)
+            {
+                inventory.Items = new();
+            }
+
+            if (inventory.Consumables is null)
+            {
+                inventory.Consumables = new(StringComparer.Ordinal);
+            }
         }
 
         if (profile is null)
@@ -146,32 +156,70 @@ public class PetStateService
         return changed;
     }
 
-    public bool ApplyFoodPayload(PetStatus status, JsonElement payload)
+    private static bool TryExtractEffect(JsonElement payload, out int satiety, out int mood, out int health)
     {
+        satiety = 0;
+        mood = 0;
+        health = 0;
+
         if (payload.ValueKind != JsonValueKind.Object)
         {
             return false;
         }
 
-        var satiety = payload.TryGetProperty("satiety", out var satietyEl) && satietyEl.ValueKind == JsonValueKind.Number
-            ? satietyEl.GetInt32()
-            : 0;
-        var mood = payload.TryGetProperty("mood", out var moodEl) && moodEl.ValueKind == JsonValueKind.Number
-            ? moodEl.GetInt32()
-            : 0;
-        var health = payload.TryGetProperty("health", out var healthEl) && healthEl.ValueKind == JsonValueKind.Number
-            ? healthEl.GetInt32()
-            : 0;
-
-        if (satiety == 0 && mood == 0 && health == 0)
+        if (payload.TryGetProperty("satiety", out var satietyEl) && satietyEl.ValueKind == JsonValueKind.Number)
         {
-            return false;
+            satiety = satietyEl.GetInt32();
         }
 
-        AdjustStatus(status, satiety, mood, health);
-        status.LastFedAt = DateTime.UtcNow;
-        status.LastUpdatedAt = DateTime.UtcNow;
-        return true;
+        if (payload.TryGetProperty("mood", out var moodEl) && moodEl.ValueKind == JsonValueKind.Number)
+        {
+            mood = moodEl.GetInt32();
+        }
+
+        if (payload.TryGetProperty("health", out var healthEl) && healthEl.ValueKind == JsonValueKind.Number)
+        {
+            health = healthEl.GetInt32();
+        }
+
+        return satiety != 0 || mood != 0 || health != 0;
+    }
+
+    private static string RequireItemId(JsonElement? payload, string actionDescription)
+    {
+        if (payload is not JsonElement element || element.ValueKind != JsonValueKind.Object)
+        {
+            throw new InvalidOperationException($"Не выбран предмет для {actionDescription}");
+        }
+
+        if (!element.TryGetProperty("itemId", out var itemIdEl) || itemIdEl.ValueKind != JsonValueKind.String)
+        {
+            throw new InvalidOperationException($"Не выбран предмет для {actionDescription}");
+        }
+
+        var itemId = itemIdEl.GetString();
+        if (string.IsNullOrWhiteSpace(itemId))
+        {
+            throw new InvalidOperationException($"Не выбран предмет для {actionDescription}");
+        }
+
+        return itemId;
+    }
+
+    private static void DecrementConsumable(Dictionary<string, int> consumables, string itemId)
+    {
+        if (!consumables.TryGetValue(itemId, out var count))
+        {
+            return;
+        }
+
+        if (count <= 1)
+        {
+            consumables.Remove(itemId);
+            return;
+        }
+
+        consumables[itemId] = count - 1;
     }
 
     public async Task<PetStateDto> PerformActionAsync(string userId, string actionName, JsonElement? payload, CancellationToken ct)
@@ -195,54 +243,72 @@ public class PetStateService
                 break;
 
             case "heal":
-                const int healCost = 25;
-                if (context.Wallet.Coins < healCost)
                 {
-                    throw new InvalidOperationException("Недостаточно монет для лечения");
-                }
+                    var itemId = RequireItemId(payload, "лечения");
 
-                context.Wallet.Coins -= healCost;
-                context.Wallet.UpdatedAt = now;
-                AdjustStatus(context.Status, moodDelta: 5, healthDelta: 20);
-                context.Status.LastHealedAt = now;
-                context.Status.LastUpdatedAt = now;
-                changed = true;
-                break;
+                    if (!context.Inventory.Consumables.TryGetValue(itemId, out var healCount) || healCount <= 0)
+                    {
+                        throw new InvalidOperationException("Нет подходящих предметов для лечения");
+                    }
+
+                    var shopItem = await _db.ShopItems.AsNoTracking().FirstOrDefaultAsync(x => x.Id == itemId, ct);
+                    if (shopItem is null || !string.Equals(shopItem.Type, "medicine", StringComparison.Ordinal))
+                    {
+                        throw new InvalidOperationException("Этот предмет нельзя использовать для лечения");
+                    }
+
+                    if (string.IsNullOrWhiteSpace(shopItem.PayloadJson))
+                    {
+                        throw new InvalidOperationException("Предмет не содержит данных для лечения");
+                    }
+
+                    using var healDoc = JsonDocument.Parse(shopItem.PayloadJson);
+                    if (!TryExtractEffect(healDoc.RootElement, out var satietyGain, out var moodGain, out var healthGain) || healthGain == 0)
+                    {
+                        throw new InvalidOperationException("Предмет не даёт эффекта лечения");
+                    }
+
+                    AdjustStatus(context.Status, satietyGain, moodGain, healthGain);
+                    context.Status.LastHealedAt = now;
+                    context.Status.LastUpdatedAt = now;
+                    DecrementConsumable(context.Inventory.Consumables, itemId);
+                    changed = true;
+                    break;
+                }
 
             case "feed":
-                var satietyGain = 20;
-                var moodGain = 3;
-                var healthGain = 0;
-
-                if (payload is JsonElement feedPayload && feedPayload.ValueKind == JsonValueKind.Object)
                 {
-                    if (feedPayload.TryGetProperty("satiety", out var satietyEl) && satietyEl.ValueKind == JsonValueKind.Number)
-                    {
-                        satietyGain = satietyEl.GetInt32();
-                    }
-                    if (feedPayload.TryGetProperty("mood", out var moodEl) && moodEl.ValueKind == JsonValueKind.Number)
-                    {
-                        moodGain = moodEl.GetInt32();
-                    }
-                    if (feedPayload.TryGetProperty("health", out var healthEl) && healthEl.ValueKind == JsonValueKind.Number)
-                    {
-                        healthGain = healthEl.GetInt32();
-                    }
-                }
+                    var itemId = RequireItemId(payload, "кормления");
 
-                const int feedCost = 5;
-                if (context.Wallet.Coins < feedCost)
-                {
-                    throw new InvalidOperationException("Недостаточно монет для корма");
-                }
+                    if (!context.Inventory.Consumables.TryGetValue(itemId, out var foodCount) || foodCount <= 0)
+                    {
+                        throw new InvalidOperationException("Корм закончился");
+                    }
 
-                context.Wallet.Coins -= feedCost;
-                context.Wallet.UpdatedAt = now;
-                AdjustStatus(context.Status, satietyGain, moodGain, healthGain);
-                context.Status.LastFedAt = now;
-                context.Status.LastUpdatedAt = now;
-                changed = true;
-                break;
+                    var shopItem = await _db.ShopItems.AsNoTracking().FirstOrDefaultAsync(x => x.Id == itemId, ct);
+                    if (shopItem is null || !string.Equals(shopItem.Type, "food", StringComparison.Ordinal))
+                    {
+                        throw new InvalidOperationException("Этот предмет нельзя использовать для кормления");
+                    }
+
+                    if (string.IsNullOrWhiteSpace(shopItem.PayloadJson))
+                    {
+                        throw new InvalidOperationException("Корм не содержит данных об эффекте");
+                    }
+
+                    using var feedDoc = JsonDocument.Parse(shopItem.PayloadJson);
+                    if (!TryExtractEffect(feedDoc.RootElement, out var satietyGain, out var moodGain, out var healthGain) || satietyGain == 0)
+                    {
+                        throw new InvalidOperationException("Корм не даёт сытости");
+                    }
+
+                    AdjustStatus(context.Status, satietyGain, moodGain, healthGain);
+                    context.Status.LastFedAt = now;
+                    context.Status.LastUpdatedAt = now;
+                    DecrementConsumable(context.Inventory.Consumables, itemId);
+                    changed = true;
+                    break;
+                }
 
             default:
                 throw new InvalidOperationException("Неизвестное действие");
@@ -296,6 +362,41 @@ public class PetStateService
             }
         }
 
+        context.Inventory.Consumables ??= new Dictionary<string, int>(StringComparer.Ordinal);
+
+        var consumableDtos = new List<InventoryConsumableDto>();
+        if (context.Inventory.Consumables.Count > 0)
+        {
+            var itemIds = context.Inventory.Consumables.Keys.ToList();
+            var shopItems = await _db.ShopItems
+                .Where(x => itemIds.Contains(x.Id))
+                .ToListAsync(ct);
+
+            var map = shopItems.ToDictionary(x => x.Id, StringComparer.Ordinal);
+
+            foreach (var (itemId, count) in context.Inventory.Consumables)
+            {
+                if (count <= 0)
+                {
+                    continue;
+                }
+
+                if (map.TryGetValue(itemId, out var shopItem))
+                {
+                    consumableDtos.Add(new InventoryConsumableDto(shopItem.Id, shopItem.Title, shopItem.Type, count));
+                }
+                else
+                {
+                    consumableDtos.Add(new InventoryConsumableDto(itemId, itemId, "unknown", count));
+                }
+            }
+
+            consumableDtos = consumableDtos
+                .OrderBy(c => c.Type, StringComparer.Ordinal)
+                .ThenBy(c => c.Title, StringComparer.Ordinal)
+                .ToList();
+        }
+
         return new PetStateDto(
             Mood: Clamp(mood),
             Satiety: Clamp(context.Status.Satiety),
@@ -303,6 +404,7 @@ public class PetStateService
             Coins: context.Wallet.Coins,
             Background: context.Inventory.Background,
             Items: context.Inventory.Items,
+            Consumables: consumableDtos,
             SelectedPetId: context.Profile.SelectedPetId,
             OwnedPetIds: context.Profile.OwnedPetIds
         );

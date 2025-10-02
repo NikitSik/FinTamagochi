@@ -8,6 +8,7 @@ public record PetStateDto(
     int Coins,
     string Background,
     List<string> Items,
+    List<InventoryConsumableDto> Consumables,
     string SelectedPetId,
     List<string> OwnedPetIds
 );

@@ -1,4 +1,8 @@
-﻿namespace Tamagochi.Models;
+using System;
+using System.Collections.Generic;
+
+namespace Tamagochi.Models;
+
 public class Inventory
 {
     public string UserId { get; set; } = default!;
@@ -6,5 +10,6 @@ public class Inventory
     public List<string> Items { get; set; } = new();
     public List<string> OwnedPets { get; set; } = new() { "dog" }; // стартовый пес
     public string SelectedPetId { get; set; } = "dog";
+    public Dictionary<string, int> Consumables { get; set; } = new(StringComparer.Ordinal);
 }
 

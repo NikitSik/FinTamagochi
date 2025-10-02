@@ -44,9 +44,17 @@ export type Mission = {
 };
 
 // ---------- PET ----------
+export type InventoryConsumable = {
+  itemId: string;
+  title: string;
+  type: string;
+  count: number;
+};
+
 export type PetState = {
   mood: number; satiety: number; health: number;
   coins: number; background: string; items: string[];
+  consumables: InventoryConsumable[];
   selectedPetId: string;           // 👈 новое
   ownedPetIds: string[];           // 👈 новое
 };
@@ -57,7 +65,7 @@ export type ShopItem = {
   title: string;
   description?: string | null;
   price: number;
-  type: "food" | "bg" | "item" | "pet";
+  type: "food" | "medicine" | "bg" | "item" | "pet";
   enabled: boolean;
   effect?: ShopItemEffect | null;
 };

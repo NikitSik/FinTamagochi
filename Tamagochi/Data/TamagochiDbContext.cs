@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -13,6 +14,11 @@ public class TamagochiDbContext : DbContext
         (left, right) => AreStringListsEqual(left, right),
         list => GetStringListHashCode(list),
         list => CloneStringList(list));
+
+    private static readonly ValueComparer<Dictionary<string, int>> StringIntDictionaryComparer = new(
+        (left, right) => AreStringIntDictionariesEqual(left, right),
+        dict => GetStringIntDictionaryHashCode(dict),
+        dict => CloneStringIntDictionary(dict));
 
     public TamagochiDbContext(DbContextOptions<TamagochiDbContext> options) : base(options)
     {
@@ -60,6 +66,13 @@ public class TamagochiDbContext : DbContext
                 v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new())
             .Metadata.SetValueComparer(StringListComparer);
 
+        modelBuilder.Entity<Inventory>()
+            .Property(e => e.Consumables)
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                v => JsonSerializer.Deserialize<Dictionary<string, int>>(v, (JsonSerializerOptions?)null) ?? new())
+            .Metadata.SetValueComparer(StringIntDictionaryComparer);
+
         modelBuilder.Entity<PetProfile>()
             .Property(e => e.OwnedPetIds)
             .HasConversion(
@@ -86,6 +99,7 @@ public class TamagochiDbContext : DbContext
         modelBuilder.Entity<ShopItem>().HasData(
             new ShopItem { Id = "food_small", Title = "Корм (мал.)", Description = "+15 к сытости", Price = 10, Type = "food", PayloadJson = "{\"satiety\":15}", Enabled = true },
             new ShopItem { Id = "food_big", Title = "Корм (бол.)", Description = "+40 к сытости", Price = 25, Type = "food", PayloadJson = "{\"satiety\":40,\"mood\":5}", Enabled = true },
+            new ShopItem { Id = "med_kit", Title = "Аптечка", Description = "+35 к здоровью", Price = 35, Type = "medicine", PayloadJson = "{\"health\":35,\"mood\":5}", Enabled = true },
             new ShopItem { Id = "bg_sky", Title = "Фон: Небо", Description = "Лёгкие облака", Price = 30, Type = "bg", PayloadJson = "{\"background\":\"sky\"}", Enabled = true },
             new ShopItem { Id = "bg_room", Title = "Фон: Комната", Description = "Уютное убежище", Price = 30, Type = "bg", PayloadJson = "{\"background\":\"room\"}", Enabled = true },
             new ShopItem { Id = "ball", Title = "Мячик", Description = "Игра повышает настроение", Price = 20, Type = "item", PayloadJson = "{\"item\":\"ball\"}", Enabled = true },
@@ -142,5 +156,52 @@ public class TamagochiDbContext : DbContext
     private static List<string> CloneStringList(List<string>? source)
     {
         return source == null ? new List<string>() : new List<string>(source);
+    }
+
+    private static bool AreStringIntDictionariesEqual(Dictionary<string, int>? left, Dictionary<string, int>? right)
+    {
+        if (ReferenceEquals(left, right))
+        {
+            return true;
+        }
+
+        if (left == null || right == null || left.Count != right.Count)
+        {
+            return false;
+        }
+
+        foreach (var (key, value) in left)
+        {
+            if (!right.TryGetValue(key, out var otherValue) || otherValue != value)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static int GetStringIntDictionaryHashCode(Dictionary<string, int>? source)
+    {
+        if (source == null || source.Count == 0)
+        {
+            return 0;
+        }
+
+        var hash = new HashCode();
+        foreach (var pair in source.OrderBy(p => p.Key, StringComparer.Ordinal))
+        {
+            hash.Add(pair.Key, StringComparer.Ordinal);
+            hash.Add(pair.Value);
+        }
+
+        return hash.ToHashCode();
+    }
+
+    private static Dictionary<string, int> CloneStringIntDictionary(Dictionary<string, int>? source)
+    {
+        return source is null
+            ? new Dictionary<string, int>(StringComparer.Ordinal)
+            : new Dictionary<string, int>(source, StringComparer.Ordinal);
     }
 }
