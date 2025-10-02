@@ -281,12 +281,6 @@ export default function Pet() {
         </section>
       </main>
 
-      <footer className={styles.actionBar}>
-        <Link className={`${styles.actionButton} ${styles.actionButtonLink}`} to="/missions/ANTIFRAUD_TUTORIAL">
-          Миссия
-        </Link>
-      </footer>
-
       {shopOpen && (
         <div className={styles.modalBackdrop} onClick={() => setShopOpen(false)}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
