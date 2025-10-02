@@ -7,6 +7,12 @@
   --card-border: rgba(255,255,255,.06);
   --accent: #7c67f2;
 
+  --shop-surface: #11162a;
+  --shop-item-bg: #151d36;
+  --shop-border: rgba(255,255,255,.12);
+  --shop-chip-bg: rgba(255,255,255,.06);
+  --shop-chip-text: rgba(255,255,255,.85);
+
   /* нижняя навигация */
   --nav-bg: rgba(10,12,24,.9);
   --nav-border: rgba(255,255,255,.08);
@@ -25,6 +31,12 @@ html.theme-light {
   --card-border: rgba(0,0,0,.06);
   --accent: #3b82f6;
 
+  --shop-surface: #ffffff;
+  --shop-item-bg: #f1f4ff;
+  --shop-border: rgba(15, 23, 42, 0.12);
+  --shop-chip-bg: rgba(59, 130, 246, 0.12);
+  --shop-chip-text: #1e3a8a;
+
   --nav-bg: rgba(255,255,255,.9);
   --nav-border: rgba(0,0,0,.08);
 
@@ -42,6 +54,12 @@ html.theme-gpb {
   --card: rgba(255,255,255,.06);
   --card-border: rgba(255,255,255,.14);
   --accent: #0066cc;          /* корпоративный голубой */
+
+  --shop-surface: #0b234d;
+  --shop-item-bg: rgba(10, 38, 80, 0.92);
+  --shop-border: rgba(255,255,255,.16);
+  --shop-chip-bg: rgba(255,255,255,.10);
+  --shop-chip-text: #eaf4ff;
 
   --nav-bg: rgba(4,12,32,.9);
   --nav-border: rgba(255,255,255,.12);

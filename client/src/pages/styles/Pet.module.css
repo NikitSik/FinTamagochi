@@ -270,19 +270,58 @@
 }
 
 .modal {
-  width: min(92%, 500px);
-  border-radius: clamp(16px, 4.5vw, 22px);
-  padding: clamp(18px, 4.5vw, 26px);
-  background: var(--card);
-  border: 1px solid var(--card-border);
+  width: min(96%, 680px);
+  border-radius: clamp(18px, 5vw, 26px);
+  padding: clamp(20px, 5vw, 28px);
+  background: var(--shop-surface);
+  border: 1px solid var(--shop-border);
   display: grid;
-  gap: clamp(12px, 3.5vw, 18px);
+  gap: clamp(14px, 4vw, 20px);
+  box-shadow: 0 28px 60px rgba(5, 9, 20, 0.55);
+}
+
+.modalHeader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(14px, 4vw, 20px);
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 .modalTitle {
   margin: 0;
   font-size: clamp(20px, 5.5vw, 26px);
   font-weight: 700;
+}
+
+.modalSubtitle {
+  margin: clamp(4px, 1.5vw, 10px) 0 0;
+  font-size: clamp(13px, 3.6vw, 16px);
+  color: var(--muted);
+}
+
+.balanceWidget {
+  margin-left: auto;
+  background: var(--shop-item-bg);
+  border: 1px solid var(--shop-border);
+  border-radius: clamp(14px, 4vw, 18px);
+  padding: clamp(12px, 3.5vw, 18px) clamp(16px, 4.5vw, 22px);
+  display: grid;
+  gap: clamp(6px, 2vw, 10px);
+  min-width: clamp(160px, 36vw, 220px);
+}
+
+.balanceCaption {
+  font-size: clamp(12px, 3.4vw, 14px);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.balanceValue {
+  font-size: clamp(18px, 5vw, 24px);
+  font-weight: 700;
+  color: var(--text);
 }
 
 .shopFilters {
@@ -294,18 +333,18 @@
 .shopFilter {
   height: clamp(36px, 10vw, 44px);
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: transparent;
-  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--shop-border);
+  background: var(--shop-chip-bg);
+  color: var(--shop-chip-text);
   font-size: clamp(13px, 3.6vw, 15px);
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
 }
 
 .shopFilterActive {
-  background: rgba(127, 90, 240, 0.28);
+  background: var(--accent);
   color: #fff;
-  border-color: rgba(127, 90, 240, 0.5);
+  border-color: transparent;
 }
 
 .err {
@@ -318,23 +357,44 @@
   font-size: clamp(13px, 3.6vw, 16px);
 }
 
+
 .shopList {
   list-style: none;
   padding: 0;
   margin: 0;
   display: grid;
-  gap: clamp(12px, 3.5vw, 18px);
+  gap: clamp(14px, 4vw, 20px);
+  grid-template-columns: repeat(auto-fit, minmax(clamp(210px, 48vw, 280px), 1fr));
 }
 
 .shopRow {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: clamp(12px, 3.5vw, 18px) clamp(14px, 4vw, 22px);
-  border-radius: clamp(14px, 4vw, 20px);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--card-border);
+  flex-direction: column;
   gap: clamp(12px, 3.5vw, 18px);
+  border-radius: clamp(16px, 4.5vw, 22px);
+  background: var(--shop-item-bg);
+  border: 1px solid var(--shop-border);
+  padding: clamp(14px, 4vw, 22px);
+  min-height: clamp(180px, 48vw, 220px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.shopRowContent {
+  display: grid;
+  gap: clamp(10px, 3vw, 16px);
+}
+
+.shopRowHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: clamp(12px, 3.5vw, 18px);
+}
+
+.shopMetaRow {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 2.5vw, 12px);
+  margin-top: clamp(6px, 2vw, 8px);
 }
 
 .shopTitle {
@@ -342,20 +402,29 @@
   font-size: clamp(14px, 3.8vw, 17px);
 }
 
+
 .shopMeta {
-  color: rgba(255, 255, 255, 0.55);
-  font-size: clamp(12px, 3.4vw, 15px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 clamp(8px, 2.5vw, 12px);
+  height: clamp(24px, 6vw, 28px);
+  border-radius: 999px;
+  font-size: clamp(12px, 3.4vw, 14px);
+  background: var(--shop-chip-bg);
+  color: var(--shop-chip-text);
+  border: 1px solid var(--shop-border);
 }
 
 .shopPrice {
-  color: var(--muted);
-  font-size: clamp(13px, 3.6vw, 16px);
-  margin-top: clamp(4px, 1.5vw, 8px);
+  color: var(--text);
+  font-size: clamp(16px, 4.4vw, 18px);
+  font-weight: 700;
 }
 
 .shopDescription {
   font-size: clamp(13px, 3.6vw, 16px);
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--muted);
 }
 
 .shopEffect {
@@ -364,15 +433,24 @@
   margin-top: clamp(4px, 1.5vw, 8px);
 }
 
-.shopTitle { font-weight:600; }
-.shopMeta { color: rgba(255,255,255,.55); font-size: 12px; }
-.shopPrice { color: var(--muted); font-size: 13px; margin-top: 6px; }
-.shopDescription { font-size: 13px; color: rgba(255,255,255,.7); }
-.shopEffect { font-size: 13px; color: #bef264; margin-top: 4px; }
-.shopOwned { font-size: 12px; color: #a3e635; margin-top: 4px; }
+.shopOwned {
+  font-size: clamp(11px, 3.2vw, 13px);
+  color: #a3e635;
+  border: 1px solid rgba(163, 230, 53, 0.4);
+  border-radius: 999px;
+  padding: 0 clamp(6px, 2vw, 10px);
+  height: clamp(22px, 5.5vw, 26px);
+  display: inline-flex;
+  align-items: center;
+}
+
+.shopRowFooter {
+  margin-top: auto;
+}
 
 .buyBtn {
-  height: clamp(40px, 11vw, 48px);
+  width: 100%;
+  height: clamp(44px, 12vw, 52px);
   border-radius: clamp(12px, 3.5vw, 18px);
   background: var(--accent);
   color: #fff;
@@ -461,10 +539,29 @@
     grid-auto-flow: row;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .modalHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .balanceWidget {
+    width: 100%;
+  }
+
+  .shopList {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 420px) {
   .actionBar {
     grid-template-columns: 1fr;
   }
+}
+.shopRowState {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-weight: 600;
 }

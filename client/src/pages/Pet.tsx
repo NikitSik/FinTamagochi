@@ -251,7 +251,7 @@ export default function Pet() {
           </div>
         </section>
 
-         <section className={`${styles.card} ${styles.summaryCard}`}>
+        <section className={`${styles.card} ${styles.summaryCard}`}>
           <div className={styles.summaryRow}>
             <div>
               <span className={styles.summaryLabel}>Выбранный питомец</span>
@@ -290,7 +290,16 @@ export default function Pet() {
       {shopOpen && (
         <div className={styles.modalBackdrop} onClick={() => setShopOpen(false)}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <h2 className={styles.modalTitle}>Магазин</h2>
+            <header className={styles.modalHeader}>
+              <div>
+                <h2 className={styles.modalTitle}>Магазин</h2>
+                <p className={styles.modalSubtitle}>Выберите всё необходимое для заботы о питомце</p>
+              </div>
+              <div className={styles.balanceWidget}>
+                <span className={styles.balanceCaption}>Баланс</span>
+                <strong className={styles.balanceValue}>{coins} мон.</strong>
+              </div>
+            </header>
             <div className={styles.shopFilters}>
               {SHOP_FILTERS.map((tab) => (
                 <button
@@ -304,30 +313,38 @@ export default function Pet() {
             </div>
             {shopErr && <div className={styles.err}>{shopErr}</div>}
             <ul className={styles.shopList}>
-              {shopLoading && <li className={styles.shopRow}>Загрузка…</li>}
+              {shopLoading && <li className={`${styles.shopRow} ${styles.shopRowState}`}>Загрузка…</li>}
               {!shopLoading && !filteredItems.length && (
-                <li className={styles.shopRow}>Подходящих товаров нет</li>
+                <li className={`${styles.shopRow} ${styles.shopRowState}`}>Подходящих товаров нет</li>
               )}
               {!shopLoading && filteredItems.map((it) => {
                 const owned = it.type === "item" && ownedItemIds.has(it.id);
                 const canBuy = coins >= it.price && buyingId !== it.id && !owned;
                 return (
                   <li key={it.id} className={styles.shopRow}>
-                    <div>
-                      <div className={styles.shopTitle}>{it.title}</div>
-                      <div className={styles.shopMeta}>{prettyType(it.type)}</div>
+                    <div className={styles.shopRowContent}>
+                      <div className={styles.shopRowHeader}>
+                        <div>
+                          <div className={styles.shopTitle}>{it.title}</div>
+                          <div className={styles.shopMetaRow}>
+                            <span className={styles.shopMeta}>{prettyType(it.type)}</span>
+                            {owned && <span className={styles.shopOwned}>Уже в инвентаре</span>}
+                          </div>
+                        </div>
+                        <div className={styles.shopPrice}>{it.price} мон.</div>
+                      </div>
                       {it.description && <div className={styles.shopDescription}>{it.description}</div>}
                       {effectText(it.effect) && <div className={styles.shopEffect}>{effectText(it.effect)}</div>}
-                      <div className={styles.shopPrice}>{it.price} мон.</div>
-                      {owned && <div className={styles.shopOwned}>Уже в инвентаре</div>}
                     </div>
-                    <button
-                      className={styles.buyBtn}
-                      disabled={!canBuy || buyingId === it.id}
-                      onClick={() => purchase(it)}
-                    >
-                      {owned ? "Недоступно" : buyingId === it.id ? "Покупаем…" : "Купить"}
-                    </button>
+                    <div className={styles.shopRowFooter}>
+                      <button
+                        className={styles.buyBtn}
+                        disabled={!canBuy || buyingId === it.id}
+                        onClick={() => purchase(it)}
+                      >
+                        {owned ? "Недоступно" : buyingId === it.id ? "Покупаем…" : "Купить"}
+                      </button>
+                    </div>
                   </li>
                 );
               })}
