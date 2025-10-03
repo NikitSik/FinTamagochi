@@ -140,7 +140,7 @@ app.MapGet("/__routes", (EndpointDataSource eds) =>
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<TamagochiDbContext>();
-    db.Database.Migrate();
+    db.Database.EnsureCreated();
 }
 
 // Program.cs, до app.Run()
