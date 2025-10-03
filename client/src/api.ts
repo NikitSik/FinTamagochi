@@ -3,7 +3,7 @@ export type AuthResponse = { userId: string; token: string };
 export type RegisterRequest = { nickname: string; password: string };
 export type LoginRequest = { nickname: string; password: string };
 
-const RAW_BASE = import.meta.env.VITE_API_URL || "https://localhost:7228";
+const RAW_BASE = import.meta.env.VITE_API_URL || "https://fintamagochi-1.onrender.com";
 const BASE = RAW_BASE.replace(/\/$/, ""); 
 
 let _token: string | null = localStorage.getItem("token");
