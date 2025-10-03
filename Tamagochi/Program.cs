@@ -43,13 +43,11 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddCors(o => o.AddPolicy("Frontend", p =>
     p.WithOrigins(
-        "http://localhost:5173",
+       "http://localhost:5173",
         "http://localhost:3000",
-        "https://melodious-zabaione-f06738.netlify.app",
-        "https://financetamagochi.netlify.app/register",
-        "https://fintamagochi-1.onrender.com",
         "http://192.168.0.12:3000",
-        "https://localhost:7228"
+        "https://melodious-zabaione-f06738.netlify.app",
+        "https://financetamagochi.netlify.app"
     )
     .AllowAnyHeader()
     .AllowAnyMethod()
@@ -127,6 +125,7 @@ app.UseSwaggerUI(c =>
 if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 
+app.UseRouting();
 app.UseCors("Frontend");
 app.UseStaticFiles();
 app.UseAuthentication();
