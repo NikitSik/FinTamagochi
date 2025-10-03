@@ -54,10 +54,11 @@ builder.Services.AddCors(o => o.AddPolicy("Frontend", p =>
     .AllowCredentials()
 ));
 
-// DbContext -> SQL Server
 var connStr = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Missing ConnectionStrings:DefaultConnection");
-builder.Services.AddDbContext<TamagochiDbContext>(o => o.UseSqlServer(connStr));
+
+builder.Services.AddDbContext<TamagochiDbContext>(o =>
+    o.UseNpgsql(connStr));
 
 // JWT auth (как было)
 var jwt = builder.Configuration.GetSection("Jwt");
