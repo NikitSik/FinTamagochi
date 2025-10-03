@@ -41,8 +41,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// CORS: ДОБАВЬ IP МАШИНЫ С ФРОНТОМ
-// пример: фронт крутится на 192.168.0.12:5173 (Vite) или :3000 (CRA)
 builder.Services.AddCors(o => o.AddPolicy("Frontend", p =>
     p.WithOrigins(
         "http://localhost:5173",
@@ -56,7 +54,7 @@ builder.Services.AddCors(o => o.AddPolicy("Frontend", p =>
     .AllowCredentials()
 ));
 
-// DbContext → SQL Server
+// DbContext -> SQL Server
 var connStr = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Missing ConnectionStrings:DefaultConnection");
 builder.Services.AddDbContext<TamagochiDbContext>(o => o.UseSqlServer(connStr));
