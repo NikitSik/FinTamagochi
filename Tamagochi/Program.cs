@@ -45,7 +45,7 @@ builder.Services.AddCors(o => o.AddPolicy("Frontend", p =>
     p.WithOrigins(
         "http://localhost:5173",
         "http://localhost:3000",
-        "https://melodious-zabaione-f06738.netlify.app"
+        "https://melodious-zabaione-f06738.netlify.app",
         "http://192.168.0.12:5173",
         "http://192.168.0.12:3000",
         "https://localhost:7228"
